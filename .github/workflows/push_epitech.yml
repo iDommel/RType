@@ -19,6 +19,6 @@ jobs:
           source-directory: .
           destination-github-username: 'EpitechPromo2025'
           destination-repository-name: 'B-CPP-500-TLS-5-1-rtype-cyril.dehaese'
-          user-email: iona.dommel-prioux@epitech.eu
+          user-email: cyril.dehaese@epitech.eu
           commit-message: See ORIGIN_COMMIT from $GITHUB_REF
           target-branch: main
