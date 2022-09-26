@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(bomberman VERSION 1.0.0 LANGUAGES CXX)
+project(r-type_server VERSION 1.0.0 LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME})
-
-
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(${PROJECT_NAME} -lstdc++fs)
