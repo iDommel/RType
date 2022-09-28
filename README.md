@@ -2,7 +2,7 @@
 Repository for the R-Type project
 
 # Compilation:
-    cmake -B build
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
     cmake --build build
 
     For debugging:
