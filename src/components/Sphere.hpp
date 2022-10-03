@@ -12,7 +12,7 @@
 
 struct Color;
 
-namespace indie
+namespace rtype
 {
     class Sphere : public Component
     {

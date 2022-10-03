@@ -7,21 +7,20 @@
 
 #include "GamepadStickCallbacks.hpp"
 
-namespace indie
+namespace rtype
 {
     GamepadStickCallbacks::GamepadStickCallbacks()
     {
     }
     GamepadStickCallbacks::GamepadStickCallbacks(std::function<void(SceneManager &, float)> negative,
                                                  std::function<void(SceneManager &)> null,
-                                                 std::function<void(SceneManager &, float)> positive):
-    _negative(negative),
-          _null(null),
-          _positive(positive)
+                                                 std::function<void(SceneManager &, float)> positive) : _negative(negative),
+                                                                                                        _null(null),
+                                                                                                        _positive(positive)
     {
     }
 
     GamepadStickCallbacks::~GamepadStickCallbacks()
     {
     }
-} 
+}

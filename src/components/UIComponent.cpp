@@ -11,7 +11,7 @@
 #include "Position.hpp"
 #include "Window.hpp"
 
-namespace indie
+namespace rtype
 {
 
     UIComponent::UIComponent(std::shared_ptr<IEntity> player, std::shared_ptr<IEntity> text) : Component(Type::UI)
@@ -64,4 +64,4 @@ namespace indie
     {
         return _textToDestroy;
     }
-} 
+}

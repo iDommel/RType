@@ -14,7 +14,7 @@
 #include "GameSystem.hpp"
 #include "SceneManager.hpp"
 
-namespace indie
+namespace rtype
 {
     void SceneManager::addScene(std::unique_ptr<IScene> scene, SceneType sceneType)
     {
@@ -62,7 +62,7 @@ namespace indie
             _scenes[SceneType::PREGAME] = _scenes[SceneType::PREGAME]->initScene();
             _scenes[SceneType::PREGAME]->setAddEntityCallback(addEntityCallback);
             _scenes[SceneType::PREGAME]->setRemoveEntityCallback(removeEntityCallback);
-        } 
+        }
 
         auto addEntityCallback = _scenes[_currentScene]->getAddEntityCallback();
         auto removeEntityCallback = _scenes[_currentScene]->getRemoveEntityCallback();
@@ -115,7 +115,6 @@ namespace indie
 
         return previousSceneType;
     }
-
 
     IScene &SceneManager::getScene(SceneType sceneType)
     {

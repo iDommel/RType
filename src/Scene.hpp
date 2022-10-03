@@ -16,7 +16,7 @@
 #include "IEntity.hpp"
 #include "IScene.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class Core;
@@ -61,11 +61,11 @@ namespace indie
          * @param callback Callback function
          */
         void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback);
-        
-        std::function<void(std::shared_ptr<IEntity>)> getAddEntityCallback() {return _addEntityCallback;};
 
-        std::function<void(std::shared_ptr<IEntity>)> getRemoveEntityCallback() {return _removeEntityCallback;};
-        
+        std::function<void(std::shared_ptr<IEntity>)> getAddEntityCallback() { return _addEntityCallback; };
+
+        std::function<void(std::shared_ptr<IEntity>)> getRemoveEntityCallback() { return _removeEntityCallback; };
+
         /**
          * @brief retrieves the entities for a given tag
          *

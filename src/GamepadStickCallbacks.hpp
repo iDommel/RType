@@ -12,7 +12,7 @@
 
 #include "SceneManager.hpp"
 
-namespace indie
+namespace rtype
 {
     /// @brief Class to group the gamepad events related to a gamepad's stick movements
     class GamepadStickCallbacks
@@ -38,6 +38,6 @@ namespace indie
     protected:
     private:
     };
-} 
+}
 
 #endif /* !GAMEPADCALLBACKS_HPP_ */

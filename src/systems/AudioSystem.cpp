@@ -16,7 +16,7 @@
 #include "MusicComponent.hpp"
 #include "AudioDevice.hpp"
 
-namespace indie
+namespace rtype
 {
 
     void AudioSystem::init(SceneManager &)

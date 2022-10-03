@@ -46,7 +46,7 @@
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 
-namespace indie
+namespace rtype
 {
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -103,7 +103,7 @@ namespace indie
 
     unsigned int GameSystem::nbr_ai;
 
-    void GameSystem::init(indie::SceneManager &sceneManager)
+    void GameSystem::init(rtype::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
 
@@ -122,7 +122,7 @@ namespace indie
         _aiSystem.init(sceneManager);
     }
 
-    void GameSystem::replaceTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::replaceTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (SceneManager::getCurrentSceneType() == SceneManager::SceneType::CONTROLLER) {
             if (players->changeUp == 2 || players->changeUp == 0) {
@@ -163,7 +163,7 @@ namespace indie
         }
     }
 
-    void GameSystem::updateTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::updateTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (players->changeUp == 1) {
             auto entity = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText];
@@ -212,7 +212,7 @@ namespace indie
         }
     }
 
-    void GameSystem::update(indie::SceneManager &sceneManager, uint64_t dt)
+    void GameSystem::update(rtype::SceneManager &sceneManager, uint64_t dt)
     {
         int firstText = 9;
 
@@ -340,11 +340,10 @@ namespace indie
                         AudioDevice::setVolume(AudioDevice::getMasterVolume());
                         value2->getValue() = std::to_string(int(AudioDevice::getMasterVolume() * 100));
                     }
-                }
-            },
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {});
+                } },
+                                      [](SceneManager &, Vector2 /*mousePosition*/) {},
+                                      [](SceneManager &, Vector2 /*mousePosition*/) {},
+                                      [](SceneManager &, Vector2 /*mousePosition*/) {});
 
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
 
@@ -609,7 +608,7 @@ namespace indie
             auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
             auto hitbox = Component::castComponent<Hitbox>((*player)[IComponent::Type::HITBOX]);
             auto splitVel = *vel;
-            
+
             splitVel.z = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
@@ -736,7 +735,7 @@ namespace indie
         }
     }
 
-    std::unique_ptr<indie::IScene> GameSystem::createMainMenu()
+    std::unique_ptr<rtype::IScene> GameSystem::createMainMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenu, this));
         std::shared_ptr<Entity> entity1 = std::make_shared<Entity>();
@@ -747,7 +746,6 @@ namespace indie
         std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/controller.png", Position(0, 600 - 80), 80, 80);
         std::shared_ptr<Entity> entity5 = createImage("assets/MainMenu/help.png", Position(0, 0), 80, 80);
         std::shared_ptr<Entity> entity6 = createImage("assets/MainMenu/quit_unpressed.png", Position(800 / 2 - 60, 700 / 2 - 18), 120, 28);
-
 
         entity1->addComponent(component2)
             .addComponent(component);
@@ -761,7 +759,7 @@ namespace indie
         return scene;
     }
 
-    std::unique_ptr<indie::IScene> GameSystem::createSoundMenu()
+    std::unique_ptr<rtype::IScene> GameSystem::createSoundMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSoundMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
@@ -779,7 +777,7 @@ namespace indie
         return scene;
     }
 
-    std::unique_ptr<indie::IScene> GameSystem::createHelpMenu()
+    std::unique_ptr<rtype::IScene> GameSystem::createHelpMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
@@ -794,7 +792,7 @@ namespace indie
         return scene;
     }
 
-    std::unique_ptr<indie::IScene> GameSystem::createControllerMenu()
+    std::unique_ptr<rtype::IScene> GameSystem::createControllerMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createControllerMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
@@ -847,7 +845,7 @@ namespace indie
         return scene;
     }
 
-    std::unique_ptr<indie::IScene> GameSystem::createPreGameMenu()
+    std::unique_ptr<rtype::IScene> GameSystem::createPreGameMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createPreGameMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
@@ -1003,8 +1001,7 @@ namespace indie
         Position(offset, 0),
         Position(800 - (textWidth + offset), 0),
         Position(0, 600 - (textWidth + offset)),
-        Position(800 - (textWidth + offset), 600 - (textWidth + offset))
-    };
+        Position(800 - (textWidth + offset), 600 - (textWidth + offset))};
 
     void GameSystem::createPlayerUI(IScene &scene, std::shared_ptr<IEntity> player)
     {
@@ -1097,7 +1094,7 @@ namespace indie
         std::function<void(SceneManager &, float)> moveVerticalStickCallback = [player, playerEntity](SceneManager &manager, float value) {
             player->moveVertical(manager, playerEntity, value);
         };
-    
+
         playerListener->addKeyboardEvent((KeyboardKey)player->getTagUp(), moveUpCallbacks);
         playerListener->addKeyboardEvent((KeyboardKey)player->getTagLeft(), moveLeftCallbacks);
         playerListener->addKeyboardEvent((KeyboardKey)player->getTagRight(), moveRightCallbacks);

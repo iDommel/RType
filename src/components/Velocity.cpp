@@ -7,10 +7,9 @@
 
 #include "Velocity.hpp"
 
-namespace indie
+namespace rtype
 {
-    Velocity::Velocity(float x, float y, float z):
-    AVector(Component::Type::VELOCITY, x, y, z)
+    Velocity::Velocity(float x, float y, float z) : AVector(Component::Type::VELOCITY, x, y, z)
     {
     }
 

@@ -14,7 +14,7 @@
 
 struct Vector3;
 
-namespace indie
+namespace rtype
 {
     class Velocity;
     class Position;
@@ -23,7 +23,6 @@ namespace indie
     class AIPlayer : public Component
     {
     public:
-
         AIPlayer(int id);
 
         /**

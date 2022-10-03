@@ -13,9 +13,11 @@
 
 struct Vector3;
 
-namespace indie {
+namespace rtype
+{
 
-class Bomb: public Component{
+    class Bomb : public Component
+    {
     public:
         Bomb(int blastPower = 1);
         ~Bomb();
@@ -34,6 +36,7 @@ class Bomb: public Component{
          * @return The time in seconds
          */
         uint64_t getTimer() const;
+
     protected:
     private:
         void calculateExplosionRadius(IScene &scene, Vector3 pos);
@@ -41,7 +44,7 @@ class Bomb: public Component{
 
         uint64_t _countdown;
         int _blastPower;
-};
+    };
 
 }
 

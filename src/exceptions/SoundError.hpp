@@ -10,13 +10,16 @@
 
 #include <stdexcept>
 
-namespace indie {
-    class SoundError: public std::exception {
-        public:
-            SoundError(const std::string &msg): _msg(msg) {}
-            virtual const char *what() const throw() { return _msg.c_str(); }
-        private:
-            std::string _msg;
+namespace rtype
+{
+    class SoundError : public std::exception
+    {
+    public:
+        SoundError(const std::string &msg) : _msg(msg) {}
+        virtual const char *what() const throw() { return _msg.c_str(); }
+
+    private:
+        std::string _msg;
     };
 }
 

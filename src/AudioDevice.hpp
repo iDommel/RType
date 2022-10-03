@@ -8,7 +8,7 @@
 #ifndef AUDIODEVICE_HPP_
 #define AUDIODEVICE_HPP_
 
-namespace indie
+namespace rtype
 {
     class AudioDevice
     {
@@ -24,7 +24,12 @@ namespace indie
         ///  @brief Set music volume
         static void setVolume(float volume);
 
-        static float &getMasterVolume() {static float masterVolume; return masterVolume;};
+        static float &getMasterVolume()
+        {
+            static float masterVolume;
+            return masterVolume;
+        };
+
     protected:
     private:
         static float masterVolume;

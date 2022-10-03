@@ -14,7 +14,7 @@
 #include "Window.hpp"
 #include "EventSystem.hpp"
 
-namespace indie
+namespace rtype
 {
     std::map<int, std::vector<std::shared_ptr<EventListener>>> EventSystem::_listeners;
 
@@ -149,7 +149,7 @@ namespace indie
         auto newEntities = manager.getScene(sceneType)[IEntity::Tags::CALLABLE];
         std::vector<std::shared_ptr<EventListener>> newListeners;
 
-        for (auto &e: newEntities) {
+        for (auto &e : newEntities) {
             auto listener = Component::castComponent<EventListener>((*e)[Component::Type::EVT_LISTENER]);
             if (listener)
                 newListeners.push_back(listener);

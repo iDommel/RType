@@ -10,10 +10,11 @@
 #include "HitboxComponent.hpp"
 #include "AVector.hpp"
 
-namespace indie
+namespace rtype
 {
     Hitbox::Hitbox(BoundingBox box, Vector3 pos) : Component(Type::HITBOX),
-    _box(std::make_unique<BoundingBox>(box)), _is3D(true)
+                                                   _box(std::make_unique<BoundingBox>(box)),
+                                                   _is3D(true)
     {
         _box->min = {pos.x + _box->min.x, pos.y + _box->min.y, pos.z + _box->min.z};
         _box->max = {pos.x + _box->max.x, pos.y + _box->max.y, pos.z + _box->max.z};
@@ -38,7 +39,7 @@ namespace indie
     }
 
     Hitbox::Hitbox(bool is3D)
-    : Component(Type::HITBOX), _is3D(is3D)
+        : Component(Type::HITBOX), _is3D(is3D)
     {
         _isInitialized = false;
     }

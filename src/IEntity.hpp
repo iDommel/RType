@@ -13,7 +13,7 @@
 
 #include "components/IComponent.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class IEntity

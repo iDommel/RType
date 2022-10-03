@@ -5,8 +5,6 @@
 ** GraphicSystem.cpp
 */
 
-#include "raylib.h"
-
 #include <iostream>
 
 #include "GraphicSystem.hpp"
@@ -26,8 +24,11 @@
 #include "ModelAnimation.hpp"
 #include "ParticleCloud.hpp"
 
-namespace indie
+#include "SFML/Graphics.h"
+
+namespace rtype
 {
+    Window GraphicSystem::_window = Window(800, 600, "R-Type");
 
     GraphicSystem::GraphicSystem()
     {
@@ -35,7 +36,6 @@ namespace indie
     void GraphicSystem::init(SceneManager &sceneManager)
     {
         std::cerr << "GraphicSystem::init" << std::endl;
-        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "Indie Studio");
 
         for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
@@ -47,17 +47,21 @@ namespace indie
         }
     }
 
+    Window &GraphicSystem::getWindow()
+    {
+        return _window;
+    }
+
     void GraphicSystem::update(SceneManager &sceneManager, uint64_t)
     {
         for (auto &scene : sceneManager.getScenes())
             for (auto &e : (*scene.second)[IEntity::Tags::TEXT])
                 loadText(e);
-        if (_window->shouldClose()) {
+        if (_window.shouldClose()) {
             sceneManager.setShouldClose(true);
             return;
         }
-        _window->beginDraw();
-        _window->clearBackground(RAYWHITE);
+        _window.clear();
         for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA]) {
             auto camComponent = (*e)[IComponent::Type::CAMERA];
             auto cam = Component::castComponent<CameraComponent>(camComponent);
@@ -81,7 +85,7 @@ namespace indie
             displaySprite(e);
         for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
             displayText(e);
-        _window->endDraw();
+        _window.display();
     }
 
     void GraphicSystem::destroy()
@@ -146,10 +150,9 @@ namespace indie
         try {
             auto rect = (*entity)[IComponent::Type::RECT];
             auto r = Component::castComponent<Rect>(rect);
-            Vector2 p = {pos->x, pos->y};
 
             _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
-            _textures.at(sprite->getValue()).first->drawRec(p);
+            _textures.at(sprite->getValue()).first->drawRec({pos->x, pos->y});
         } catch (std::runtime_error &) {
             _textures.at(sprite->getValue()).first->draw(pos->x, pos->y);
         }
@@ -157,9 +160,9 @@ namespace indie
 
     void GraphicSystem::displayParticles(std::shared_ptr<IEntity> &entity) const
     {
-        static auto sphere = Sphere(1, BLUE);
+        static auto sphere = Sphere(1, sf::Color(87, 12, 13));
         auto particlesCloudEntity = (*entity)[IComponent::Type::PARTICLES];
-        std::shared_ptr<indie::ParticleCloud> particlesCloud = nullptr;
+        std::shared_ptr<rtype::ParticleCloud> particlesCloud = nullptr;
 
         if (particlesCloudEntity == nullptr)
             return;
@@ -201,7 +204,7 @@ namespace indie
     {
         auto model = Component::castComponent<Model3D>((*entity)[IComponent::Type::MODEL]);
         auto boxComponent = (*entity)[IComponent::Type::HITBOX];
-        std::shared_ptr<indie::Hitbox> hitbox = nullptr;
+        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
 
         if (_models.find(model->getModelPath()) != _models.end())
             _models[model->getModelPath()].second++;

@@ -8,12 +8,12 @@
 #ifndef RADAR_HPP
 #define RADAR_HPP
 
-namespace indie
+namespace rtype
 {
     class Radar : public Component
     {
     public:
-        Radar() : Component(Type::RADAR) {};
+        Radar() : Component(Type::RADAR){};
     };
 }
 

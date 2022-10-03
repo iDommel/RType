@@ -9,7 +9,7 @@
 
 #include "EventListener.hpp"
 
-namespace indie
+namespace rtype
 {
 
     EventListener::EventListener() : Component(Type::EVT_LISTENER)

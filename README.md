@@ -34,3 +34,8 @@ To undo last commit and to restore file content to the prevous commit:
     git reset --hard HEAD^
 Same thing but keeping your changes:
     git reset HEAD^
+
+# Things that were a pain in the bun to refactor:
+Handling windows
+Graphic system
+Event system

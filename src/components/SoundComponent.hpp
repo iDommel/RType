@@ -13,12 +13,12 @@
 #include "Component.hpp"
 #include "Sound.hpp"
 
-namespace indie
+namespace rtype
 {
     class SoundComponent : public Component
     {
     public:
-        SoundComponent(std::string str) : Component(Type::SOUND), sound(str) {};
+        SoundComponent(std::string str) : Component(Type::SOUND), sound(str){};
 
         std::string getValue() const { return sound; };
         void setSoundState(Sound::SoundState state) { _newState = state; };

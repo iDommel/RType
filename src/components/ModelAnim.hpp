@@ -10,7 +10,7 @@
 
 #include "Component.hpp"
 
-namespace indie
+namespace rtype
 {
     class ModelAnim : public Component
     {
@@ -20,8 +20,7 @@ namespace indie
          * @param filepath Path to the file containing the animation
          * @param currentFrame Current frame of the animation
          */
-        ModelAnim(std::string const &filepath, int currentFrame = 0):
-        Component(IComponent::Type::ANIMATION), _filepath(filepath), _currFrame(currentFrame){};
+        ModelAnim(std::string const &filepath, int currentFrame = 0) : Component(IComponent::Type::ANIMATION), _filepath(filepath), _currFrame(currentFrame){};
 
         /// @brief Get the animation filepath
         std::string getAnimPath() { return _filepath; };
@@ -31,8 +30,13 @@ namespace indie
         int &getNbFrames() { return _nbFrames; };
         void setShouldPlay(bool shouldPlay) { _play = shouldPlay; };
         bool shouldPlay() const { return _play; };
-        void triggerPlay(std::shared_ptr<IEntity> e) {if (_trigger) _trigger(e);};
+        void triggerPlay(std::shared_ptr<IEntity> e)
+        {
+            if (_trigger)
+                _trigger(e);
+        };
         void setTrigger(std::function<void(std::shared_ptr<IEntity>)> trigger) { _trigger = trigger; };
+
     private:
         std::string _filepath;
         int _currFrame;

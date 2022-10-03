@@ -16,7 +16,7 @@
 #include "Text.hpp"
 #include "ModelAnimation.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class GraphicSystem : public ISystem
@@ -37,6 +37,8 @@ namespace indie
          * @param entity The Entity that was removed
          */
         void unloadEntity(std::shared_ptr<IEntity> entity) final;
+
+        static Window &getWindow();
 
     private:
         void loadSprite(std::shared_ptr<IEntity> &entity);
@@ -61,11 +63,11 @@ namespace indie
         void loadModelAnimation(std::shared_ptr<IEntity> &entity);
         void unloadModelAnimation(std::shared_ptr<IEntity> &entity);
 
-        std::unique_ptr<Window> _window;
         std::map<std::string, std::pair<std::unique_ptr<Texture>, int>> _textures;
         std::map<std::string, std::pair<std::unique_ptr<Model>, int>> _models;
         std::map<std::string, std::pair<std::unique_ptr<Text>, int>> _texts;
         std::map<std::string, std::pair<std::unique_ptr<ModelAnimation>, int>> _animations;
+        static Window _window;
     };
 
 }

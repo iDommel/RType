@@ -23,7 +23,7 @@
 #define MAP_INDESTRUCTIBLE_WALL 3
 #define MAP_PLAYER 4
 
-namespace indie
+namespace rtype
 {
 
     AISystem::AISystem(CollideSystem &collideSystem) : _collideSystem(collideSystem) {}
@@ -77,7 +77,6 @@ namespace indie
             }
 
             if (collider->hasTag(IEntity::Tags::COLLIDABLE) && collider != me) {
-
                 int y = std::round(pos->z / GAME_TILE_SIZE) - (pz - 2);
                 int x = std::round(pos->x / GAME_TILE_SIZE) - (px - 2);
 
@@ -85,14 +84,14 @@ namespace indie
                     continue;
                 if (collider->hasTag(IEntity::Tags::BOMB)) {
                     map[y][x] = MAP_BOMB;
-                    if (y - 1 > 0 && map[y-1][x] == MAP_EMPTY)
-                        map[y-1][x] = MAP_BOMB;
-                    if (y + 1 < 5 && map[y+1][x] == MAP_EMPTY)
-                        map[y+1][x] = MAP_BOMB;
-                    if (x - 1 > 0 && map[y][x-1] == MAP_EMPTY)
-                        map[y][x-1] = MAP_BOMB;
-                    if (x + 1 < 5 && map[y][x+1] == MAP_EMPTY)
-                        map[y][x+1] = MAP_BOMB;
+                    if (y - 1 > 0 && map[y - 1][x] == MAP_EMPTY)
+                        map[y - 1][x] = MAP_BOMB;
+                    if (y + 1 < 5 && map[y + 1][x] == MAP_EMPTY)
+                        map[y + 1][x] = MAP_BOMB;
+                    if (x - 1 > 0 && map[y][x - 1] == MAP_EMPTY)
+                        map[y][x - 1] = MAP_BOMB;
+                    if (x + 1 < 5 && map[y][x + 1] == MAP_EMPTY)
+                        map[y][x + 1] = MAP_BOMB;
                 } else if (collider->hasTag(IEntity::Tags::DESTRUCTIBLE)) {
                     if (collider->hasTag(IEntity::Tags::PLAYER))
                         map[y][x] = MAP_PLAYER;
@@ -134,7 +133,6 @@ namespace indie
     {
         Vector2 pos = {2, 2};
 
-
         if (ai._isUp) {
             if (map[pos.y - 1][pos.x] == MAP_EMPTY)
                 return;
@@ -163,7 +161,6 @@ namespace indie
         auto position = Component::castComponent<Position>((*entity)[Component::Type::POSITION]);
         poseBomb(ai, sceneManager, map);
         changeDir(map, ai, entity);
-
     }
 
     bool AISystem::escape(AIPlayer &ai, std::array<std::array<char, 5>, 5> &map, std::shared_ptr<IEntity> entity)
@@ -245,9 +242,9 @@ namespace indie
             return;
 
         if ((map[y - 1][x - 1] != MAP_EMPTY || (map[y - 1][x] != MAP_EMPTY && map[y][x - 1] != MAP_EMPTY)) &&
-        (map[y - 1][x + 1] != MAP_EMPTY || (map[y - 1][x] != MAP_EMPTY && map[y][x + 1] != MAP_EMPTY)) &&
-        (map[y + 1][x - 1] != MAP_EMPTY || (map[y + 1][x] != MAP_EMPTY && map[y][x - 1] != MAP_EMPTY)) &&
-        (map[y + 1][x + 1] != MAP_EMPTY || (map[y + 1][x] != MAP_EMPTY && map[y][x + 1] != MAP_EMPTY)))
+            (map[y - 1][x + 1] != MAP_EMPTY || (map[y - 1][x] != MAP_EMPTY && map[y][x + 1] != MAP_EMPTY)) &&
+            (map[y + 1][x - 1] != MAP_EMPTY || (map[y + 1][x] != MAP_EMPTY && map[y][x - 1] != MAP_EMPTY)) &&
+            (map[y + 1][x + 1] != MAP_EMPTY || (map[y + 1][x] != MAP_EMPTY && map[y][x + 1] != MAP_EMPTY)))
             return;
         ai.generateBomb(sceneManager, posBomb);
     }

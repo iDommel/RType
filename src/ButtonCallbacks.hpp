@@ -12,7 +12,7 @@
 
 #include "SceneManager.hpp"
 
-namespace indie
+namespace rtype
 {
     /// @brief Class to group all pressed, released and down callbacks for an event
     class ButtonCallbacks
@@ -42,6 +42,6 @@ namespace indie
     protected:
     private:
     };
-} 
+}
 
 #endif /* !BUTTONCALLBACKS_HPP_ */

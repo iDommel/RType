@@ -10,7 +10,8 @@
 
 #include <memory>
 
-namespace indie {
+namespace rtype
+{
 
     class SceneManager;
     class IEntity;
@@ -18,7 +19,6 @@ namespace indie {
     class ISystem
     {
     public:
-
         /**
          * @brief Initialize the system before the game loop
          * @param manager The scene manager
@@ -45,7 +45,6 @@ namespace indie {
          * @param entity The Entity that was removed
          */
         virtual void unloadEntity(std::shared_ptr<IEntity> entity) = 0;
-
     };
 
 }

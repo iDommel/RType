@@ -16,7 +16,7 @@
 
 #define UPDATE_DELTA 17
 
-namespace indie
+namespace rtype
 {
     class Core
     {

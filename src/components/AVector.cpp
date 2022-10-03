@@ -7,20 +7,17 @@
 
 #include "AVector.hpp"
 
-namespace indie
+namespace rtype
 {
-    AVector::AVector(Component::Type type, float x, float y, float z):
-    Component(type), x(x), y(y), z(z)
+    AVector::AVector(Component::Type type, float x, float y, float z) : Component(type), x(x), y(y), z(z)
     {
     }
 
-    AVector::AVector(const AVector &other):
-    Component(other.getType()), x(other.x), y(other.y), z(other.z)
+    AVector::AVector(const AVector &other) : Component(other.getType()), x(other.x), y(other.y), z(other.z)
     {
     }
 
-    AVector::AVector(const AVector &&other):
-    Component(other.getType()), x(other.x), y(other.y), z(other.z)
+    AVector::AVector(const AVector &&other) : Component(other.getType()), x(other.x), y(other.y), z(other.z)
     {
     }
 

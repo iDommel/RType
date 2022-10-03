@@ -10,7 +10,7 @@
 
 #include "Entity.hpp"
 
-namespace indie
+namespace rtype
 {
 
     const std::map<Entity::Tags, std::vector<std::vector<IComponent::Type>>> Entity::entityTags = {

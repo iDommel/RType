@@ -8,7 +8,7 @@
 #ifndef ICOMPONENT_HPP
 #define ICOMPONENT_HPP
 
-namespace indie
+namespace rtype
 {
 
     class IEntity;

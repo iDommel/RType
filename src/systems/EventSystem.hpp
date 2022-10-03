@@ -11,7 +11,7 @@
 #include "ISystem.hpp"
 #include "SceneManager.hpp"
 
-namespace indie
+namespace rtype
 {
     class EventListener;
     class EventSystem : public ISystem

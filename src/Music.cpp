@@ -13,7 +13,7 @@
 #include "exceptions/MusicError.hpp"
 #include "AudioDevice.hpp"
 
-namespace indie
+namespace rtype
 {
     Music::Music(const std::string &fileName)
     {

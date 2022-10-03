@@ -9,7 +9,7 @@
 
 #include "Shape2D.hpp"
 
-namespace indie
+namespace rtype
 {
 
     Shape2D::Shape2D()

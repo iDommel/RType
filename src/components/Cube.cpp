@@ -9,7 +9,7 @@
 
 #include "Cube.hpp"
 
-namespace indie
+namespace rtype
 {
     Cube::Cube(Vector3 size, Color color) : Component(Type::CUBE), _size(size), _color(color)
     {

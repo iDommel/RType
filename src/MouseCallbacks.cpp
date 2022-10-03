@@ -7,7 +7,7 @@
 
 #include "MouseCallbacks.hpp"
 
-namespace indie
+namespace rtype
 {
 
     MouseCallbacks::MouseCallbacks()
@@ -16,15 +16,14 @@ namespace indie
     MouseCallbacks::MouseCallbacks(std::function<void(SceneManager &, Vector2)> pressed,
                                    std::function<void(SceneManager &, Vector2)> released,
                                    std::function<void(SceneManager &, Vector2)> down,
-                                   std::function<void(SceneManager &, Vector2)> up):
-    _pressed(pressed),
-          _released(released),
-          _down(down),
-          _up(up)
+                                   std::function<void(SceneManager &, Vector2)> up) : _pressed(pressed),
+                                                                                      _released(released),
+                                                                                      _down(down),
+                                                                                      _up(up)
     {
     }
 
     MouseCallbacks::~MouseCallbacks()
     {
     }
-} 
+}

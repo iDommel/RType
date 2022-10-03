@@ -10,13 +10,13 @@
 
 #include "AVector.hpp"
 
-namespace indie
+namespace rtype
 {
     class Velocity : public AVector
     {
     public:
         Velocity(float x, float y, float z = 0);
     };
-} 
+}
 
 #endif /* !VELOCITY_HPP_ */

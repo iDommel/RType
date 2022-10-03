@@ -13,7 +13,7 @@
 #include "ISystem.hpp"
 #include "CollideSystem.hpp"
 
-namespace indie
+namespace rtype
 {
     class Position;
     class AIPlayer;
@@ -21,9 +21,7 @@ namespace indie
     class AISystem : public ISystem
     {
     public:
-
-        enum class DIRECTION
-        {
+        enum class DIRECTION {
             UP,
             DOWN,
             LEFT,

@@ -24,7 +24,7 @@
 #include "Destructible.hpp"
 #include "GameSystem.hpp"
 
-namespace indie
+namespace rtype
 {
     static const std::string tilesFilepath = "assets/ground_asset/sand_asset_basic/basicBeach";
     static const std::string indestructibleBordersFile = "assets/wall asset/plamier_wall/palmier_wall_1";

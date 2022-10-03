@@ -11,7 +11,7 @@
 #include "Component.hpp"
 #include "Camera.hpp"
 
-namespace indie
+namespace rtype
 {
     class CameraComponent : public Component
     {

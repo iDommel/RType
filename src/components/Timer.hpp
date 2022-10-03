@@ -10,12 +10,12 @@
 
 #include "Component.hpp"
 
-namespace indie
+namespace rtype
 {
     class Timer : public Component
     {
     public:
-        Timer(int time) : Component(Type::TIMER), _time(time) {};
+        Timer(int time) : Component(Type::TIMER), _time(time){};
 
         int &getTime() { return _time; };
 

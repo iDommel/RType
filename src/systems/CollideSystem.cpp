@@ -16,7 +16,7 @@
 #include "Sprite.hpp"
 #include "Model3D.hpp"
 
-namespace indie
+namespace rtype
 {
     void CollideSystem::preInit(IScene &scene)
     {
@@ -38,7 +38,7 @@ namespace indie
                     maybeUninitialized = std::make_shared<Hitbox>(toUpdateRect, pos2d);
                 } else if (collidable->hasComponent(IComponent::Type::MODEL)) {
                     Vector3 pos3d = {pos->x, pos->y, pos->z};
-                    Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0,0,0}, {0,0,0}}, pos3d));
+                    Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0, 0, 0}, {0, 0, 0}}, pos3d));
                 } else {
                     throw std::runtime_error("Uninitialized collidable entity has no rect or model");
                 }
@@ -48,8 +48,8 @@ namespace indie
 
     void CollideSystem::init(SceneManager &sceneManager)
     {
-        std::shared_ptr<indie::Hitbox> hitbox = nullptr;
-        std::shared_ptr<indie::IComponent> maybeCollider = nullptr;
+        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
+        std::shared_ptr<rtype::IComponent> maybeCollider = nullptr;
 
         for (auto &scene : sceneManager.getScenes()) {
             auto collidables = (*scene.second)[IEntity::Tags::COLLIDABLE];
@@ -77,8 +77,8 @@ namespace indie
 
     void CollideSystem::loadEntity(std::shared_ptr<IEntity> entity)
     {
-        std::shared_ptr<indie::Hitbox> hitbox = nullptr;
-        std::shared_ptr<indie::IComponent> maybeCollider = nullptr;
+        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
+        std::shared_ptr<rtype::IComponent> maybeCollider = nullptr;
 
         if (!entity || (maybeCollider = (*entity)[IComponent::Type::HITBOX]) == nullptr || !maybeCollider->isInitialized())
             return;
@@ -242,8 +242,8 @@ namespace indie
 
     void CollideSystem::reloadCollidables3D(SceneManager &sceneManager)
     {
-        std::shared_ptr<indie::Hitbox> hitbox = nullptr;
-        std::shared_ptr<indie::IComponent> maybeCollider = nullptr;
+        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
+        std::shared_ptr<rtype::IComponent> maybeCollider = nullptr;
 
         _collidables3D.clear();
         for (auto &scene : sceneManager.getScenes()) {
