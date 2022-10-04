@@ -47,4 +47,9 @@ namespace ecs
     {
         return (_win->getSize().y);
     }
+
+    sf::RenderWindow &Window::getRenderWindow()
+    {
+        return *_win;
+    }
 }

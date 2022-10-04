@@ -11,7 +11,7 @@
 #include "ISystem.hpp"
 #include "SceneManager.hpp"
 #include "Window.hpp"
-// #include "Texture2D.hpp"
+#include "Texture2D.hpp"
 // #include "Text.hpp"
 
 namespace ecs
@@ -39,9 +39,9 @@ namespace ecs
         static Window &getWindow();
 
     private:
-        // void loadSprite(std::shared_ptr<IEntity> &entity);
+        void loadSprite(std::shared_ptr<IEntity> &entity);
         // void unloadSprite(std::shared_ptr<IEntity> &entity);
-        // void displaySprite(std::shared_ptr<IEntity> &entity) const;
+        void displaySprite(std::shared_ptr<IEntity> &entity) const;
 
         // void displayParticles(std::shared_ptr<IEntity> &entity) const;
         // void displayCollidable(std::shared_ptr<IEntity> &entity) const;
@@ -51,7 +51,7 @@ namespace ecs
         // void unloadText(std::shared_ptr<IEntity> &entity);
         // void displayText(std::shared_ptr<IEntity> &entity) const;
 
-        // std::map<std::string, std::pair<std::unique_ptr<Texture>, int>> _textures;
+        std::map<std::string, std::pair<std::unique_ptr<Texture>, int>> _textures;
         // std::map<std::string, std::pair<std::unique_ptr<Text>, int>> _texts;
         static Window _window;
     };

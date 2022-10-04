@@ -14,7 +14,7 @@ target_sources(${PROJECT_NAME}
     src/main.cpp
 
     # src/Music.cpp
-    # src/Texture2D.cpp
+    src/Texture2D.cpp
     # src/AudioDevice.cpp
     src/Scene.cpp
     src/SceneManager.cpp
@@ -43,8 +43,8 @@ target_sources(${PROJECT_NAME}
 
     # src/components/EventListener.cpp
     # src/components/Player.cpp
-    # src/components/Position.cpp
-    # src/components/AVector.cpp
+    src/components/Position.cpp
+    src/components/AVector.cpp
     # src/components/Velocity.cpp
     # src/components/HitboxComponent.cpp
     # src/components/ParticleCloud.cpp
@@ -56,7 +56,7 @@ target_sources(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
     PUBLIC
 
-    # src/components
+    src/components
     src/exceptions
     src/systems
     src

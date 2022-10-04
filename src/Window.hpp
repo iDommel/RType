@@ -42,6 +42,8 @@ namespace ecs
         /// @brief Get the screen height
         int getScreenHeight();
 
+        sf::RenderWindow &getRenderWindow();
+
     private:
         sf::RenderWindow* _win;
         static bool _shouldClose;

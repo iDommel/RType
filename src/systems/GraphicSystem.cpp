@@ -7,16 +7,14 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+
 #include "GraphicSystem.hpp"
-// #include "Position.hpp"
+#include "Position.hpp"
 // #include "Rect.hpp"
-// #include "Sprite.hpp"
+#include "Sprite.hpp"
 // #include "String.hpp"
-// #include "Texture2D.hpp"
 // #include "HitboxComponent.hpp"
 // #include "ParticleCloud.hpp"
-
-#include "SFML/Graphics.h"
 
 namespace ecs
 {
@@ -29,12 +27,12 @@ namespace ecs
     {
         std::cerr << "GraphicSystem::init" << std::endl;
 
-        // for (auto &scene : sceneManager.getScenes()) {
-        //     for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
-        //         loadSprite(entity);
+        for (auto &scene : sceneManager.getScenes()) {
+            for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
+                loadSprite(entity);
         //     for (auto &e : (*scene.second)[IEntity::Tags::TEXT])
         //         loadText(e);
-        // }
+        }
     }
 
     Window &GraphicSystem::getWindow()
@@ -52,8 +50,8 @@ namespace ecs
             return;
         }
         _window.clear(sf::Color::Black);
-        // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
-        //     displaySprite(e);
+        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
+            displaySprite(e);
         // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
         //     displayText(e);
         _window.display();
@@ -68,7 +66,7 @@ namespace ecs
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D)) {
             std::cerr << "loadSprite" << std::endl;
-            // loadSprite(entity);
+            loadSprite(entity);
         }
     }
 
@@ -78,22 +76,24 @@ namespace ecs
         // unloadSprite(entity);
     }
 
-    // void GraphicSystem::loadSprite(std::shared_ptr<IEntity> &entity)
-    // {
-    //     auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+    void GraphicSystem::loadSprite(std::shared_ptr<IEntity> &entity)
+    {
+        auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+        unsigned long entityId = (unsigned long)entity.get();
 
-    //     if (_textures.find(sprite->getValue()) != _textures.end())
-    //         _textures[sprite->getValue()].second++;
-    //     else
-    //         _textures[sprite->getValue()] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
-    //     if (sprite->getNbFrame() == 0)
-    //         return;
+        // if (_textures.find(sprite->getValue()) != _textures.end()) {
+        //     _textures[sprite->getValue()].second++;
+        // } else {
+        _textures[sprite->getValue() + std::to_string(entityId)] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
+        // }
+        if (sprite->getNbFrame() == 0)
+            return;
 
-    //     auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
+        // auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
 
-    //     spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
-    //     spriteRect->height = _textures[sprite->getValue()].first->getHeight();
-    // }
+        // spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
+        // spriteRect->height = _textures[sprite->getValue()].first->getHeight();
+    }
 
     // void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
     // {
@@ -105,22 +105,23 @@ namespace ecs
     //         _textures.erase(sprite->getValue());
     // }
 
-    // void GraphicSystem::displaySprite(std::shared_ptr<IEntity> &entity) const
-    // {
-    //     auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
-    //     auto sprite = Component::castComponent<Sprite>(components[0]);
-    //     auto pos = Component::castComponent<Position>(components[1]);
+    void GraphicSystem::displaySprite(std::shared_ptr<IEntity> &entity) const
+    {
+        unsigned long entityId = (unsigned long)entity.get();
+        auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
+        auto sprite = Component::castComponent<Sprite>(components[0]);
+        auto pos = Component::castComponent<Position>(components[1]);
 
-    //     try {
-    //         auto rect = (*entity)[IComponent::Type::RECT];
-    //         auto r = Component::castComponent<Rect>(rect);
+        // try {
+            // auto rect = (*entity)[IComponent::Type::RECT];
+            // auto r = Component::castComponent<Rect>(rect);
 
-    //         _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
-    //         // _textures.at(sprite->getValue()).first->drawRec({pos->x, pos->y});
-    //     } catch (std::runtime_error &) {
-    //         _textures.at(sprite->getValue()).first->draw(pos->x, pos->y);
-    //     }
-    // }
+            // _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
+            // _textures.at(sprite->getValue()).first->drawRec({pos->x, pos->y});
+        // } catch (std::runtime_error &) {
+            _textures.at(sprite->getValue() + std::to_string(entityId)).first->draw(pos->x, pos->y);
+        // }
+    }
 
     // void GraphicSystem::displayParticles(std::shared_ptr<IEntity> &entity) const
     // {

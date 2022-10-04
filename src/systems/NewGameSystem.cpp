@@ -6,6 +6,9 @@
 */
 
 #include "NewGameSystem.hpp"
+#include "Position.hpp"
+#include "Sprite.hpp"
+#include "Entity.hpp"
 
 namespace ecs
 {
@@ -51,7 +54,15 @@ namespace ecs
 
     std::unique_ptr<IScene> NewGameSystem::createDefaultScene()
     {
-        return std::make_unique<Scene>(std::bind(&NewGameSystem::createDefaultScene, this));
+        auto scene = std::make_unique<Scene>(std::bind(&NewGameSystem::createDefaultScene, this));
+        auto entity = std::make_shared<Entity>();
+        auto pos = std::make_shared<Position>(10, 10);
+        auto sprite = std::make_shared<Sprite>("assets/player/sprites/player1.png");
+
+        entity->addComponent(pos)
+                .addComponent(sprite);
+        scene->addEntity(entity);
+        return scene;
     }
 
 }  // namespace ecs
