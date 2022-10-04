@@ -5,18 +5,17 @@
 ** Core.cpp
 */
 
-#include "raylib.h"
-
 #include <chrono>
 #include <thread>
 
 #include "Core.hpp"
-#include "systems/AudioSystem.hpp"
-#include "systems/EventSystem.hpp"
-#include "systems/GameSystem.hpp"
-#include "systems/GraphicSystem.hpp"
-#include "systems/CollideSystem.hpp"
-#include "systems/ParticlesSystem.hpp"
+// #include "systems/AudioSystem.hpp"
+// #include "systems/EventSystem.hpp"
+// #include "systems/GameSystem.hpp"
+#include "NewGameSystem.hpp"
+#include "GraphicSystem.hpp"
+// #include "systems/CollideSystem.hpp"
+// #include "systems/ParticlesSystem.hpp"
 
 namespace ecs
 {
@@ -24,7 +23,8 @@ namespace ecs
     Core::Core()
     {
         // _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
-        _systems[SystemType::GAME] = std::make_unique<GameSystem>();
+        // _systems[SystemType::GAME] = std::make_unique<GameSystem>();
+        _systems[SystemType::GAME] = std::make_unique<NewGameSystem>();
         // _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
         // _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
         _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();

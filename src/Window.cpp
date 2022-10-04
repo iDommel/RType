@@ -14,13 +14,13 @@ namespace ecs
     bool Window::_shouldClose = false;
 
     Window::Window(int screenWidth, int screenHeight, const std::string& name)
-        : _win({screenWidth, screenHeight}, name.c_str())
     {
+        _win = new sf::RenderWindow(sf::VideoMode(screenWidth, screenHeight), name);
     }
 
     Window::~Window()
     {
-        _win.close();
+        _win->close();
     }
 
     bool Window::shouldClose()
@@ -30,21 +30,21 @@ namespace ecs
 
     void Window::clear(const sf::Color& color)
     {
-        _win.clear(color);
+        _win->clear(color);
     }
 
     void Window::display()
     {
-        _win.display();
+        _win->display();
     }
 
     int Window::getScreenWidth()
     {
-        return (_win.getSize().x);
+        return (_win->getSize().x);
     }
 
     int Window::getScreenHeight()
     {
-        return (_win.getSize().y);
+        return (_win->getSize().y);
     }
 }

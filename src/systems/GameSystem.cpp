@@ -16,7 +16,6 @@
 #include "EventSystem.hpp"
 #include "CollideSystem.hpp"
 #include "UIComponent.hpp"
-#include "CameraComponent.hpp"
 #include "GamepadStickCallbacks.hpp"
 #include "Core.hpp"
 #include "Entity.hpp"
@@ -32,18 +31,13 @@
 #include "Sprite.hpp"
 #include "String.hpp"
 #include "Bonus.hpp"
-#include "Model3D.hpp"
-#include "Sphere.hpp"
-#include "Grid.hpp"
 #include "Velocity.hpp"
 #include "Bomb.hpp"
 #include "Timer.hpp"
 #include "Destructible.hpp"
-#include "CameraComponent.hpp"
 #include "SoundComponent.hpp"
 #include "MusicComponent.hpp"
 #include "ParticleCloud.hpp"
-#include "ModelAnim.hpp"
 #include "Window.hpp"
 
 namespace ecs
@@ -107,16 +101,19 @@ namespace ecs
     {
         std::cerr << "GameSystem::init" << std::endl;
 
-        sceneManager.addScene(createScene(), SceneManager::SceneType::GAME);
-        sceneManager.addScene(createSplashScreen(), SceneManager::SceneType::SPLASH);
-        sceneManager.addScene(createMainMenu(), SceneManager::SceneType::MAIN_MENU);
-        sceneManager.addScene(createSoundMenu(), SceneManager::SceneType::SOUND);
-        sceneManager.addScene(createHelpMenu(), SceneManager::SceneType::HELP);
-        sceneManager.addScene(createControllerMenu(), SceneManager::SceneType::CONTROLLER);
-        sceneManager.addScene(createPreGameMenu(), SceneManager::SceneType::PREGAME);
-        sceneManager.addScene(createPauseMenu(), SceneManager::SceneType::PAUSE);
-        sceneManager.addScene(createEndMenu(), SceneManager::SceneType::END);
-        sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
+        // sceneManager.addScene(createScene(), SceneManager::SceneType::GAME);
+        // sceneManager.addScene(createSplashScreen(), SceneManager::SceneType::SPLASH);
+        // sceneManager.addScene(createMainMenu(), SceneManager::SceneType::MAIN_MENU);
+        // sceneManager.addScene(createSoundMenu(), SceneManager::SceneType::SOUND);
+        // sceneManager.addScene(createHelpMenu(), SceneManager::SceneType::HELP);
+        // sceneManager.addScene(createControllerMenu(), SceneManager::SceneType::CONTROLLER);
+        // sceneManager.addScene(createPreGameMenu(), SceneManager::SceneType::PREGAME);
+        // sceneManager.addScene(createPauseMenu(), SceneManager::SceneType::PAUSE);
+        // sceneManager.addScene(createEndMenu(), SceneManager::SceneType::END);
+        // sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
+        std::unique_ptr<ecs::IScene> scene = std::make_unique<ecs::Scene>();
+
+        sceneManager.addScene(std::move(scene), SceneManager::SceneType::GAME);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
         _aiSystem.init(sceneManager);

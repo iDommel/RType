@@ -33,7 +33,7 @@ namespace ecs
         bool shouldClose();
 
         /// @brief Clears the window, black by default
-        void clear(const sf::Color& color = sf::Color(0, 0, 0, 255));
+        void clear(const sf::Color& color);
 
         /// @brief Display the current contents of the window
         void display();
@@ -43,7 +43,7 @@ namespace ecs
         int getScreenHeight();
 
     private:
-        sf::RenderWindow _win;
+        sf::RenderWindow* _win;
         static bool _shouldClose;
     };
 }

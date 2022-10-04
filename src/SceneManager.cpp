@@ -5,13 +5,11 @@
 ** SceneManager.cpp
 */
 
-#include "raylib.h"
-
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
-#include "GameSystem.hpp"
+// #include "GameSystem.hpp"
 #include "SceneManager.hpp"
 
 namespace ecs
@@ -38,7 +36,7 @@ namespace ecs
         _currentScene = sceneType;
         getCurrentSceneType() = sceneType;
         if (getPreviousSceneType() == SceneType::GAME && _currentScene != SceneType::PAUSE) {
-            GameSystem::setNbrPlayer(4);
+            // GameSystem::setNbrPlayer(4);
             auto addEntityCallback = _scenes[SceneType::GAME]->getAddEntityCallback();
             auto removeEntityCallback = _scenes[SceneType::GAME]->getRemoveEntityCallback();
             _scenes[SceneType::GAME] = _scenes[SceneType::GAME]->initScene();

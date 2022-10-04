@@ -10,14 +10,6 @@
 
 #include "Component.hpp"
 
-struct BoundingBox;
-struct Model;
-struct Mesh;
-struct Vector2;
-struct Vector3;
-struct Rectangle;
-struct Image;
-
 namespace ecs
 {
     class AVector;
