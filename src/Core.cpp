@@ -45,10 +45,10 @@ namespace ecs
                 std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELTA - deltaTime));
                 continue;
             }
-            _systems[SystemType::EVENT]->update(_sceneManager, deltaTime);
+            // _systems[SystemType::EVENT]->update(_sceneManager, deltaTime);
             _systems[SystemType::GAME]->update(_sceneManager, deltaTime);
-            _systems[SystemType::AUDIO]->update(_sceneManager, deltaTime);
-            _systems[SystemType::PARTICLE]->update(_sceneManager, deltaTime);
+            // _systems[SystemType::AUDIO]->update(_sceneManager, deltaTime);
+            // _systems[SystemType::PARTICLE]->update(_sceneManager, deltaTime);
             _systems[SystemType::GRAPHIC]->update(_sceneManager, deltaTime);
             clock = time;
         }
