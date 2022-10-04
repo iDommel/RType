@@ -12,7 +12,7 @@
 
 #include "SceneManager.hpp"
 
-namespace rtype
+namespace ecs
 {
     /// @brief Class to group the gamepad events related to a gamepad's stick movements
     class GamepadStickCallbacks

@@ -11,7 +11,7 @@
 
 #include "Core.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Scene::Scene(std::function<std::unique_ptr<IScene>()> init) : _initFunc(init)

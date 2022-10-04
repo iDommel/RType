@@ -16,7 +16,7 @@ namespace sf
     class Color;
 }  // namespace sf
 
-namespace rtype
+namespace ecs
 {
     class Window
     {

@@ -16,7 +16,7 @@
 
 struct Vector3;
 
-namespace rtype
+namespace ecs
 {
 
     /**

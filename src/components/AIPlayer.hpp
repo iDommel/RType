@@ -14,7 +14,7 @@
 
 struct Vector3;
 
-namespace rtype
+namespace ecs
 {
     class Velocity;
     class Position;

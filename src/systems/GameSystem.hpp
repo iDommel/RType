@@ -27,7 +27,7 @@
 
 struct Vector3;
 
-namespace rtype
+namespace ecs
 {
     class IEntity;
     class Scene;
@@ -101,8 +101,8 @@ namespace rtype
         std::shared_ptr<Entity> createText(std::string text, Position position, float fontSize);
         void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
         void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
-        void replaceTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
-        void updateTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
+        void replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
+        void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         static void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
         void updatePlayerUI(SceneManager &, std::vector<std::shared_ptr<IEntity>> &);
         static void createAIPlayer(IScene &scene, int id, Position pos);

@@ -7,7 +7,7 @@
 
 #include "Velocity.hpp"
 
-namespace rtype
+namespace ecs
 {
     Velocity::Velocity(float x, float y, float z) : AVector(Component::Type::VELOCITY, x, y, z)
     {

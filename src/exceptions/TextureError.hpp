@@ -10,7 +10,7 @@
 
 #include "AssetError.hpp"
 
-namespace rtype
+namespace ecs
 {
     class TextureError : public AssetError
     {

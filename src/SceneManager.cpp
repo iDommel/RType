@@ -14,7 +14,7 @@
 #include "GameSystem.hpp"
 #include "SceneManager.hpp"
 
-namespace rtype
+namespace ecs
 {
     void SceneManager::addScene(std::unique_ptr<IScene> scene, SceneType sceneType)
     {

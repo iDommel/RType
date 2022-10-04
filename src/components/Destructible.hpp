@@ -8,7 +8,7 @@
 #ifndef DESTRUCTIBLE_HPP
 #define DESTRUCTIBLE_HPP
 
-namespace rtype
+namespace ecs
 {
     class Destructible : public Component
     {

@@ -18,7 +18,7 @@ struct Vector3;
 struct Rectangle;
 struct Image;
 
-namespace rtype
+namespace ecs
 {
     class AVector;
     class Hitbox : public Component

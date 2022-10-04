@@ -13,7 +13,7 @@
 
 #include "components/IComponent.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     class IEntity

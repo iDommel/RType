@@ -8,7 +8,7 @@
 #ifndef ICOMPONENT_HPP
 #define ICOMPONENT_HPP
 
-namespace rtype
+namespace ecs
 {
 
     class IEntity;
@@ -22,7 +22,6 @@ namespace rtype
             ROTATION,
             TEXT,
             SPRITE,
-            MODEL,
             HITBOX,
             MUSIC,
             SOUND,
@@ -30,10 +29,6 @@ namespace rtype
             BONUS,
             PLAYER,
             RECT,
-            CAMERA,
-            SPHERE,
-            CUBE,
-            GRID,
             ANIMATION,
             PARTICLES,
             BOMB,

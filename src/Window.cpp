@@ -9,7 +9,7 @@
 
 #include "Window.hpp"
 
-namespace rtype
+namespace ecs
 {
     bool Window::_shouldClose = false;
 

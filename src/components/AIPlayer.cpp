@@ -21,7 +21,7 @@
 #include "GameSystem.hpp"
 #include "Bonus.hpp"
 
-namespace rtype
+namespace ecs
 {
     AIPlayer::AIPlayer(int id) : Component(Type::AI), _id(id)
     {

@@ -13,7 +13,7 @@
 
 struct Vector3;
 
-namespace rtype
+namespace ecs
 {
 
     class Bomb : public Component

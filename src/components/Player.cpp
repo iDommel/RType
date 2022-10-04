@@ -24,7 +24,7 @@
 #include "GameSystem.hpp"
 #include "Model3D.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb) : Component(Type::PLAYER), _id(id)

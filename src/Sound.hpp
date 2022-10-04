@@ -13,7 +13,7 @@
 
 struct Sound;
 
-namespace rtype
+namespace ecs
 {
 
     class Sound

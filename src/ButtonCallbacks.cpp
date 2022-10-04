@@ -7,7 +7,7 @@
 
 #include "ButtonCallbacks.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     ButtonCallbacks::ButtonCallbacks()

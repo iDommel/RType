@@ -10,7 +10,7 @@
 
 #include "Component.hpp"
 
-namespace rtype
+namespace ecs
 {
     class Timer : public Component
     {

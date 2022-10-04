@@ -10,18 +10,9 @@
 
 #include "SceneManager.hpp"
 #include "HitboxComponent.hpp"
-#include "Model.hpp"
 #include "ISystem.hpp"
 
-struct BoundingBox;
-struct Model;
-struct Mesh;
-struct Vector2;
-struct Vector3;
-struct Rectangle;
-struct Image;
-
-namespace rtype
+namespace ecs
 {
     /// @brief CollideSystem class provide collision detection functions for 2D and 3D shapes. (does not handle collision between 3D and 2D)
     class CollideSystem : public ISystem

@@ -46,7 +46,7 @@
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 
-namespace rtype
+namespace ecs
 {
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -103,7 +103,7 @@ namespace rtype
 
     unsigned int GameSystem::nbr_ai;
 
-    void GameSystem::init(rtype::SceneManager &sceneManager)
+    void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
 
@@ -122,7 +122,7 @@ namespace rtype
         _aiSystem.init(sceneManager);
     }
 
-    void GameSystem::replaceTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (SceneManager::getCurrentSceneType() == SceneManager::SceneType::CONTROLLER) {
             if (players->changeUp == 2 || players->changeUp == 0) {
@@ -163,7 +163,7 @@ namespace rtype
         }
     }
 
-    void GameSystem::updateTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (players->changeUp == 1) {
             auto entity = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText];
@@ -212,7 +212,7 @@ namespace rtype
         }
     }
 
-    void GameSystem::update(rtype::SceneManager &sceneManager, uint64_t dt)
+    void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
         int firstText = 9;
 
@@ -735,7 +735,7 @@ namespace rtype
         }
     }
 
-    std::unique_ptr<rtype::IScene> GameSystem::createMainMenu()
+    std::unique_ptr<ecs::IScene> GameSystem::createMainMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenu, this));
         std::shared_ptr<Entity> entity1 = std::make_shared<Entity>();
@@ -759,7 +759,7 @@ namespace rtype
         return scene;
     }
 
-    std::unique_ptr<rtype::IScene> GameSystem::createSoundMenu()
+    std::unique_ptr<ecs::IScene> GameSystem::createSoundMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSoundMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
@@ -777,7 +777,7 @@ namespace rtype
         return scene;
     }
 
-    std::unique_ptr<rtype::IScene> GameSystem::createHelpMenu()
+    std::unique_ptr<ecs::IScene> GameSystem::createHelpMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
@@ -792,7 +792,7 @@ namespace rtype
         return scene;
     }
 
-    std::unique_ptr<rtype::IScene> GameSystem::createControllerMenu()
+    std::unique_ptr<ecs::IScene> GameSystem::createControllerMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createControllerMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
@@ -845,7 +845,7 @@ namespace rtype
         return scene;
     }
 
-    std::unique_ptr<rtype::IScene> GameSystem::createPreGameMenu()
+    std::unique_ptr<ecs::IScene> GameSystem::createPreGameMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createPreGameMenu, this));
         std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);

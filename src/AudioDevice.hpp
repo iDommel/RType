@@ -8,7 +8,7 @@
 #ifndef AUDIODEVICE_HPP_
 #define AUDIODEVICE_HPP_
 
-namespace rtype
+namespace ecs
 {
     class AudioDevice
     {

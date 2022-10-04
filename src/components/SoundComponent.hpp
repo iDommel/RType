@@ -13,7 +13,7 @@
 #include "Component.hpp"
 #include "Sound.hpp"
 
-namespace rtype
+namespace ecs
 {
     class SoundComponent : public Component
     {

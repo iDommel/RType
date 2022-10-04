@@ -18,7 +18,7 @@ struct Color;
 
 typedef Texture Texture2D;
 
-namespace rtype
+namespace ecs
 {
     class Texture
     {

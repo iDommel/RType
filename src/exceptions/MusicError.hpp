@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 
-namespace rtype
+namespace ecs
 {
     class MusicError : public std::exception
     {

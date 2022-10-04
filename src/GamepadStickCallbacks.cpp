@@ -7,7 +7,7 @@
 
 #include "GamepadStickCallbacks.hpp"
 
-namespace rtype
+namespace ecs
 {
     GamepadStickCallbacks::GamepadStickCallbacks()
     {

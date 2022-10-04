@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace rtype
+namespace ecs
 {
     class AudioDeviceError
     {

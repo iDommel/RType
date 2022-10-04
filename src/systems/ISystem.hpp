@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace rtype
+namespace ecs
 {
 
     class SceneManager;

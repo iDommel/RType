@@ -11,7 +11,7 @@
 #include <exception>
 #include <string>
 
-namespace rtype
+namespace ecs
 {
     class AssetError : public std::exception
     {

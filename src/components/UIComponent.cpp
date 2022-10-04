@@ -11,7 +11,7 @@
 #include "Position.hpp"
 #include "Window.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     UIComponent::UIComponent(std::shared_ptr<IEntity> player, std::shared_ptr<IEntity> text) : Component(Type::UI)

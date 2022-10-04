@@ -10,7 +10,7 @@
 #include "HitboxComponent.hpp"
 #include "AVector.hpp"
 
-namespace rtype
+namespace ecs
 {
     Hitbox::Hitbox(BoundingBox box, Vector3 pos) : Component(Type::HITBOX),
                                                    _box(std::make_unique<BoundingBox>(box)),

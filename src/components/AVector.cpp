@@ -7,7 +7,7 @@
 
 #include "AVector.hpp"
 
-namespace rtype
+namespace ecs
 {
     AVector::AVector(Component::Type type, float x, float y, float z) : Component(type), x(x), y(y), z(z)
     {

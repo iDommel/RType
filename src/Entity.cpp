@@ -10,7 +10,7 @@
 
 #include "Entity.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     const std::map<Entity::Tags, std::vector<std::vector<IComponent::Type>>> Entity::entityTags = {
@@ -18,21 +18,11 @@ namespace rtype
          {{IComponent::Type::SPRITE, IComponent::Type::POSITION}}},
         {Entity::Tags::TEXT,
          {{IComponent::Type::TEXT, IComponent::Type::POSITION}}},
-        {Entity::Tags::RENDERABLE_3D,
-         {{IComponent::Type::POSITION, IComponent::Type::MODEL}}},
-        {Entity::Tags::GRID,
-         {{IComponent::Type::GRID}}},
-        {Entity::Tags::CUBE,
-         {{IComponent::Type::POSITION, IComponent::Type::CUBE}}},
-        {Entity::Tags::SPHERE,
-         {{IComponent::Type::POSITION, IComponent::Type::SPHERE}}},
         {Entity::Tags::AUDIBLE,
          {{IComponent::Type::MUSIC},
           {IComponent::Type::SOUND}}},
         {Entity::Tags::COLLIDABLE,
          {{IComponent::Type::HITBOX}}},
-        {Entity::Tags::CAMERA,
-         {{IComponent::Type::CAMERA}}},
         {Entity::Tags::CALLABLE,
          {{IComponent::Type::EVT_LISTENER}}},
         {Entity::Tags::BONUS,

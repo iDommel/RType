@@ -18,15 +18,15 @@
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Core::Core()
     {
-        _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
+        // _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
         _systems[SystemType::GAME] = std::make_unique<GameSystem>();
-        _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
-        _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
+        // _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
+        // _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
         _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
     }
 

@@ -19,7 +19,7 @@ static int getNewId(void)
     return (idCounter++);
 }
 
-namespace rtype
+namespace ecs
 {
     Camera::Camera(Vector3 target, Vector3 position)
     {

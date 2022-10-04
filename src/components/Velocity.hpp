@@ -10,7 +10,7 @@
 
 #include "AVector.hpp"
 
-namespace rtype
+namespace ecs
 {
     class Velocity : public AVector
     {

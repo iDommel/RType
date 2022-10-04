@@ -8,7 +8,7 @@
 #ifndef RADAR_HPP
 #define RADAR_HPP
 
-namespace rtype
+namespace ecs
 {
     class Radar : public Component
     {
