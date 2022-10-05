@@ -95,15 +95,13 @@ namespace ecs
         // spriteRect->height = _textures[sprite->getValue()].first->getHeight();
     }
 
-    // void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
-    // {
-    //     auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+    void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
+    {
+        auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+        unsigned long entityId = (unsigned long)entity.get();
 
-    //     if (_textures[sprite->getValue()].second != 1)
-    //         _textures[sprite->getValue()].second--;
-    //     else
-    //         _textures.erase(sprite->getValue());
-    // }
+        _textures.erase(sprite->getValue() + std::to_string(entityId));
+    }
 
     void GraphicSystem::displaySprite(std::shared_ptr<IEntity> &entity) const
     {

@@ -40,7 +40,7 @@ namespace ecs
 
     private:
         void loadSprite(std::shared_ptr<IEntity> &entity);
-        // void unloadSprite(std::shared_ptr<IEntity> &entity);
+        void unloadSprite(std::shared_ptr<IEntity> &entity);
         void displaySprite(std::shared_ptr<IEntity> &entity) const;
 
         // void displayParticles(std::shared_ptr<IEntity> &entity) const;
