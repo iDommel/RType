@@ -82,48 +82,52 @@ namespace indie
         static void setNbrAi(unsigned int nbr) { nbr_ai = nbr; };
 
     private:
-        std::unique_ptr<IScene> createScene();
+        /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
+        /// @param scene The scene to add the entity to
+        static void createMusic(Scene &scene);
+        /// @brief Adds a entity with a sound component to a scene, the AudioSystem then loads it
+        /// @param scene The scene to add the entity to
+        static void createSound(Scene &scene);
+        /// @brief Create an image entity
+        /// @param path Path to the image to load
+        /// @param position Position of the Image
+        /// @param heigh Height of the Image
+        /// @param width Width of the Image
+        /// @return Returns a pointer to an entity with an Image Component with information on its position and size
+        std::shared_ptr<Entity> createImage(std::string path, Position position, int heigh, int width);
+        /// @brief Create an Text entity
+        /// @param text Text to display
+        /// @param position Initial position of the text
+        /// @param fontSize font size of the text
+        /// @return Returns a pointer to an entity with an Text Component with information on its position and size
+        std::shared_ptr<Entity> createText(std::string text, Position position, float fontSize);
+        /// @brief Create a 3DCamera entity
+        /// @param camPos Initial position of the camera
+        /// @param camTarget Initial target of the camera
+        /// @return Returns a pointer to an entity with an Camera Component with information on its position and target
+        std::shared_ptr<IEntity> create3DCamera(Vector3 camPos, Vector3 camTarget);
+        void createSoundEvent(std::shared_ptr<Entity> &sound, std::string value);
+        void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
+        void createSceneEvent(std::shared_ptr<Entity> &scene, SceneManager::SceneType sceneType);
+        void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
+
+        static void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
+
+        std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createSplashScreen();
         std::unique_ptr<IScene> createMainMenu();
-        std::unique_ptr<IScene> createSoundMenu();
-        std::unique_ptr<IScene> createHelpMenu();
-        std::unique_ptr<IScene> createControllerMenu();
-        std::unique_ptr<IScene> createPreGameMenu();
-        std::unique_ptr<IScene> createPauseMenu();
-        static void createPlayerUI(IScene &, std::shared_ptr<IEntity>);
-        void createSupporters(IScene &);
-        void createSupporter(IScene &, Position pos);
-        std::unique_ptr<IScene> createEndMenu();
+
         void changeBindings(SceneManager &SceneManager, int id_player, int button);
-        void createSceneEvent(std::shared_ptr<Entity> &scene, SceneManager::SceneType sceneType);
-        void createSoundEvent(std::shared_ptr<Entity> &sound, std::string value);
-        std::shared_ptr<Entity> createImage(std::string path, Position position, int heigh, int width);
-        std::shared_ptr<Entity> createText(std::string text, Position position, float fontSize);
-        void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
-        void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
         void replaceTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
+
         void updateTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
-        static void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
-        void updatePlayerUI(SceneManager &, std::vector<std::shared_ptr<IEntity>> &);
-        static void createAIPlayer(IScene &scene, int id, Position pos);
         void updatePlayers(SceneManager &scene, uint64_t dt);
-        void updateAIs(SceneManager &scene, uint64_t dt);
-        void updateBombs(SceneManager &scene, uint64_t dt);
-        std::shared_ptr<IEntity> createCamera(Vector3 camPos, Vector3 camTarget);
-        void createBonus(IScene &scene, const Position &pos);
-        void generateMap(const std::string &filename, IScene &scene);
-        void createSpawn(int x, int y, IScene &scene);
-        static void createMusic(Scene &scene);
-        static void createSound(Scene &scene);
 
         int timeElasped = 0;
         static unsigned int nbr_player;
         static unsigned int nbr_ai;
         static const Position _uiPos[4];
         static const std::map<int, std::string> _bindings;
-        static bool _playSupporters;
-        static std::chrono::time_point<std::chrono::high_resolution_clock> _startTime;
-        static int _nbFrame;
         CollideSystem _collideSystem;
         AISystem _aiSystem;
     };
