@@ -37,6 +37,8 @@ namespace indie
         void manageSound(SoundComponent &sound);
 
     private:
+        void loadMusic(std::shared_ptr<IEntity> entity);
+        void loadSound(std::shared_ptr<IEntity> entity);
         std::map<std::string, std::unique_ptr<Sound>> _sounds;
         std::map<std::string, std::unique_ptr<Music>> _musics;
         AudioDevice audioDevice;

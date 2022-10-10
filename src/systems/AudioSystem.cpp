@@ -19,14 +19,31 @@
 namespace indie
 {
 
-    void AudioSystem::init(SceneManager &)
+    void AudioSystem::init(SceneManager &sceneManager)
     {
         if (AudioDevice::isReady()) {
             AudioDevice::setVolume(100);
         }
-        _musics.emplace(std::string("music.ogg"), std::make_unique<Music>("assets/sounds/Music.ogg"));
-        _sounds.emplace(std::string("sound_det"), std::make_unique<Sound>("assets/sounds/Detonation.ogg"));
-        _sounds.emplace(std::string("sound_expl"), std::make_unique<Sound>("assets/sounds/Explosion.ogg"));
+        for (auto &scene : sceneManager.getScenes()) {
+            for (auto &entity : (*scene.second)[IEntity::Tags::MUSIC])
+                loadMusic(entity);
+            for (auto &e : (*scene.second)[IEntity::Tags::SOUND])
+                loadSound(e);
+        }
+    }
+
+    void AudioSystem::loadMusic(std::shared_ptr<IEntity> entity)
+    {
+        auto music = Component::castComponent<MusicComponent>((*entity)[IComponent::Type::MUSIC]);
+
+        _musics.emplace(music->getValue(), std::make_unique<Music>(music->getValue()));
+    }
+
+    void AudioSystem::loadSound(std::shared_ptr<IEntity> entity)
+    {
+        auto sound = Component::castComponent<SoundComponent>((*entity)[IComponent::Type::SOUND]);
+
+        _sounds.emplace(sound->getValue(), std::make_unique<Sound>(sound->getValue()));
     }
 
     void AudioSystem::update(SceneManager &sceneManager, uint64_t)

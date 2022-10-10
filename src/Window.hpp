@@ -16,11 +16,6 @@ struct Color;
 struct Camera2D;
 struct Camera3D;
 struct Vector2;
-namespace sf
-{
-    class RenderWindow;
-}  // namespace sf
-
 namespace indie
 {
     class Window
@@ -29,7 +24,7 @@ namespace indie
         /// @brief Construct a new window:: window object with the size of the screen
         Window(int screenWidth, int screenHeight, const std::string& name = "Indie Studio");
         /// @brief Construct a new window:: window object with the size of the screen, pass configuration flags as parameter
-        // Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name = "Indie Studio");
+        Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name = "Indie Studio");
         /// @brief Destruct the window:: close the windows
         ~Window();
         /**
@@ -110,7 +105,6 @@ namespace indie
         static int getScreenHeight();
 
     private:
-        sf::RenderWindow _win;
     };
 }
 #endif /* !WINDOW_HPP_ */

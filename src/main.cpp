@@ -5,21 +5,22 @@
 ** main
 */
 
-#include <SFML/Graphics.hpp>
+#include <exception>
+#include <iostream>
 
-int main()
+#include "Core.hpp"
+
+#include "TestHeaders.hpp"
+
+int main(void)
 {
-    auto window = sf::RenderWindow{{1920u, 1080u}, "CMake SFML Project"};
-    window.setFramerateLimit(144);
+    indie::Core core;
 
-    while (window.isOpen()) {
-        for (auto event = sf::Event{}; window.pollEvent(event);) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-        }
-
-        window.clear();
-        window.display();
+    try {
+        core.mainLoop();
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
     }
+    return 0;
 }
