@@ -38,7 +38,7 @@ namespace indie
                     maybeUninitialized = std::make_shared<Hitbox>(toUpdateRect, pos2d);
                 } else if (collidable->hasComponent(IComponent::Type::MODEL)) {
                     Vector3 pos3d = {pos->x, pos->y, pos->z};
-                    Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0,0,0}, {0,0,0}}, pos3d));
+                    Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0, 0, 0}, {0, 0, 0}}, pos3d));
                 } else {
                     throw std::runtime_error("Uninitialized collidable entity has no rect or model");
                 }
@@ -75,7 +75,7 @@ namespace indie
         _collidables2D.clear();
     }
 
-    void CollideSystem::loadEntity(std::shared_ptr<IEntity> entity)
+    void CollideSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
     {
         std::shared_ptr<indie::Hitbox> hitbox = nullptr;
         std::shared_ptr<indie::IComponent> maybeCollider = nullptr;
@@ -89,7 +89,7 @@ namespace indie
             _collidables2D.push_back(std::make_pair(entity, hitbox));
     }
 
-    void CollideSystem::unloadEntity(std::shared_ptr<IEntity> entity)
+    void CollideSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
     {
         for (auto it = _collidables3D.begin(); it != _collidables3D.end(); ++it)
             if (it->first == entity) {

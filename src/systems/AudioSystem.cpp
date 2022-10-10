@@ -69,11 +69,11 @@ namespace indie
         std::cerr << "AudioSystem::destroy" << std::endl;
     }
 
-    void AudioSystem::loadEntity(std::shared_ptr<IEntity>)
+    void AudioSystem::onEntityAdded(std::shared_ptr<IEntity>)
     {
     }
 
-    void AudioSystem::unloadEntity(std::shared_ptr<IEntity>)
+    void AudioSystem::onEntityRemoved(std::shared_ptr<IEntity>)
     {
     }
 

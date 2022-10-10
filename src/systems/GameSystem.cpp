@@ -625,14 +625,14 @@ namespace indie
         scene.addEntity(playerEntity);
     }
 
-    void GameSystem::loadEntity(std::shared_ptr<IEntity> entity)
+    void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
     {
-        _collideSystem.loadEntity(entity);
+        _collideSystem.onEntityAdded(entity);
     }
 
-    void GameSystem::unloadEntity(std::shared_ptr<IEntity> entity)
+    void GameSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
     {
-        _collideSystem.unloadEntity(entity);
+        _collideSystem.onEntityRemoved(entity);
         if (entity->hasComponent(IComponent::Type::PLAYER))
             nbr_player -= 1;
         else if (entity->hasComponent(IComponent::Type::AI))

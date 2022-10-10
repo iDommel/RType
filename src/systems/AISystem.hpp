@@ -21,9 +21,7 @@ namespace indie
     class AISystem : public ISystem
     {
     public:
-
-        enum class DIRECTION
-        {
+        enum class DIRECTION {
             UP,
             DOWN,
             LEFT,
@@ -36,8 +34,8 @@ namespace indie
         void update(SceneManager &manager, uint64_t deltaTime) final;
         void destroy() final;
 
-        void loadEntity(std::shared_ptr<IEntity> entity) final;
-        void unloadEntity(std::shared_ptr<IEntity> entity) final;
+        void onEntityAdded(std::shared_ptr<IEntity> entity) final;
+        void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
 
     private:
         void loadMap(AIPlayer &ai, std::array<std::array<char, 5>, 5> &map, Position &pos, std::shared_ptr<IEntity> me);

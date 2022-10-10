@@ -89,7 +89,7 @@ namespace indie
         std::cerr << "GraphicSystem::destroy" << std::endl;
     }
 
-    void GraphicSystem::loadEntity(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D)) {
             std::cerr << "loadSprite" << std::endl;
@@ -101,7 +101,7 @@ namespace indie
         }
     }
 
-    void GraphicSystem::unloadEntity(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D))
             unloadSprite(entity);
