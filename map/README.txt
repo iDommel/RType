@@ -2,6 +2,7 @@ Map are composed of up to 170 lines of 11 caracters.
 The last line define the end of the Map.
 
 List off caracters:
+Base:
 *:  void
 P:  Player spawn
 
@@ -23,7 +24,13 @@ n:  Open angle on Top, Left
 o:  Open angle on Top, Right
 p:  Open angle on Bot, Left
 q:  Open angle on Bot, Right
-r:  Closed angle on 
-s:  Closed angle on 
-t:  Closed angle on 
-u:  Closed angle on 
+r:  Closed angle on Top, Left
+s:  Closed angle on Top, Right
+t:  Closed angle on Bot, Left
+u:  Closed angle on Bot, Right
+v:  border on Left and Right
+w:  border on Top and Bot
+x:  border on All sides
+
+Enemies:
+1:  Basic Enemy
