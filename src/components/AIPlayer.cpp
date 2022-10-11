@@ -22,7 +22,7 @@
 #include "Bonus.hpp"
 #include "Model3D.hpp"
 
-namespace indie
+namespace rtype
 {
     AIPlayer::AIPlayer(int id) : Component(Type::AI), _id(id)
     {

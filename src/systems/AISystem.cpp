@@ -23,7 +23,7 @@
 #define MAP_INDESTRUCTIBLE_WALL 3
 #define MAP_PLAYER 4
 
-namespace indie
+namespace rtype
 {
 
     AISystem::AISystem(CollideSystem &collideSystem) : _collideSystem(collideSystem) {}

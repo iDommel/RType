@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 
-namespace indie {
+namespace rtype {
     class SoundError: public std::exception {
         public:
             SoundError(const std::string &msg): _msg(msg) {}

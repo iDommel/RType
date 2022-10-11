@@ -13,7 +13,7 @@
 
 #include "components/IComponent.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class IEntity
@@ -31,7 +31,8 @@ namespace indie
             AUDIBLE,
             CALLABLE,
             BONUS,
-            CAMERA,
+            CAMERA_2D,
+            CAMERA_3D,
             BOMB,
             TIMED,
             DESTRUCTIBLE,

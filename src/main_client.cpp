@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** rtypeStudio
 ** File description:
 ** main
 */
@@ -14,12 +14,12 @@
 
 int main(void)
 {
-    indie::Core core(
-        {indie::Core::SystemType::GAME,
-         indie::Core::SystemType::EVENT,
-         indie::Core::SystemType::AUDIO,
-         indie::Core::SystemType::GRAPHIC,
-         indie::Core::SystemType::PARTICLE});
+    rtype::Core core(
+        {rtype::Core::SystemType::GAME,
+         rtype::Core::SystemType::EVENT,
+         rtype::Core::SystemType::AUDIO,
+         rtype::Core::SystemType::GRAPHIC,
+         rtype::Core::SystemType::PARTICLE});
 
     try {
         core.mainLoop();

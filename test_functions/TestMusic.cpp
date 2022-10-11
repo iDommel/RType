@@ -19,7 +19,7 @@ void testMusic(void)
 
     InitAudioDevice();
 
-    indie::Music music("test_pictures/music.ogg");
+    rtype::Music music("test_pictures/music.ogg");
 
     music.playMusic();
 

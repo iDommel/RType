@@ -13,7 +13,7 @@
 struct Camera3D;
 struct Vector3;
 
-namespace indie {
+namespace rtype {
 /// @brief raylib camera encapsulation class
 class Camera {
     public:

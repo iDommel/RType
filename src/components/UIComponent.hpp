@@ -11,7 +11,7 @@
 #include "Player.hpp"
 #include "String.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class UIComponent : public Component

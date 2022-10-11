@@ -25,9 +25,9 @@ void testText(void)
     // NOTE: Textures/Fonts MUST be loaded after Window initialization (OpenGL context is required)
 
     // BMFont (AngelCode) : Font data and image atlas have been generated using external program
-    indie::Text textMsg(msg, "test_fonts/pixantiqua.fnt");
-    indie::Text textBm("Using BMFont (Angelcode) imported");
-    indie::Text textSpace("Hold SPACE to use TTF generated font");
+    rtype::Text textMsg(msg, "test_fonts/pixantiqua.fnt");
+    rtype::Text textBm("Using BMFont (Angelcode) imported");
+    rtype::Text textSpace("Hold SPACE to use TTF generated font");
 
     // TTF font : Font data and atlas are generated directly from TTF
     // NOTE: We define a font base size of 32 pixels tall and up-to 250 characters

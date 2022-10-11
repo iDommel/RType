@@ -14,7 +14,7 @@
 
 struct Vector2;
 
-namespace indie
+namespace rtype
 {
     /// @brief Class to group all four callbacks for a mouse event
     class MouseCallbacks

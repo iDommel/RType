@@ -31,7 +31,7 @@ void testAudioDevice(void)
 
     InitWindow(screenWidth, screenHeight, "raylib [audio] example - module playing (streaming)");
 
-    indie::AudioDevice audioDevice; // Initialize audio device
+    rtype::AudioDevice audioDevice; // Initialize audio device
 
     Color colors[14] = { ORANGE, RED, GOLD, LIME, BLUE, VIOLET, BROWN, LIGHTGRAY, PINK,
                          YELLOW, GREEN, SKYBLUE, PURPLE, BEIGE };

@@ -10,7 +10,7 @@
 
 #include "Component.hpp"
 
-namespace indie
+namespace rtype
 {
     class Timer : public Component
     {

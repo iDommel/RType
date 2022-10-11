@@ -16,7 +16,7 @@
 #include "EventSystem.hpp"
 #include "CollideSystem.hpp"
 #include "UIComponent.hpp"
-#include "CameraComponent.hpp"
+#include "Camera3DComponent.hpp"
 #include "GamepadStickCallbacks.hpp"
 #include "Core.hpp"
 #include "Entity.hpp"
@@ -39,14 +39,13 @@
 #include "Bomb.hpp"
 #include "Timer.hpp"
 #include "Destructible.hpp"
-#include "CameraComponent.hpp"
 #include "SoundComponent.hpp"
 #include "MusicComponent.hpp"
 #include "ParticleCloud.hpp"
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 
-namespace indie
+namespace rtype
 {
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -103,7 +102,7 @@ namespace indie
 
     unsigned int GameSystem::nbr_ai;
 
-    void GameSystem::init(indie::SceneManager &sceneManager)
+    void GameSystem::init(rtype::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
 
@@ -115,7 +114,7 @@ namespace indie
         _aiSystem.init(sceneManager);
     }
 
-    void GameSystem::replaceTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::replaceTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (SceneManager::getCurrentSceneType() == SceneManager::SceneType::CONTROLLER) {
             if (players->changeUp == 2 || players->changeUp == 0) {
@@ -156,7 +155,7 @@ namespace indie
         }
     }
 
-    void GameSystem::updateTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::updateTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (players->changeUp == 1) {
             auto entity = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText];
@@ -186,7 +185,7 @@ namespace indie
         }
     }
 
-    void GameSystem::update(indie::SceneManager &sceneManager, uint64_t dt)
+    void GameSystem::update(rtype::SceneManager &sceneManager, uint64_t dt)
     {
         // int firstText = 9;
 
@@ -491,7 +490,7 @@ namespace indie
         }
     }
 
-    std::unique_ptr<indie::IScene> GameSystem::createMainMenu()
+    std::unique_ptr<rtype::IScene> GameSystem::createMainMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenu, this));
         std::shared_ptr<Entity> entity1 = std::make_shared<Entity>();

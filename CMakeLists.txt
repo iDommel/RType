@@ -14,7 +14,8 @@ add_library(${LIBRARY_NAME} SHARED
     src/ModelAnimation.cpp
     src/Music.cpp
     src/Texture2D.cpp
-    src/Camera.cpp
+    src/Camera2D.cpp
+    src/Camera3D.cpp
     src/AudioDevice.cpp
     src/Core.cpp
     src/Scene.cpp
@@ -44,7 +45,8 @@ add_library(${LIBRARY_NAME} SHARED
     src/components/AVector.cpp
     src/components/Velocity.cpp
     src/components/HitboxComponent.cpp
-    src/components/CameraComponent.cpp
+    src/components/Camera2DComponent.cpp
+    src/components/Camera3DComponent.cpp
     src/components/Sphere.cpp
     src/components/Cube.cpp
     src/components/Grid.cpp
@@ -54,7 +56,8 @@ add_library(${LIBRARY_NAME} SHARED
     src/components/AIPlayer.cpp
 
     test_functions/TestAnimations2D.cpp
-    test_functions/TestCamera.cpp
+    test_functions/TestCamera2D.cpp
+    test_functions/TestCamera3D.cpp
     test_functions/TestTextures.cpp
     test_functions/TestCollisions.cpp
     test_functions/TestModelsCollision.cpp

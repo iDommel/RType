@@ -13,7 +13,7 @@
 #include "ISystem.hpp"
 #include "CollideSystem.hpp"
 
-namespace indie
+namespace rtype
 {
     class Position;
     class AIPlayer;

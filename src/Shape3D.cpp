@@ -9,7 +9,7 @@
 
 #include "Shape3D.hpp"
 
-namespace indie {
+namespace rtype {
 Shape3D::Shape3D()
 {
 }

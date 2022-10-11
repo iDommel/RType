@@ -7,7 +7,7 @@
 
 #include "ButtonCallbacks.hpp"
 
-namespace indie
+namespace rtype
 {
 
     ButtonCallbacks::ButtonCallbacks()

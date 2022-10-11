@@ -14,9 +14,9 @@
 
 int main(void)
 {
-    indie::Core core(
-        {indie::Core::SystemType::GAME,
-         indie::Core::SystemType::PARTICLE});
+    rtype::Core core(
+        {rtype::Core::SystemType::GAME,
+         rtype::Core::SystemType::PARTICLE});
 
     try {
         core.mainLoop();

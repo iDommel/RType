@@ -11,7 +11,7 @@
 
 #include "Core.hpp"
 
-namespace indie
+namespace rtype
 {
 
     Scene::Scene(std::function<std::unique_ptr<IScene>()> init):

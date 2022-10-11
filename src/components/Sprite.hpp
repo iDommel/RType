@@ -12,7 +12,7 @@
 
 #include "Component.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class Sprite : public Component

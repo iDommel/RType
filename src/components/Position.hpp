@@ -12,7 +12,7 @@
 
 #include "AVector.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class Position : public AVector

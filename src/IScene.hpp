@@ -15,7 +15,7 @@
 
 #include "IEntity.hpp"
 
-namespace indie
+namespace rtype
 {
     class IScene
     {

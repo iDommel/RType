@@ -15,7 +15,7 @@
 
 #include "IScene.hpp"
 
-namespace indie
+namespace rtype
 {
     class SceneManager
     {

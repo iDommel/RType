@@ -10,7 +10,7 @@
 
 #include "raylib.h"
 
-#include "Camera.hpp"
+#include "Camera3D.hpp"
 #include "EventListener.hpp"
 #include "Shape3D.hpp"
 #include "Window.hpp"
@@ -28,7 +28,7 @@ void testRaylibCamera()
 
     std::shared_ptr<Vector3> cubePositionPtr = std::make_shared<Vector3>(cubePosition);
     std::shared_ptr<Vector3> cameraPositionPtr = std::make_shared<Vector3>(cameraPosition);
-    indie::Camera camera(cubePosition, cameraPosition);
+    rtype::Camera camera(cubePositionPtr, cameraPositionPtr);
 
     SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
 
@@ -41,19 +41,19 @@ void testRaylibCamera()
         //----------------------------------------------------------------------------------
 
         if (IsKeyDown(KEY_RIGHT)) {
-            cubePosition.x -= 0.1f;
+            cubePositionPtr->x -= 0.1f;
         } else if (IsKeyDown(KEY_LEFT)) {
-            cubePosition.x += 0.1f;
+            cubePositionPtr->x += 0.1f;
         }
         if (IsKeyDown(KEY_UP)) {
-            cubePosition.y += 0.1f;
+            cubePositionPtr->y += 0.1f;
         } else if (IsKeyDown(KEY_DOWN)) {
-            cubePosition.y -= 0.1f;
+            cubePositionPtr->y -= 0.1f;
         }
         if (IsKeyDown(KEY_RIGHT_SHIFT)) {
-            cubePosition.z += 0.1f;
+            cubePositionPtr->z += 0.1f;
         } else if (IsKeyDown(KEY_RIGHT_CONTROL)) {
-            cubePosition.z -= 0.1f;
+            cubePositionPtr->z -= 0.1f;
         }
         if (IsKeyDown(KEY_KP_ADD)) {
             cameraPosition.y += 0.1f;

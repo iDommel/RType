@@ -24,7 +24,7 @@
 #include "GameSystem.hpp"
 #include "Model3D.hpp"
 
-namespace indie
+namespace rtype
 {
 
     Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb):

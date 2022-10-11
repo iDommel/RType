@@ -8,7 +8,7 @@
 #ifndef DESTRUCTIBLE_HPP
 #define DESTRUCTIBLE_HPP
 
-namespace indie
+namespace rtype
 {
     class Destructible : public Component
     {

@@ -14,7 +14,7 @@
 #include "SoundComponent.hpp"
 #include "AudioDevice.hpp"
 
-namespace indie
+namespace rtype
 {
     class AudioSystem : public ISystem
     {

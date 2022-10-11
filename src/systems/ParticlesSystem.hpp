@@ -11,7 +11,7 @@
 #include "ISystem.hpp"
 #include "ParticleCloud.hpp"
 
-namespace indie
+namespace rtype
 {
     class ParticlesSystem : public ISystem
     {
