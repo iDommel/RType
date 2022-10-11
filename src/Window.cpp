@@ -5,7 +5,7 @@
 ** window
 */
 
-#include <SFML/Graphics.hpp>
+#include "raylib.h"
 
 #include "Window.hpp"
 
@@ -13,19 +13,19 @@ namespace indie
 {
 
     Window::Window(int screenWidth, int screenHeight, const std::string& name)
-        : _win({screenWidth, screenHeight}, name.c_str())
     {
+        InitWindow(screenWidth, screenHeight, name.c_str());
     }
 
-    // Window::Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name)
-    // {
-    //     SetConfigFlags(flags);
-    //     InitWindow(screenWidth, screenHeight, name.c_str());
-    // }
+    Window::Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name)
+    {
+        SetConfigFlags(flags);
+        InitWindow(screenWidth, screenHeight, name.c_str());
+    }
 
     Window::~Window()
     {
-        _win.close();
+        CloseWindow();
     }
 
     int Window::getKeyPressed()

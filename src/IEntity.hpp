@@ -38,7 +38,9 @@ namespace indie
             PLAYER,
             UI,
             AI,
-            RADAR
+            RADAR,
+            MUSIC,
+            SOUND
         };
 
         virtual ~IEntity() = default;
@@ -88,7 +90,6 @@ namespace indie
          */
         virtual std::shared_ptr<IComponent> &operator[](IComponent::Type type) = 0;
     };
-
 }
 
 #endif /* IENTITY_HPP */
