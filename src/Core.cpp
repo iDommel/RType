@@ -21,13 +21,34 @@
 namespace indie
 {
 
-    Core::Core()
+    Core::Core(std::vector<SystemType> activeSystems)
     {
-        _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
-        _systems[SystemType::GAME] = std::make_unique<GameSystem>();
-        _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
-        _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
-        _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
+        for (auto &system : activeSystems) {
+            switch (system) {
+            case SystemType::GAME:
+                _systems[system] = std::make_unique<GameSystem>();
+                break;
+            case SystemType::EVENT:
+                _systems[system] = std::make_unique<EventSystem>();
+                break;
+            case SystemType::AUDIO:
+                _systems[system] = std::make_unique<AudioSystem>();
+                break;
+            case SystemType::GRAPHIC:
+                _systems[system] = std::make_unique<GraphicSystem>();
+                break;
+            case SystemType::PARTICLE:
+                _systems[system] = std::make_unique<ParticlesSystem>();
+                break;
+            default:
+                break;
+            }
+        }
+        // _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
+        // _systems[SystemType::GAME] = std::make_unique<GameSystem>();
+        // _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
+        // _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
+        // _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
     }
 
     void Core::mainLoop()
@@ -58,7 +79,7 @@ namespace indie
 
     void Core::systemUpdate(SystemType type, SceneManager &manager, int64_t deltaTime)
     {
-        if (_systems[type] == nullptr)
+        if (_systems.find(type) == _systems.end())
             return;
         _systems[type]->update(manager, deltaTime);
     }

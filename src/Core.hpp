@@ -36,7 +36,9 @@ namespace indie
             AI
         };
 
-        Core();
+        /// @brief Construct a core with enabled systems
+        /// @param ActiveSystems systems to enable
+        Core(std::vector<SystemType> ActiveSystems);
 
         /// @brief Game loop
         void mainLoop();

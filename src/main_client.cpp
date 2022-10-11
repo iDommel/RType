@@ -14,7 +14,12 @@
 
 int main(void)
 {
-    indie::Core core;
+    indie::Core core(
+        {indie::Core::SystemType::GAME,
+         indie::Core::SystemType::EVENT,
+         indie::Core::SystemType::AUDIO,
+         indie::Core::SystemType::GRAPHIC,
+         indie::Core::SystemType::PARTICLE});
 
     try {
         core.mainLoop();
