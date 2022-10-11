@@ -17,14 +17,16 @@
 #include "systems/GraphicSystem.hpp"
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
+#include "systems/NetworkSystem.hpp"
 
 namespace ecs
 {
 
-    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems) : QCoreApplication(ac, av)
+    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
     {
         // Connect signal doLoop to loop function
         connect(this, &Core::doLoop, this, &Core::loop);
+        connect(this, &Core::exitApp, this, &QCoreApplication::quit, Qt::QueuedConnection);
 
         for (auto &system : activeSystems) {
             switch (system) {
@@ -42,6 +44,9 @@ namespace ecs
                 break;
             case SystemType::PARTICLE:
                 _systems[system] = std::make_unique<ParticlesSystem>();
+                break;
+            case SystemType::NETWORK:
+                _systems[system] = std::make_unique<NetworkSystem>(role);
                 break;
             default:
                 break;
@@ -76,6 +81,7 @@ namespace ecs
         } else {
             systemUpdate(SystemType::EVENT, _sceneManager, deltaTime);
             systemUpdate(SystemType::GAME, _sceneManager, deltaTime);
+            systemUpdate(SystemType::NETWORK, _sceneManager, deltaTime);
             systemUpdate(SystemType::AUDIO, _sceneManager, deltaTime);
             systemUpdate(SystemType::PARTICLE, _sceneManager, deltaTime);
             systemUpdate(SystemType::GRAPHIC, _sceneManager, deltaTime);
@@ -84,7 +90,7 @@ namespace ecs
         if (!_sceneManager.getShouldClose())
             emit doLoop();
         else
-            quit();
+            emit exitApp();
     }
 
     void Core::systemUpdate(SystemType type, SceneManager &manager, int64_t deltaTime)

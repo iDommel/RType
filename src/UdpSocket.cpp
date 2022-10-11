@@ -8,7 +8,7 @@
 #include "UdpSocket.hpp"
 #include <iostream>
 
-namespace indie
+namespace ecs
 {
 
 UdpSocket::UdpSocket(QObject *parent, QHostAddress address, int port, QAbstractSocket::BindMode mode) : QObject(parent), _socket(parent)
@@ -20,10 +20,10 @@ UdpSocket::UdpSocket(QObject *parent, QHostAddress address, int port, QAbstractS
 void UdpSocket::joinMulticastGroup(QHostAddress groupAddress)
 {
     if (!_socket.joinMulticastGroup(groupAddress))
-        throw runtime_error("Couldn't join multicast group: " + _socket.errorString().toStdString());
+        throw std::runtime_error("Couldn't join multicast group: " + _socket.errorString().toStdString());
 }
 
-void Socket::readDatagrams()
+void UdpSocket::readDatagrams()
 {
     while (_socket.hasPendingDatagrams()) {
         QNetworkDatagram data = _socket.receiveDatagram();
@@ -40,15 +40,6 @@ void UdpSocket::write(const std::string &msg, const QHostAddress &address, int p
         throw std::runtime_error("Error sending msg: " + msg);
     }
     std::cout << "Send msg: " << msg << std::endl;
-}
-
-bool UdpSocket::canRead()
-{
-    if (_socket.hasPendingDatagrams()) {
-        emit _socket.readyRead();
-        return true;
-    }
-    return false;
 }
 
 }

@@ -11,7 +11,7 @@
 #include <QtNetwork>
 #include <string>
 
-namespace indie
+namespace ecs
 {
 
     class UdpSocket : public QObject
@@ -34,7 +34,6 @@ namespace indie
         void joinMulticastGroup(QHostAddress groupAddress);
 
         void write(const std::string &msg, const QHostAddress &address, int port);
-        bool canRead();
 
     private slots:
         void readDatagrams();

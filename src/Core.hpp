@@ -19,6 +19,8 @@
 
 namespace ecs
 {
+    enum class NetworkRole;
+
     class Core : public QCoreApplication
     {
 
@@ -37,12 +39,13 @@ namespace ecs
             /// sub-system of game system
             COLLIDE,
             /// sub-system of game system
-            AI
+            AI,
+            NETWORK
         };
 
         /// @brief Construct a core with enabled systems
         /// @param ActiveSystems systems to enable
-        Core(int ac, char **av, std::vector<SystemType> ActiveSystems);
+        Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role);
 
         /// @brief init systems & launch game loop
         void run();
@@ -64,6 +67,7 @@ namespace ecs
 
     signals:
         void doLoop();
+        void exitApp();
 
     private:
         void systemUpdate(SystemType, SceneManager &, int64_t);

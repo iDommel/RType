@@ -17,24 +17,22 @@
 class QHostAddress;
 class QThread;
 
-namespace rtype
+namespace ecs
 {
+    enum class NetworkRole {
+        UNDEFINED = -1,
+        SERVER,
+        CLIENT
+    };
 
-    class NetworkSystem : public ISystem, public QObject
+    class NetworkSystem : public QObject, public ISystem
     {
 
         Q_OBJECT
 
     public:
 
-        enum class NetworkRole {
-            UNDEFINED = -1,
-            SERVER,
-            CLIENT
-        };
-
         NetworkSystem(NetworkRole role);
-        ~NetworkSystem();
 
         void init(SceneManager &manager) final;
         void update(SceneManager &manager, uint64_t deltaTime) final;
@@ -44,19 +42,25 @@ namespace rtype
          * @brief The callback to be called when an entity is added to a scene
          * @param entity The Entity that was added
          */
-        void loadEntity(std::shared_ptr<IEntity> entity) final {};
+        void onEntityAdded(std::shared_ptr<IEntity> entity) final;
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
          */
-        void unloadEntity(std::shared_ptr<IEntity> entity) final {};
+        void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
+
+    signals:
+        void sendMessage(std::string msg);
+
+    protected slots:
+        void writeMsg(std::string msg);
 
     private:
         static QHostAddress _serverAddr;
-        static const QHostAddress _groupAddr = QStringLiteral("239.255.43.21");
-        static const unsigned short _port = 8080;
+        QHostAddress _groupAddr;
+        static const unsigned short _port;
 
-        NetworkRole _role = UNDEFINED;
+        NetworkRole _role = NetworkRole::UNDEFINED;
         UdpSocket *_socket;
     };
 

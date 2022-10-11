@@ -32,6 +32,7 @@ add_library(${LIBRARY_NAME} SHARED
     src/MouseCallbacks.cpp
     src/GamepadStickCallbacks.cpp
     src/Sound.cpp
+    src/UdpSocket.cpp
 
     src/systems/AudioSystem.cpp
     src/systems/GraphicSystem.cpp
@@ -40,6 +41,7 @@ add_library(${LIBRARY_NAME} SHARED
     src/systems/CollideSystem.cpp
     src/systems/ParticlesSystem.cpp
     src/systems/AISystem.cpp
+    src/systems/NetworkSystem.cpp
 
     src/components/Component.cpp
     src/components/EventListener.cpp
