@@ -7,7 +7,7 @@
 
 #include "Component.hpp"
 
-namespace rtype
+namespace ecs
 {
     Component::Component(const Type &type) : _type(type)
     {

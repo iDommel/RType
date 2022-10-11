@@ -24,11 +24,10 @@
 #include "GameSystem.hpp"
 #include "Model3D.hpp"
 
-namespace rtype
+namespace ecs
 {
 
-    Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb):
-    Component(Type::PLAYER), _id(id)
+    Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb) : Component(Type::PLAYER), _id(id)
     {
         UP = GameSystem::getBinding(_up);
         DOWN = GameSystem::getBinding(_down);
@@ -175,7 +174,7 @@ namespace rtype
     void Player::generateBomb(SceneManager &manager, std::shared_ptr<IEntity> entity)
     {
         int bombNb = _bombs.size();
-    
+
         if (bombNb >= _nbBomb)
             return;
 

@@ -13,13 +13,12 @@
 
 struct Sound;
 
-namespace rtype
+namespace ecs
 {
 
     class Sound
     {
     public:
-
         /**
          * @brief Construct a new Sound object
          * @param filename Path to the sound file
@@ -27,8 +26,7 @@ namespace rtype
         Sound(const std::string &filename);
         ~Sound();
 
-        enum class SoundState
-        {
+        enum class SoundState {
             PLAYING,
             STOPPED,
             PAUSED

@@ -7,7 +7,7 @@
 
 #include "ButtonCallbacks.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     ButtonCallbacks::ButtonCallbacks()
@@ -16,15 +16,14 @@ namespace rtype
     ButtonCallbacks::ButtonCallbacks(std::function<void(SceneManager &)> pressed,
                                      std::function<void(SceneManager &)> released,
                                      std::function<void(SceneManager &)> down,
-                                     std::function<void(SceneManager &)> up):
-    pressed(pressed),
-          released(released),
-          down(down),
-          up(up)
+                                     std::function<void(SceneManager &)> up) : pressed(pressed),
+                                                                               released(released),
+                                                                               down(down),
+                                                                               up(up)
     {
     }
 
     ButtonCallbacks::~ButtonCallbacks()
     {
     }
-} 
+}

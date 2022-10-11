@@ -13,48 +13,46 @@
 #include "IEntity.hpp"
 #include "SceneManager.hpp"
 
-namespace rtype {
-ParticlesSystem::ParticlesSystem()
+namespace ecs
 {
-}
-
-void ParticlesSystem::init(SceneManager &)
-{
-    std::cerr << "ParticlesSystem::init" << std::endl;
-}
-
-void ParticlesSystem::update(SceneManager &manager, uint64_t deltaTime)
-{
-    for (auto &particlesCloud : manager.getCurrentScene()[IEntity::Tags::AESTHETIC]) {
-        if (particlesCloud == nullptr || !particlesCloud->hasComponent(Component::Type::PARTICLES)) {
-            manager.getCurrentScene().removeEntity(particlesCloud);
-            continue;
-        }
-        auto particleCloud = Component::castComponent<ParticleCloud>((*particlesCloud)[IComponent::Type::PARTICLES]);
-        if (!particleCloud)
-            continue;
-        particleCloud->addTime(deltaTime);
-        if (!particleCloud->isAlive())
-            manager.getCurrentScene().removeEntity(particlesCloud);
+    ParticlesSystem::ParticlesSystem()
+    {
     }
-}
 
-void ParticlesSystem::destroy()
-{
+    void ParticlesSystem::init(SceneManager &)
+    {
+        std::cerr << "ParticlesSystem::init" << std::endl;
+    }
 
-}
+    void ParticlesSystem::update(SceneManager &manager, uint64_t deltaTime)
+    {
+        for (auto &particlesCloud : manager.getCurrentScene()[IEntity::Tags::AESTHETIC]) {
+            if (particlesCloud == nullptr || !particlesCloud->hasComponent(Component::Type::PARTICLES)) {
+                manager.getCurrentScene().removeEntity(particlesCloud);
+                continue;
+            }
+            auto particleCloud = Component::castComponent<ParticleCloud>((*particlesCloud)[IComponent::Type::PARTICLES]);
+            if (!particleCloud)
+                continue;
+            particleCloud->addTime(deltaTime);
+            if (!particleCloud->isAlive())
+                manager.getCurrentScene().removeEntity(particlesCloud);
+        }
+    }
 
-void ParticlesSystem::loadEntity(std::shared_ptr<IEntity>)
-{
-   
-}
+    void ParticlesSystem::destroy()
+    {
+    }
 
-void ParticlesSystem::unloadEntity(std::shared_ptr<IEntity>)
-{
-   
-}
+    void ParticlesSystem::onEntityAdded(std::shared_ptr<IEntity>)
+    {
+    }
 
-ParticlesSystem::~ParticlesSystem()
-{
-}
+    void ParticlesSystem::onEntityRemoved(std::shared_ptr<IEntity>)
+    {
+    }
+
+    ParticlesSystem::~ParticlesSystem()
+    {
+    }
 }

@@ -17,7 +17,7 @@ void testSound(void)
 
     InitWindow(screenWidth, screenHeight, "raylib [audio] example - sound loading and playing");
     InitAudioDevice();  // Initialize audio device
-    rtype::Sound s1("test_pictures/jump.wav");
+    ecs::Sound s1("test_pictures/jump.wav");
     Sound fxWav = LoadSound("test_pictures/jump.wav");  // Load WAV audio file
 
     SetTargetFPS(60);  // Set our game to run at 60 frames-per-second

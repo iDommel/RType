@@ -14,7 +14,7 @@
 #include "Window.hpp"
 #include "EventSystem.hpp"
 
-namespace rtype
+namespace ecs
 {
     std::map<int, std::vector<std::shared_ptr<EventListener>>> EventSystem::_listeners;
 
@@ -124,7 +124,7 @@ namespace rtype
         std::cerr << "EventSystem destroy" << std::endl;
     }
 
-    void EventSystem::loadEntity(std::shared_ptr<IEntity> entity)
+    void EventSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
     {
         if (entity->hasTag(IEntity::Tags::CALLABLE)) {
             std::shared_ptr<EventListener> listener = Component::castComponent<EventListener>((*entity)[Component::Type::EVT_LISTENER]);
@@ -132,7 +132,7 @@ namespace rtype
         }
     }
 
-    void EventSystem::unloadEntity(std::shared_ptr<IEntity> entity)
+    void EventSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
     {
         if (entity->hasTag(IEntity::Tags::CALLABLE)) {
             auto currentListeners = _listeners[(int)SceneManager::getCurrentSceneType()];
@@ -149,7 +149,7 @@ namespace rtype
         auto newEntities = manager.getScene(sceneType)[IEntity::Tags::CALLABLE];
         std::vector<std::shared_ptr<EventListener>> newListeners;
 
-        for (auto &e: newEntities) {
+        for (auto &e : newEntities) {
             auto listener = Component::castComponent<EventListener>((*e)[Component::Type::EVT_LISTENER]);
             if (listener)
                 newListeners.push_back(listener);

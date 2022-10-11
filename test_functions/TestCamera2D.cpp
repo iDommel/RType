@@ -26,7 +26,7 @@ void testRaylibCamera2D()
 
     std::shared_ptr<Vector2> rectPositionPtr = std::make_shared<Vector2>(rectPosition);
     std::shared_ptr<Vector2> cameraPositionPtr = std::make_shared<Vector2>(cameraPosition);
-    rtype::Camera2D camera(rectPositionPtr);
+    ecs::Camera2D camera(rectPositionPtr);
 
     SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
 

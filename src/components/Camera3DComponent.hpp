@@ -11,7 +11,7 @@
 #include "Component.hpp"
 #include "Camera3D.hpp"
 
-namespace rtype
+namespace ecs
 {
     class CameraComponent : public Component
     {

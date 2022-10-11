@@ -16,7 +16,7 @@ struct Color;
 struct Camera2D;
 struct Camera3D;
 struct Vector2;
-namespace rtype
+namespace ecs
 {
     class Window
     {

@@ -16,7 +16,7 @@
 #include "MusicComponent.hpp"
 #include "AudioDevice.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     void AudioSystem::init(SceneManager &sceneManager)
@@ -69,11 +69,11 @@ namespace rtype
         std::cerr << "AudioSystem::destroy" << std::endl;
     }
 
-    void AudioSystem::loadEntity(std::shared_ptr<IEntity>)
+    void AudioSystem::onEntityAdded(std::shared_ptr<IEntity>)
     {
     }
 
-    void AudioSystem::unloadEntity(std::shared_ptr<IEntity>)
+    void AudioSystem::onEntityRemoved(std::shared_ptr<IEntity>)
     {
     }
 

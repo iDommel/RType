@@ -16,35 +16,34 @@ void testModelsCollision(void)
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 450;
-    rtype::CollideSystem collideSystem;
+    ecs::CollideSystem collideSystem;
 
     InitWindow(screenWidth, screenHeight, "raylib [models] example - models loading");
 
-
     // Define the camera to look into our 3d world
-    Vector3 a = { 0.0f, 10.0f, 10.0f };
-    Vector3 b = { 0.0f, 0.0f, 0.0f };
-    Vector3 c = { 0.0f, 1.0f, 0.0f };
-    Camera camera = { a, b, c, 45.0f, 0 };
+    Vector3 a = {0.0f, 10.0f, 10.0f};
+    Vector3 b = {0.0f, 0.0f, 0.0f};
+    Vector3 c = {0.0f, 1.0f, 0.0f};
+    Camera camera = {a, b, c, 45.0f, 0};
 
-    rtype::Model test("test_models/turret.obj", "test_models/turret.png");
-    rtype::Model test2("test_models/turret.obj", "test_models/turret.png");
+    ecs::Model test("test_models/turret.obj", "test_models/turret.png");
+    ecs::Model test2("test_models/turret.obj", "test_models/turret.png");
 
-    Vector3 position = { 0.0f, 0.0f, 0.0f };                    // Set model position
-    Vector3 position2 = { 10.0f, 0.0f, 10.0f };                 // Set model2 position
+    Vector3 position = {0.0f, 0.0f, 0.0f};     // Set model position
+    Vector3 position2 = {10.0f, 0.0f, 10.0f};  // Set model2 position
 
-    Vector3 rotation = { 10.0f, 0.0f, 0.0f };
-    Vector3 rotation2 = { 0.0f, 0.0f, 0.0f };
-    Vector3 scale = { 1.0f, 1.0f, 1.0f };
-    SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode
+    Vector3 rotation = {10.0f, 0.0f, 0.0f};
+    Vector3 rotation2 = {0.0f, 0.0f, 0.0f};
+    Vector3 scale = {1.0f, 1.0f, 1.0f};
+    SetCameraMode(camera, CAMERA_FREE);  // Set a free camera mode
 
     bool colliding = false;
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    while (!WindowShouldClose())  // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
@@ -61,8 +60,8 @@ void testModelsCollision(void)
         colliding = false;
 
         if (collideSystem.check3DCollision(
-            collideSystem.makeUpdatedBBox(test.getBoundingBox(), position),
-            collideSystem.makeUpdatedBBox(test2.getBoundingBox(), position2)))
+                collideSystem.makeUpdatedBBox(test.getBoundingBox(), position),
+                collideSystem.makeUpdatedBBox(test2.getBoundingBox(), position2)))
             colliding = true;
 
         UpdateCamera(&camera);
@@ -71,28 +70,28 @@ void testModelsCollision(void)
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);
 
-            BeginMode3D(camera);
+        BeginMode3D(camera);
 
-                test.drawRotate(position, rotation, 45.0f, scale, WHITE);
-                test2.drawRotate(position2, rotation2, 45.0f, scale, WHITE);
-                DrawBoundingBox(collideSystem.makeUpdatedBBox(test.getBoundingBox(), position), GREEN);
-                DrawBoundingBox(collideSystem.makeUpdatedBBox
-                (test2.getBoundingBox(), position2), GREEN);
+        test.drawRotate(position, rotation, 45.0f, scale, WHITE);
+        test2.drawRotate(position2, rotation2, 45.0f, scale, WHITE);
+        DrawBoundingBox(collideSystem.makeUpdatedBBox(test.getBoundingBox(), position), GREEN);
+        DrawBoundingBox(collideSystem.makeUpdatedBBox(test2.getBoundingBox(), position2), GREEN);
 
-                DrawGrid(20, 10.0f);         // Draw a grid
+        DrawGrid(20, 10.0f);  // Draw a grid
 
-            EndMode3D();
+        EndMode3D();
 
-            if (colliding) DrawText("MODELS COLLIDING", GetScreenWidth() - 110, 10, 10, GREEN);
+        if (colliding)
+            DrawText("MODELS COLLIDING", GetScreenWidth() - 110, 10, 10, GREEN);
 
-            DrawFPS(10, 10);
+        DrawFPS(10, 10);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
     test.unload();
-    CloseWindow();              // Close window and OpenGL context
+    CloseWindow();  // Close window and OpenGL context
     //--------------------
 }

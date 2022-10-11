@@ -15,7 +15,7 @@
 
 #include "IEntity.hpp"
 
-namespace rtype
+namespace ecs
 {
     class IScene
     {

@@ -13,9 +13,11 @@
 struct Camera2D;
 struct Vector2;
 
-namespace rtype {
-/// @brief raylib camera encapsulation class
-class Camera2D {
+namespace ecs
+{
+    /// @brief raylib camera encapsulation class
+    class Camera2D
+    {
     public:
         /**
          * @brief Construct a new Camera2D object
@@ -44,7 +46,7 @@ class Camera2D {
          * @param target New target coordinates
          */
         void setSnapedTarget(std::shared_ptr<Vector2> target);
-        
+
         int getId(void) const;
 
         /// @brief Update camera (target updated only if snap mode is on)
@@ -63,7 +65,7 @@ class Camera2D {
         /// @brief _id, used to identify the camera
         int _id;
         std::shared_ptr<::Camera2D> _camera = nullptr;
-};
+    };
 }
 
 #endif /* !CAMERA2D_HPP_ */

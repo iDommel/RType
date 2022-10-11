@@ -22,7 +22,7 @@
 #include "Bonus.hpp"
 #include "Model3D.hpp"
 
-namespace rtype
+namespace ecs
 {
     AIPlayer::AIPlayer(int id) : Component(Type::AI), _id(id)
     {
@@ -137,7 +137,7 @@ namespace rtype
 
         std::shared_ptr<Entity> bomb = std::make_shared<Entity>();
         Vector3 size = {GAME_TILE_SIZE, GAME_TILE_SIZE, GAME_TILE_SIZE};
-        Vector3 bPos = {pos.x - GAME_TILE_SIZE/2, pos.y, pos.z - GAME_TILE_SIZE/2};
+        Vector3 bPos = {pos.x - GAME_TILE_SIZE / 2, pos.y, pos.z - GAME_TILE_SIZE / 2};
 
         bomb->addComponent(std::make_shared<Bomb>(_blastPower))
             .addComponent(std::make_shared<Position>(pos.x, pos.y, pos.z))

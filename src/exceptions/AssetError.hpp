@@ -11,14 +11,17 @@
 #include <exception>
 #include <string>
 
-namespace rtype {
-class AssetError: public std::exception {
+namespace ecs
+{
+    class AssetError : public std::exception
+    {
     public:
-        AssetError(const std::string &msg): _msg(msg) {}
+        AssetError(const std::string &msg) : _msg(msg) {}
         virtual const char *what() const throw() { return _msg.c_str(); }
+
     private:
         std::string _msg;
-};
+    };
 }
 
 #endif /* !ASSETERROR_HPP_ */

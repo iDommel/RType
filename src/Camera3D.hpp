@@ -13,9 +13,11 @@
 struct Camera3D;
 struct Vector3;
 
-namespace rtype {
-/// @brief raylib camera encapsulation class
-class Camera {
+namespace ecs
+{
+    /// @brief raylib camera encapsulation class
+    class Camera
+    {
     public:
         /**
          * @brief Construct a new Camera object
@@ -60,7 +62,7 @@ class Camera {
          * @brief Shift position, only if snap mode is off
          * @param shift Vector to add to position
          */
-        
+
         void shiftPosition(Vector3 shift);
         /**
          * @brief Get ID
@@ -86,7 +88,7 @@ class Camera {
         /// @brief _id, used to identify the camera
         int _id;
         std::shared_ptr<Camera3D> _camera = nullptr;
-};
+    };
 }
 
 #endif /* !CAMERA_HPP_ */

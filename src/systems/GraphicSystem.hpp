@@ -16,7 +16,7 @@
 #include "Text.hpp"
 #include "ModelAnimation.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     class GraphicSystem : public ISystem
@@ -31,12 +31,12 @@ namespace rtype
          * @brief The callback to be called when an entity is added to a scene
          * @param entity The Entity that was added
          */
-        void loadEntity(std::shared_ptr<IEntity> entity) final;
+        void onEntityAdded(std::shared_ptr<IEntity> entity) final;
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
          */
-        void unloadEntity(std::shared_ptr<IEntity> entity) final;
+        void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
 
     private:
         void loadSprite(std::shared_ptr<IEntity> &entity);

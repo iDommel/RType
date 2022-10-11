@@ -10,7 +10,7 @@
 #include "AudioDevice.hpp"
 #include "exceptions/AudioDeviceError.hpp"
 
-rtype::AudioDevice::AudioDevice()
+ecs::AudioDevice::AudioDevice()
 {
     InitAudioDevice();
     if (isReady() != true)
@@ -18,17 +18,17 @@ rtype::AudioDevice::AudioDevice()
     setVolume(50);
 }
 
-rtype::AudioDevice::~AudioDevice()
+ecs::AudioDevice::~AudioDevice()
 {
     CloseAudioDevice();
 }
 
-bool rtype::AudioDevice::isReady()
+bool ecs::AudioDevice::isReady()
 {
     return IsAudioDeviceReady();
 }
 
-void rtype::AudioDevice::setVolume(float volume)
+void ecs::AudioDevice::setVolume(float volume)
 {
     SetMasterVolume(volume);
 }

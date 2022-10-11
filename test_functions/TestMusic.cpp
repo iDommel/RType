@@ -19,51 +19,49 @@ void testMusic(void)
 
     InitAudioDevice();
 
-    rtype::Music music("test_pictures/music.ogg");
+    ecs::Music music("test_pictures/music.ogg");
 
     music.playMusic();
 
     float timePlayed = 0.0f;
     bool pause = false;
 
-
     SetTargetFPS(60);
 
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()) {
         music.updateMusic();
 
-        if (IsKeyPressed(KEY_SPACE))
-        {
+        if (IsKeyPressed(KEY_SPACE)) {
             music.stopMusic();
             music.playMusic();
         }
 
-        if (IsKeyPressed(KEY_P))
-        {
+        if (IsKeyPressed(KEY_P)) {
             pause = !pause;
 
-            if (pause) music.pauseMusic();
-            else music.resumeMusic();
+            if (pause)
+                music.pauseMusic();
+            else
+                music.resumeMusic();
         }
 
-        timePlayed = music.getTimePlayedMusic()/music.getTimeLengthMusic()*400;
+        timePlayed = music.getTimePlayedMusic() / music.getTimeLengthMusic() * 400;
 
-        if (timePlayed > 400) music.stopMusic();
-
+        if (timePlayed > 400)
+            music.stopMusic();
 
         BeginDrawing();
 
-            ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);
 
-            DrawText("MUSIC SHOULD BE PLAYING!", 255, 150, 20, LIGHTGRAY);
+        DrawText("MUSIC SHOULD BE PLAYING!", 255, 150, 20, LIGHTGRAY);
 
-            DrawRectangle(200, 200, 400, 12, LIGHTGRAY);
-            DrawRectangle(200, 200, (int)timePlayed, 12, MAROON);
-            DrawRectangleLines(200, 200, 400, 12, GRAY);
+        DrawRectangle(200, 200, 400, 12, LIGHTGRAY);
+        DrawRectangle(200, 200, (int)timePlayed, 12, MAROON);
+        DrawRectangleLines(200, 200, 400, 12, GRAY);
 
-            DrawText("PRESS SPACE TO RESTART MUSIC", 215, 250, 20, LIGHTGRAY);
-            DrawText("PRESS P TO PAUSE/RESUME MUSIC", 208, 280, 20, LIGHTGRAY);
+        DrawText("PRESS SPACE TO RESTART MUSIC", 215, 250, 20, LIGHTGRAY);
+        DrawText("PRESS P TO PAUSE/RESUME MUSIC", 208, 280, 20, LIGHTGRAY);
 
         EndDrawing();
     }
