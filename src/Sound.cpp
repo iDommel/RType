@@ -12,7 +12,7 @@
 #include "Sound.hpp"
 #include "exceptions/SoundError.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Sound::Sound(const std::string &filename)

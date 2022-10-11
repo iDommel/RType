@@ -10,9 +10,11 @@
 
 #include "Component.hpp"
 
-namespace rtype {
+namespace ecs
+{
 
-class Bonus: public Component {
+    class Bonus : public Component
+    {
     public:
         enum class Type {
             BOMB,
@@ -20,7 +22,7 @@ class Bonus: public Component {
             POWER
         };
 
-        Bonus(const Type &type): Component(IComponent::Type::BONUS), _type(type) {};
+        Bonus(const Type &type) : Component(IComponent::Type::BONUS), _type(type){};
 
         /**
          * @brief Get bonus type
@@ -31,7 +33,7 @@ class Bonus: public Component {
     protected:
     private:
         Type _type;
-};
+    };
 
 }
 

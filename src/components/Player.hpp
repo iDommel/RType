@@ -12,7 +12,7 @@
 #include "EventListener.hpp"
 #include "SceneManager.hpp"
 
-namespace rtype
+namespace ecs
 {
     class Velocity;
     class Bonus;

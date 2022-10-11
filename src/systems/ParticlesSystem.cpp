@@ -13,7 +13,7 @@
 #include "IEntity.hpp"
 #include "SceneManager.hpp"
 
-namespace rtype
+namespace ecs
 {
     ParticlesSystem::ParticlesSystem()
     {

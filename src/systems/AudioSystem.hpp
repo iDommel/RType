@@ -14,7 +14,7 @@
 #include "SoundComponent.hpp"
 #include "AudioDevice.hpp"
 
-namespace rtype
+namespace ecs
 {
     class AudioSystem : public ISystem
     {

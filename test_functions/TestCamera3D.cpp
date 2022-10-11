@@ -28,7 +28,7 @@ void testRaylibCamera()
 
     std::shared_ptr<Vector3> cubePositionPtr = std::make_shared<Vector3>(cubePosition);
     std::shared_ptr<Vector3> cameraPositionPtr = std::make_shared<Vector3>(cameraPosition);
-    rtype::Camera camera(cubePositionPtr, cameraPositionPtr);
+    ecs::Camera camera(cubePositionPtr, cameraPositionPtr);
 
     SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
 

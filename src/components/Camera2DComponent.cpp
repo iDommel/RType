@@ -8,10 +8,9 @@
 #include <raylib.h>
 #include "Camera2DComponent.hpp"
 
-namespace rtype
+namespace ecs
 {
-    Camera2DComponent::Camera2DComponent(Vector2 target):
-    Component(Type::CAMERA_2D), _camera(target)
+    Camera2DComponent::Camera2DComponent(Vector2 target) : Component(Type::CAMERA_2D), _camera(target)
     {
         _isInitialized = true;
     }

@@ -8,12 +8,12 @@
 #ifndef DESTRUCTIBLE_HPP
 #define DESTRUCTIBLE_HPP
 
-namespace rtype
+namespace ecs
 {
     class Destructible : public Component
     {
     public:
-        Destructible() : Component(Type::DESTRUCTIBLE) {};
+        Destructible() : Component(Type::DESTRUCTIBLE){};
     };
 }
 

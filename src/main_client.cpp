@@ -14,12 +14,12 @@
 
 int main(void)
 {
-    rtype::Core core(
-        {rtype::Core::SystemType::GAME,
-         rtype::Core::SystemType::EVENT,
-         rtype::Core::SystemType::AUDIO,
-         rtype::Core::SystemType::GRAPHIC,
-         rtype::Core::SystemType::PARTICLE});
+    ecs::Core core(
+        {ecs::Core::SystemType::GAME,
+         ecs::Core::SystemType::EVENT,
+         ecs::Core::SystemType::AUDIO,
+         ecs::Core::SystemType::GRAPHIC,
+         ecs::Core::SystemType::PARTICLE});
 
     try {
         core.mainLoop();

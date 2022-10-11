@@ -13,12 +13,12 @@
 #include "Component.hpp"
 #include "Music.hpp"
 
-namespace rtype
+namespace ecs
 {
     class MusicComponent : public Component
     {
     public:
-        MusicComponent(std::string str) : Component(Type::MUSIC), music(str) {};
+        MusicComponent(std::string str) : Component(Type::MUSIC), music(str){};
 
         std::string getValue() const { return music; };
         void setMusicState(Music::MusicState state) { _newState = state; };

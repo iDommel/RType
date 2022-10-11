@@ -15,7 +15,7 @@
 
 #include "IScene.hpp"
 
-namespace rtype
+namespace ecs
 {
     class SceneManager
     {

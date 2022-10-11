@@ -12,7 +12,7 @@
 
 struct Color;
 
-namespace rtype
+namespace ecs
 {
     class Grid : public Component
     {

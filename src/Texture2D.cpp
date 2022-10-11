@@ -10,7 +10,7 @@
 #include "exceptions/TextureError.hpp"
 #include "Texture2D.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Texture::Texture(const std::string &fileName)

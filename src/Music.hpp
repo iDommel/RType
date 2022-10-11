@@ -13,7 +13,7 @@
 
 struct Music;
 
-namespace rtype {
+namespace ecs {
     class Music {
         public:
             ///  @brief Constructor a new music:: load music from file

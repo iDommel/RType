@@ -9,7 +9,7 @@
 
 #include "raylib.h"
 
-namespace rtype
+namespace ecs
 {
     Grid::Grid(int slices, float spacing) : Component(Type::GRID), _slices(slices), _spacing(spacing)
     {

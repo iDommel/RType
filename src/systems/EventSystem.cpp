@@ -14,7 +14,7 @@
 #include "Window.hpp"
 #include "EventSystem.hpp"
 
-namespace rtype
+namespace ecs
 {
     std::map<int, std::vector<std::shared_ptr<EventListener>>> EventSystem::_listeners;
 

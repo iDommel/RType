@@ -10,13 +10,16 @@
 
 #include "AssetError.hpp"
 
-namespace rtype {
-class TextureError: public AssetError {
+namespace ecs
+{
+    class TextureError : public AssetError
+    {
     public:
-        TextureError(const std::string &msg): AssetError(msg) {}
+        TextureError(const std::string &msg) : AssetError(msg) {}
+
     private:
         std::string _msg;
-};
+    };
 };
 
 #endif /* !TEXTUREERROR_HPP_ */

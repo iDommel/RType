@@ -11,7 +11,7 @@
 
 #include "Model.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Model::Model(const std::string &modelFile, const std::string &textureFile)

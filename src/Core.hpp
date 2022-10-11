@@ -16,7 +16,7 @@
 
 #define UPDATE_DELTA 17
 
-namespace rtype
+namespace ecs
 {
     class Core
     {

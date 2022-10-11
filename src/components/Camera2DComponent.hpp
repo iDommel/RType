@@ -11,25 +11,25 @@
 #include "Component.hpp"
 #include "Camera2D.hpp"
 
-namespace rtype
+namespace ecs
 {
     class Camera2DComponent : public Component
     {
-        public:
-            /**
-             * @brief Construct a new Camera Component
-             * @param target Vector the camera point to
-             */
-            Camera2DComponent(Vector2 target);
+    public:
+        /**
+         * @brief Construct a new Camera Component
+         * @param target Vector the camera point to
+         */
+        Camera2DComponent(Vector2 target);
 
-            /**
-             * @brief Get camera object
-             * @return Returns a reference to the camera object
-             */
-            Camera2D &getCamera();
+        /**
+         * @brief Get camera object
+         * @return Returns a reference to the camera object
+         */
+        Camera2D &getCamera();
 
-        private:
-            Camera2D _camera;
+    private:
+        Camera2D _camera;
     };
 }
 

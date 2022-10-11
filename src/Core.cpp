@@ -18,7 +18,7 @@
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Core::Core(std::vector<SystemType> activeSystems)

@@ -16,7 +16,7 @@
 #include "Text.hpp"
 #include "ModelAnimation.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     class GraphicSystem : public ISystem

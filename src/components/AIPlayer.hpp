@@ -14,7 +14,7 @@
 
 struct Vector3;
 
-namespace rtype
+namespace ecs
 {
     class Velocity;
     class Position;
@@ -23,7 +23,6 @@ namespace rtype
     class AIPlayer : public Component
     {
     public:
-
         AIPlayer(int id);
 
         /**

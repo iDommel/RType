@@ -19,7 +19,7 @@ void testTextures()
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture loading and drawing");
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-    rtype::Texture texture("test_pictures/raylib_logo.png");  // Texture loading
+    ecs::Texture texture("test_pictures/raylib_logo.png");  // Texture loading
     //---------------------------------------------------------------------------------------
 
     // Main game loop

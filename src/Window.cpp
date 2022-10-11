@@ -9,7 +9,7 @@
 
 #include "Window.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Window::Window(int screenWidth, int screenHeight, const std::string& name)
