@@ -7,7 +7,7 @@
 
 #include "MouseCallbacks.hpp"
 
-namespace indie
+namespace rtype
 {
 
     MouseCallbacks::MouseCallbacks()

@@ -16,7 +16,7 @@ void testBasicCollisions(void)
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 450;
-    indie::CollideSystem collideSystem;
+    rtype::CollideSystem collideSystem;
 
     InitWindow(screenWidth, screenHeight, "raylib [models] example - box collisions");
 

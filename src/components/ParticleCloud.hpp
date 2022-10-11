@@ -16,7 +16,7 @@
 
 struct Vector3;
 
-namespace indie {
+namespace rtype {
 
 /**
  * @brief Uniformly distributed random number generator

@@ -15,10 +15,10 @@ void test_raylib_modelAnimation()
     Vector3 c = { 0.0f, 1.0f, 0.0f };
     Camera camera = { a, b, c, 45.0f, 0 };
 
-    std::unique_ptr<indie::Model> model = std::make_unique<indie::Model>("assets_test/final.iqm", "assets_test/playerobj.png");
+    std::unique_ptr<rtype::Model> model = std::make_unique<rtype::Model>("assets_test/final.iqm", "assets_test/playerobj.png");
     Vector3 position = { 0.0f, 0.0f, 0.0f };
 
-    indie::ModelAnimation anim("assets_test/final_anim.iqm");
+    rtype::ModelAnimation anim("assets_test/final_anim.iqm");
     int animFrameCounter = 0;
 
     SetCameraMode(camera, CAMERA_FREE);

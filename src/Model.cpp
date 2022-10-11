@@ -11,7 +11,7 @@
 
 #include "Model.hpp"
 
-namespace indie
+namespace rtype
 {
 
     Model::Model(const std::string &modelFile, const std::string &textureFile)

@@ -7,7 +7,7 @@
 
 #include "Position.hpp"
 
-namespace indie
+namespace rtype
 {
     Position::Position(float x, float y, float z):
     AVector(Component::Type::POSITION, x, y, z)

@@ -14,7 +14,7 @@
 
 struct Vector3;
 
-namespace indie
+namespace rtype
 {
     class Velocity;
     class Position;

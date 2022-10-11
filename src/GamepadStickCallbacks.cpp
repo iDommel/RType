@@ -7,7 +7,7 @@
 
 #include "GamepadStickCallbacks.hpp"
 
-namespace indie
+namespace rtype
 {
     GamepadStickCallbacks::GamepadStickCallbacks()
     {

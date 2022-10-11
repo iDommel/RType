@@ -13,7 +13,7 @@
 struct Vector3;
 struct Color;
 
-namespace indie
+namespace rtype
 {
     class Cube : public Component
     {

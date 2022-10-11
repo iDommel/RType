@@ -8,7 +8,7 @@
 #ifndef ICOMPONENT_HPP
 #define ICOMPONENT_HPP
 
-namespace indie
+namespace rtype
 {
 
     class IEntity;
@@ -30,7 +30,8 @@ namespace indie
             BONUS,
             PLAYER,
             RECT,
-            CAMERA,
+            CAMERA_2D,
+            CAMERA_3D,
             SPHERE,
             CUBE,
             GRID,

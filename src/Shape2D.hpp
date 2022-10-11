@@ -11,7 +11,7 @@
 struct Vector2;
 struct Color;
 
-namespace indie
+namespace rtype
 {
     struct Shape2D;
      /// @brief Shape2D object

@@ -10,7 +10,7 @@
 
 #include "AssetError.hpp"
 
-namespace indie {
+namespace rtype {
 class TextureError: public AssetError {
     public:
         TextureError(const std::string &msg): AssetError(msg) {}

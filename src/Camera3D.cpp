@@ -10,7 +10,7 @@
 #include <memory>
 #include <iostream>
 
-#include "Camera.hpp"
+#include "Camera3D.hpp"
 
 static int getNewId(void)
 {
@@ -19,7 +19,7 @@ static int getNewId(void)
     return (idCounter++);
 }
 
-namespace indie {
+namespace rtype {
 Camera::Camera(Vector3 target, Vector3 position)
 {
     Vector3 up = {0.0f, 1.0f, 0.0f};

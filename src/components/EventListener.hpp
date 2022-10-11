@@ -16,7 +16,7 @@
 #include "GamepadStickCallbacks.hpp"
 #include "MouseCallbacks.hpp"
 
-namespace indie
+namespace rtype
 {
     /// @brief EventListener is a class to describe what to do when an event is detected.
     /// you can add a callback to an event by using the different add<>Event methods.

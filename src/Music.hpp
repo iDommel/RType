@@ -13,7 +13,7 @@
 
 struct Music;
 
-namespace indie {
+namespace rtype {
     class Music {
         public:
             ///  @brief Constructor a new music:: load music from file

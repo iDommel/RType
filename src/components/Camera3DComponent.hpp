@@ -9,9 +9,9 @@
 #define CAMERA_COMPONENT_HPP_
 
 #include "Component.hpp"
-#include "Camera.hpp"
+#include "Camera3D.hpp"
 
-namespace indie
+namespace rtype
 {
     class CameraComponent : public Component
     {

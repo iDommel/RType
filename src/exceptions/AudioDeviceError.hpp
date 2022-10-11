@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace indie {
+namespace rtype {
     class AudioDeviceError {
         public:
             AudioDeviceError(const std::string &msg): _msg(msg) {}

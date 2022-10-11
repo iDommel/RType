@@ -9,7 +9,7 @@
 
 #include "ModelAnimation.hpp"
 
-namespace indie {
+namespace rtype {
 ModelAnimation::ModelAnimation(const std::string &fileName)
 {
     anims = LoadModelAnimations(fileName.c_str(), &_animsCount);

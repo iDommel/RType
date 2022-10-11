@@ -16,7 +16,7 @@
 #include "IEntity.hpp"
 #include "IScene.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class Core;
