@@ -18,7 +18,7 @@ struct Color;
 
 typedef Texture Texture2D;
 
-namespace indie {
+namespace rtype {
     class Texture {
         public:
             Texture(const std::string &fileName);

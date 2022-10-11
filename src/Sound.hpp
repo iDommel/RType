@@ -13,7 +13,7 @@
 
 struct Sound;
 
-namespace indie
+namespace rtype
 {
 
     class Sound

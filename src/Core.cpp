@@ -18,7 +18,7 @@
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
 
-namespace indie
+namespace rtype
 {
 
     Core::Core()

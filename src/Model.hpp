@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indie
+** rtype
 ** File description:
 ** models
 */
@@ -16,7 +16,7 @@
     #include <memory>
     #include <string>
 
-namespace indie {
+namespace rtype {
 
     ///@brief Model 3D object
     class Model {

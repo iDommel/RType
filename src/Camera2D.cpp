@@ -19,7 +19,7 @@ static int getNewId(void)
     return (idCounter++);
 }
 
-namespace indie {
+namespace rtype {
 Camera2D::Camera2D(Vector2 target)
 {
     _camera = std::make_shared <::Camera2D>();

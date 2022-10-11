@@ -7,10 +7,7 @@
 
 #include <exception>
 #include <iostream>
-#include "raylib.h"
-
-#include "raylib.h"
-
+#include <raylib.h>
 #include "Camera2D.hpp"
 #include "components/EventListener.hpp"
 #include "Shape2D.hpp"
@@ -29,7 +26,7 @@ void testRaylibCamera2D()
 
     std::shared_ptr<Vector2> rectPositionPtr = std::make_shared<Vector2>(rectPosition);
     std::shared_ptr<Vector2> cameraPositionPtr = std::make_shared<Vector2>(cameraPosition);
-    indie::Camera2D camera(rectPosition);
+    rtype::Camera2D camera(rectPositionPtr);
 
     SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
 
@@ -42,19 +39,19 @@ void testRaylibCamera2D()
         //----------------------------------------------------------------------------------
 
         if (IsKeyDown(KEY_RIGHT)) {
-            rectPosition.x -= 0.1f;
+            rectPositionPtr->x -= 1.0f;
         } else if (IsKeyDown(KEY_LEFT)) {
-            rectPosition.x += 0.1f;
+            rectPositionPtr->x += 1.0f;
         }
         if (IsKeyDown(KEY_UP)) {
-            rectPosition.y += 0.1f;
+            rectPositionPtr->y += 1.0f;
         } else if (IsKeyDown(KEY_DOWN)) {
-            rectPosition.y -= 0.1f;
+            rectPositionPtr->y -= 1.0f;
         }
         if (IsKeyDown(KEY_KP_ADD)) {
-            cameraPosition.y += 0.1f;
+            cameraPosition.y += 1.0f;
         } else if (IsKeyDown(KEY_KP_SUBTRACT)) {
-            cameraPosition.y -= 0.1f;
+            cameraPosition.y -= 1.0f;
         }
         camera.update();  // Update camera
         //----------------------------------------------------------------------------------
@@ -67,8 +64,8 @@ void testRaylibCamera2D()
 
         camera.beginDrawScope();
 
-        DrawRectangle(rectPositionPtr->x, rectPositionPtr->y, 2.0f, 2.0f, RED);
-        //DrawCubeWires(*rectPositionPtr, 2.0f, 2.0f, MAROON);
+        DrawRectangle(rectPositionPtr->x, rectPositionPtr->y, 200, 200, RED);
+        DrawRectangleLines(0, 0, 200, 200, BLUE);
 
         DrawGrid(10, 1.0f);
 

@@ -13,7 +13,7 @@
 
 #include "IComponent.hpp"
 
-namespace indie
+namespace rtype
 {
 
     class Component : public IComponent

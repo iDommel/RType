@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace indie {
+namespace rtype {
 
     class SceneManager;
     class IEntity;

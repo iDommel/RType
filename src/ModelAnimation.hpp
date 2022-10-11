@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indie
+** rtype
 ** File description:
 ** animation
 */
@@ -16,7 +16,7 @@
     struct ModelAnimation;
     struct Model;
 
-    namespace indie {
+    namespace rtype {
         /**
          * @brief ModelAnimation object
          */

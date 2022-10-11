@@ -22,7 +22,7 @@ void testAnimations2D()
     InitWindow(screenWidth, screenHeight, "raylib [texture] example - texture rectangle");
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-    indie::Texture scarfy("test_pictures/scarfy.png");  // Texture loading
+    rtype::Texture scarfy("test_pictures/scarfy.png");  // Texture loading
 
     scarfy.setRect(0.0f, 0.0f, (float)scarfy.getWidth() / 6, (float)scarfy.getHeight());
 

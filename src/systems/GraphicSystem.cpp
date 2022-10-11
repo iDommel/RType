@@ -10,7 +10,7 @@
 #include <iostream>
 
 #include "GraphicSystem.hpp"
-#include "CameraComponent.hpp"
+#include "Camera3DComponent.hpp"
 #include "Cube.hpp"
 #include "Grid.hpp"
 #include "Model3D.hpp"
@@ -26,7 +26,7 @@
 #include "ModelAnimation.hpp"
 #include "ParticleCloud.hpp"
 
-namespace indie
+namespace rtype
 {
 
     GraphicSystem::GraphicSystem()
@@ -58,8 +58,8 @@ namespace indie
         }
         _window->beginDraw();
         _window->clearBackground(RAYWHITE);
-        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA]) {
-            auto camComponent = (*e)[IComponent::Type::CAMERA];
+        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_3D]) {
+            auto camComponent = (*e)[IComponent::Type::CAMERA_3D];
             auto cam = Component::castComponent<CameraComponent>(camComponent);
 
             cam->getCamera().beginDrawScope();
@@ -159,7 +159,7 @@ namespace indie
     {
         static auto sphere = Sphere(1, BLUE);
         auto particlesCloudEntity = (*entity)[IComponent::Type::PARTICLES];
-        std::shared_ptr<indie::ParticleCloud> particlesCloud = nullptr;
+        std::shared_ptr<rtype::ParticleCloud> particlesCloud = nullptr;
 
         if (particlesCloudEntity == nullptr)
             return;
@@ -201,7 +201,7 @@ namespace indie
     {
         auto model = Component::castComponent<Model3D>((*entity)[IComponent::Type::MODEL]);
         auto boxComponent = (*entity)[IComponent::Type::HITBOX];
-        std::shared_ptr<indie::Hitbox> hitbox = nullptr;
+        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
 
         if (_models.find(model->getModelPath()) != _models.end())
             _models[model->getModelPath()].second++;

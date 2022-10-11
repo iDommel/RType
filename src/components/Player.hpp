@@ -12,7 +12,7 @@
 #include "EventListener.hpp"
 #include "SceneManager.hpp"
 
-namespace indie
+namespace rtype
 {
     class Velocity;
     class Bonus;

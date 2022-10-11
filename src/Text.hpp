@@ -15,7 +15,7 @@ struct Vector2;
 struct Color;
 struct Font;
 
-namespace indie
+namespace rtype
 {
     class Text
     {

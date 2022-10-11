@@ -14,7 +14,7 @@
 
 int main(void)
 {
-    indie::Core core;
+    rtype::Core core;
 
     try {
         core.mainLoop();

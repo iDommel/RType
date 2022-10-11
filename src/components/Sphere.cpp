@@ -9,7 +9,7 @@
 
 #include "Sphere.hpp"
 
-namespace indie
+namespace rtype
 {
     Sphere::Sphere(float radius, Color color) : Component(Type::SPHERE), _radius(radius), _color(color)
     {

@@ -14,7 +14,7 @@
 #include "GameSystem.hpp"
 #include "SceneManager.hpp"
 
-namespace indie
+namespace rtype
 {
     void SceneManager::addScene(std::unique_ptr<IScene> scene, SceneType sceneType)
     {

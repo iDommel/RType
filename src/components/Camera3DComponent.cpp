@@ -5,14 +5,14 @@
 ** CameraComponent.cpp
 */
 
-#include "raylib.h"
+#include <raylib.h>
 
-#include "CameraComponent.hpp"
+#include "Camera3DComponent.hpp"
 
-namespace indie
+namespace rtype
 {
     CameraComponent::CameraComponent(Vector3 target, Vector3 position):
-    Component(Type::CAMERA), _camera(target, position)
+    Component(Type::CAMERA_3D), _camera(target, position)
     {
         _isInitialized = true;
     }

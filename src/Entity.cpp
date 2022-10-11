@@ -10,7 +10,7 @@
 
 #include "Entity.hpp"
 
-namespace indie
+namespace rtype
 {
 
     const std::map<Entity::Tags, std::vector<std::vector<IComponent::Type>>> Entity::entityTags = {
@@ -35,8 +35,10 @@ namespace indie
          {{IComponent::Type::SOUND}}},
         {Entity::Tags::COLLIDABLE,
          {{IComponent::Type::HITBOX}}},
-        {Entity::Tags::CAMERA,
-         {{IComponent::Type::CAMERA}}},
+        {Entity::Tags::CAMERA_2D,
+         {{IComponent::Type::CAMERA_2D}}},
+        {Entity::Tags::CAMERA_3D,
+         {{IComponent::Type::CAMERA_3D}}},
         {Entity::Tags::CALLABLE,
          {{IComponent::Type::EVT_LISTENER}}},
         {Entity::Tags::BONUS,

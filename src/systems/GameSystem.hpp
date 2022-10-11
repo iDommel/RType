@@ -27,7 +27,7 @@
 
 struct Vector3;
 
-namespace indie
+namespace rtype
 {
     class IEntity;
     class Scene;
@@ -118,9 +118,9 @@ namespace indie
         std::unique_ptr<IScene> createMainMenu();
 
         void changeBindings(SceneManager &SceneManager, int id_player, int button);
-        void replaceTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
+        void replaceTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
 
-        void updateTextBindings(indie::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
+        void updateTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
 
         int timeElasped = 0;

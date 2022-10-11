@@ -11,7 +11,7 @@
 #include "Component.hpp"
 #include "Model.hpp"
 
-namespace indie
+namespace rtype
 {
     class Model3D : public Component
     {

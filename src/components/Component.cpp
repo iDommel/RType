@@ -7,7 +7,7 @@
 
 #include "Component.hpp"
 
-namespace indie
+namespace rtype
 {
     Component::Component(const Type &type) : _type(type)
     {

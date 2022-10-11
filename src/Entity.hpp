@@ -16,7 +16,7 @@
 #include "IEntity.hpp"
 #include "components/IComponent.hpp"
 
-namespace indie
+namespace rtype
 {
     class Entity : public IEntity
     {

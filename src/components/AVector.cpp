@@ -7,7 +7,7 @@
 
 #include "AVector.hpp"
 
-namespace indie
+namespace rtype
 {
     AVector::AVector(Component::Type type, float x, float y, float z):
     Component(type), x(x), y(y), z(z)

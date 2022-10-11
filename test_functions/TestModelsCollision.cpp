@@ -16,7 +16,7 @@ void testModelsCollision(void)
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 450;
-    indie::CollideSystem collideSystem;
+    rtype::CollideSystem collideSystem;
 
     InitWindow(screenWidth, screenHeight, "raylib [models] example - models loading");
 
@@ -27,8 +27,8 @@ void testModelsCollision(void)
     Vector3 c = { 0.0f, 1.0f, 0.0f };
     Camera camera = { a, b, c, 45.0f, 0 };
 
-    indie::Model test("test_models/turret.obj", "test_models/turret.png");
-    indie::Model test2("test_models/turret.obj", "test_models/turret.png");
+    rtype::Model test("test_models/turret.obj", "test_models/turret.png");
+    rtype::Model test2("test_models/turret.obj", "test_models/turret.png");
 
     Vector3 position = { 0.0f, 0.0f, 0.0f };                    // Set model position
     Vector3 position2 = { 10.0f, 0.0f, 10.0f };                 // Set model2 position

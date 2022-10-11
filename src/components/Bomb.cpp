@@ -20,7 +20,7 @@
 #define BOMB_TIMER      3000
 #define EXPLOSION_TIMER 500
 
-namespace indie {
+namespace rtype {
 
 Bomb::Bomb(int blastPower): Component(Type::BOMB)
 {

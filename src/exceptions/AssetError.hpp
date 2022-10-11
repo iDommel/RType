@@ -11,7 +11,7 @@
 #include <exception>
 #include <string>
 
-namespace indie {
+namespace rtype {
 class AssetError: public std::exception {
     public:
         AssetError(const std::string &msg): _msg(msg) {}

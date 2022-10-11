@@ -13,7 +13,7 @@
 
 struct Vector3;
 
-namespace indie {
+namespace rtype {
 
 class Bomb: public Component{
     public:

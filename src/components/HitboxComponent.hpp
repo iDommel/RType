@@ -18,7 +18,7 @@ struct Vector3;
 struct Rectangle;
 struct Image;
 
-namespace indie
+namespace rtype
 {
     class AVector;
     class Hitbox : public Component
