@@ -10,7 +10,7 @@
 #include <memory>
 #include <iostream>
 
-#include "Camera.hpp"
+#include "Camera3D.hpp"
 
 static int getNewId(void)
 {
