@@ -10,6 +10,7 @@
 
 #include <map>
 #include <iostream>
+#include <QtCore>
 
 #include "systems/ISystem.hpp"
 #include "SceneManager.hpp"
@@ -18,8 +19,11 @@
 
 namespace ecs
 {
-    class Core
+    class Core : public QCoreApplication
     {
+
+        Q_OBJECT
+
     public:
         /**
          * @brief Types of systems: systems init and destroy calls are effectued by ascending order
@@ -38,10 +42,10 @@ namespace ecs
 
         /// @brief Construct a core with enabled systems
         /// @param ActiveSystems systems to enable
-        Core(std::vector<SystemType> ActiveSystems);
+        Core(int ac, char **av, std::vector<SystemType> ActiveSystems);
 
-        /// @brief Game loop
-        void mainLoop();
+        /// @brief init systems & launch game loop
+        void run();
 
         /**
          * @brief Call each onEntityAdded system function, set as addEntity callback
@@ -55,11 +59,18 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
+    private slots:
+        void loop();
+
+    signals:
+        void doLoop();
+
     private:
         void systemUpdate(SystemType, SceneManager &, int64_t);
         std::map<SystemType, std::unique_ptr<ISystem>> _systems;
         SceneManager _sceneManager;
         bool _end = false;
+        std::chrono::_V2::system_clock::time_point _clock;
     };
 }
 

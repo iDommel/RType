@@ -21,8 +21,11 @@
 namespace ecs
 {
 
-    Core::Core(std::vector<SystemType> activeSystems)
+    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems) : QCoreApplication(ac, av)
     {
+        // Connect signal doLoop to loop function
+        connect(this, &Core::doLoop, this, &Core::loop);
+
         for (auto &system : activeSystems) {
             switch (system) {
             case SystemType::GAME:
@@ -51,30 +54,37 @@ namespace ecs
         // _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
     }
 
-    void Core::mainLoop()
+    void Core::run()
     {
-        auto clock = std::chrono::high_resolution_clock::now();
+        _clock = std::chrono::high_resolution_clock::now();
 
         for (auto &system : _systems)
             system.second->init(_sceneManager);
         _sceneManager.setAddEntityCallback(std::bind(&Core::onEntityAdded, this, std::placeholders::_1));
         _sceneManager.setRemoveEntityCallback(std::bind(&Core::onEntityRemoved, this, std::placeholders::_1));
-        while (!_sceneManager.getShouldClose()) {
-            auto time = std::chrono::high_resolution_clock::now();
-            auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(time - clock).count();
-            if (deltaTime < UPDATE_DELTA) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELTA - deltaTime));
-                continue;
-            }
+
+        emit doLoop();
+    }
+
+    void Core::loop()
+    {
+        auto time = std::chrono::high_resolution_clock::now();
+        auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(time - _clock).count();
+
+        if (deltaTime < UPDATE_DELTA) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELTA - deltaTime));
+        } else {
             systemUpdate(SystemType::EVENT, _sceneManager, deltaTime);
             systemUpdate(SystemType::GAME, _sceneManager, deltaTime);
             systemUpdate(SystemType::AUDIO, _sceneManager, deltaTime);
             systemUpdate(SystemType::PARTICLE, _sceneManager, deltaTime);
             systemUpdate(SystemType::GRAPHIC, _sceneManager, deltaTime);
-            clock = time;
+            _clock = time;
         }
-        for (auto &system : _systems)
-            system.second->destroy();
+        if (!_sceneManager.getShouldClose())
+            emit doLoop();
+        else
+            quit();
     }
 
     void Core::systemUpdate(SystemType type, SceneManager &manager, int64_t deltaTime)

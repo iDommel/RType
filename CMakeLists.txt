@@ -10,6 +10,9 @@ set(LIBRARY_NAME "r-type_library")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
+
 add_library(${LIBRARY_NAME} SHARED
     src/ModelAnimation.cpp
     src/Music.cpp
@@ -76,8 +79,10 @@ target_include_directories(${LIBRARY_NAME}
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Network REQUIRED)
 find_package(raylib REQUIRED)
-target_link_libraries(${LIBRARY_NAME} raylib)
+target_link_libraries(${LIBRARY_NAME} raylib Qt5::Core Qt5::Network)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(${LIBRARY_NAME} -lstdc++fs)

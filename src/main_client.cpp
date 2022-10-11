@@ -12,9 +12,9 @@
 
 #include "TestHeaders.hpp"
 
-int main(void)
+int main(int ac, char **av)
 {
-    ecs::Core core(
+    ecs::Core core(ac, av,
         {ecs::Core::SystemType::GAME,
          ecs::Core::SystemType::EVENT,
          ecs::Core::SystemType::AUDIO,
@@ -22,7 +22,8 @@ int main(void)
          ecs::Core::SystemType::PARTICLE});
 
     try {
-        core.mainLoop();
+        core.run();
+        core.exec();
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
