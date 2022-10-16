@@ -108,6 +108,7 @@ namespace rtype
         std::cerr << "GameSystem::init" << std::endl;
 
         sceneManager.addScene(createMainMenu(), SceneManager::SceneType::MAIN_MENU);
+        sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
         sceneManager.addScene(createSplashScreen(), SceneManager::SceneType::SPLASH);
         sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
         _collideSystem.init(sceneManager);
@@ -218,7 +219,7 @@ namespace rtype
             timeElasped += dt;
             if (timeElasped > 3000)
             {
-                sceneManager.setCurrentScene(SceneManager::SceneType::MAIN_MENU);
+                sceneManager.setCurrentScene(SceneManager::SceneType::GAME);
             }
         }
         // _aiSystem.update(sceneManager, dt);
@@ -247,13 +248,13 @@ namespace rtype
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(550, 350);
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
-        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
+        // std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
         std::shared_ptr<Entity> entity3 = createText("Made by Idiots", Position(250, 100), 30);
         std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nLéo Maman\nCyril Dehaese\nRoxanne Baert", Position(10, 450), 15);
 
         entity->addComponent(pos)
             .addComponent(sprite);
-        scene->addEntities({entity, entity2, entity3, entity4});
+        //scene->addEntities({entity, entity2, entity3, entity4});
         return scene;
     }
 
@@ -572,7 +573,7 @@ namespace rtype
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("asset/Blue Ground/BlueGroundTop.png");
                     entity->addComponent(sprite);
-                    std::shared_ptr<Position> position = std::make_shared<Position>(row, line, 0);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row, 11 - line, 0);
                     entity->addComponent(position);
                     //Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
