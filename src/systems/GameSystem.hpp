@@ -113,6 +113,10 @@ namespace rtype
 
         static void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
 
+        /// @brief Read the map and fill the scene with entities
+        /// @return Returns the scene inhabited with map entities
+        std::unique_ptr<IScene> ReadMap();
+        
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createSplashScreen();
         std::unique_ptr<IScene> createMainMenu();
