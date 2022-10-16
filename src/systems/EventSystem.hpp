@@ -11,12 +11,19 @@
 #include "ISystem.hpp"
 #include "SceneManager.hpp"
 
+#include <QtCore>   // for networked event handling
+
 namespace ecs
 {
     class EventListener;
-    class EventSystem : public ISystem
+    class EventSystem : public QObject, public ISystem
     {
+
+        Q_OBJECT
+
     public:
+        EventSystem();
+
         void init(SceneManager &manager) final;
         void update(SceneManager &manager, uint64_t deltaTime) final;
         void destroy() final;
@@ -34,6 +41,11 @@ namespace ecs
 
         static void reloadScene(SceneManager &manager, SceneManager::SceneType sceneType);
 
+        void setNetworkedEvents();
+
+    signals:
+        void writeMsg(const std::string &message);
+
     private:
         void handleKeyboard(SceneManager &, std::shared_ptr<EventListener> listener);
         void handleMouse(SceneManager &, std::shared_ptr<EventListener> listener);
@@ -43,6 +55,8 @@ namespace ecs
         /// @brief this number is from looking into the source files from the raylib
         const int _maxGamepads = 4;
         static std::map<int, std::vector<std::shared_ptr<EventListener>>> _listeners;
+        /// @brief Set at true if events should be send to a server.
+        bool _netEvt = false;
     };
 
 }

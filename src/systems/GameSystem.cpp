@@ -496,9 +496,19 @@ namespace ecs
         std::shared_ptr<Entity> entity1 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/background/bg-preview-big.png");
         std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
+        ButtonCallbacks pauseCallbacks(
+            [](SceneManager &) {},
+            [](SceneManager &scenemanager) {
+                // scenemanager.setCurrentScene(SceneManager::SceneType::PAUSE);
+            },
+            [](SceneManager &) {},
+            [](SceneManager &) {});
+        std::shared_ptr<EventListener> listener = std::make_shared<EventListener>();
 
+        listener->addKeyboardEvent(KEY_P, pauseCallbacks);
         entity1->addComponent(component2)
-            .addComponent(component);
+            .addComponent(component)
+            .addComponent(listener);
         scene->addEntity(entity1);
         return scene;
     }

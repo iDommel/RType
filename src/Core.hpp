@@ -32,6 +32,7 @@ namespace ecs
          */
         enum class SystemType {
             GAME,
+            NETWORK,
             EVENT,
             AUDIO,
             GRAPHIC,
@@ -39,13 +40,17 @@ namespace ecs
             /// sub-system of game system
             COLLIDE,
             /// sub-system of game system
-            AI,
-            NETWORK
+            AI
         };
 
         /// @brief Construct a core with enabled systems
         /// @param ActiveSystems systems to enable
         Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role);
+        ~Core();
+
+        /// @brief Connect EventSystem & NetworkSystem for networked events
+        /// @throw Needs to be called before run() & both systems needs to be active
+        void setEventNetwork();
 
         /// @brief init systems & launch game loop
         void run();
@@ -75,6 +80,7 @@ namespace ecs
         SceneManager _sceneManager;
         bool _end = false;
         std::chrono::_V2::system_clock::time_point _clock;
+        bool _running = false;
     };
 }
 

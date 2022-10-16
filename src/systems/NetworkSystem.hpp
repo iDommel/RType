@@ -49,16 +49,12 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
 
-    signals:
-        void sendMessage(std::string msg);
-
-    protected slots:
-        void writeMsg(std::string msg);
+    public slots:
+        void writeMsg(const std::string &msg);
 
     private:
-        static QHostAddress _serverAddr;
-        QHostAddress _groupAddr;
-        static const unsigned short _port;
+        QHostAddress _serverAddr;
+        unsigned short _port;
 
         NetworkRole _role = NetworkRole::UNDEFINED;
         UdpSocket *_socket;

@@ -34,7 +34,7 @@ namespace ecs
                 _systems[system] = std::make_unique<GameSystem>();
                 break;
             case SystemType::EVENT:
-                _systems[system] = std::make_unique<EventSystem>();
+                    _systems[system] = std::make_unique<EventSystem>();
                 break;
             case SystemType::AUDIO:
                 _systems[system] = std::make_unique<AudioSystem>();
@@ -59,8 +59,17 @@ namespace ecs
         // _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
     }
 
+    Core::~Core()
+    {
+        if (_systems.find(SystemType::NETWORK) != _systems.end())
+            _systems[SystemType::NETWORK].release();
+        if (_systems.find(SystemType::EVENT) != _systems.end())
+            _systems[SystemType::EVENT].release();
+    }
+
     void Core::run()
     {
+        _running = true;
         _clock = std::chrono::high_resolution_clock::now();
 
         for (auto &system : _systems)
@@ -110,5 +119,19 @@ namespace ecs
     {
         for (auto &system : _systems)
             system.second->onEntityRemoved(entity);
+    }
+
+    void Core::setEventNetwork()
+    {
+        if (_systems.find(SystemType::EVENT) == _systems.end() || _systems.find(SystemType::NETWORK) == _systems.end())
+            throw std::runtime_error("Missing system");
+        else if (_running)
+            throw std::runtime_error("Can't set event network while running");
+
+        auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK].get());
+        auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT].get());
+
+        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        evtSys->setNetworkedEvents();
     }
 }

@@ -17,7 +17,7 @@ int main(int ac, char **av)
 {
     ecs::Core core(ac, av,
         {ecs::Core::SystemType::GAME,
-        //  ecs::Core::SystemType::NETWORK,
+         ecs::Core::SystemType::NETWORK,
          ecs::Core::SystemType::EVENT,
          ecs::Core::SystemType::AUDIO,
          ecs::Core::SystemType::GRAPHIC,
@@ -25,6 +25,7 @@ int main(int ac, char **av)
         ecs::NetworkRole::CLIENT);
 
     try {
+        core.setEventNetwork();
         core.run();
         return core.exec();
     } catch (std::exception &e) {

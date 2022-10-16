@@ -8,6 +8,8 @@
 #ifndef UDP_SOCKET_HPP
 #define UDP_SOCKET_HPP
 
+#define CONNECTION_OK       "OK"
+
 #include <QtNetwork>
 #include <string>
 
@@ -33,13 +35,34 @@ namespace ecs
         /// @param groupAddress Address of the group to join
         void joinMulticastGroup(QHostAddress groupAddress);
 
+        /// @brief Writes a message
+        /// @param msg Message to send
+        /// @param address Address to send message to
+        /// @param port Port to send message to
         void write(const std::string &msg, const QHostAddress &address, int port);
 
-    private slots:
+        /// @brief Read a message from the queue
+        std::string readDatagram();
+
+        /// @brief Tells if datagrams are available
+        /// @return Returns True if the queue is not empty, false otherwise
+        bool canRead();
+
+        bool waitForServerConnection();
+
+        /// @brief Returns the address of the last sender
+        QHostAddress getLastAddress() { return _lastAddr; };
+
+        /// @brief Returns the port of the last sender
+        unsigned short getLastPort() { return _lastPort; };
+
+    public slots:
         void readDatagrams();
 
     private:
-        QUdpSocket _socket;
+        QUdpSocket *_socket;
+        QHostAddress _lastAddr;
+        unsigned short _lastPort = 0;
 
     };
 
