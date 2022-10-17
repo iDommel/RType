@@ -3,6 +3,7 @@ r-type_client
 build
 debug
 .vscode
+*.manifest
 
 # Prerequisites
 *.d

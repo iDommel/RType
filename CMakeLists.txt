@@ -14,7 +14,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_library(${LIBRARY_NAME} SHARED
+add_library(${LIBRARY_NAME}
     src/ModelAnimation.cpp
     src/Music.cpp
     src/Texture2D.cpp
@@ -80,7 +80,9 @@ target_include_directories(${LIBRARY_NAME}
     src
 )
 
-target_compile_definitions(${LIBRARY_NAME} PUBLIC)
+if(WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
+endif()
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt5 COMPONENTS Network REQUIRED)
