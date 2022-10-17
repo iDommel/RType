@@ -533,10 +533,7 @@ namespace ecs
             [player, playerEntity](SceneManager &manager) {
                 player->stopRight(manager, playerEntity, 1);
             },
-            [player, playerEntity, playerPos, playerVel](SceneManager &manager) {
-                std::cout << "move right, pos x: " << playerPos->x << "pos y : " << playerPos->y << std::endl;
-                std::cout << "vel x: " << playerVel->x << "vel y : " << playerVel->y << std::endl;
-                std::cout << "speed" << player->getSpeed() << std::endl;
+            [player, playerEntity](SceneManager &manager) {
                 player->moveRight(manager, playerEntity, 1);
             },
             [player, playerEntity](SceneManager &manager) {
