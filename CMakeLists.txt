@@ -10,7 +10,7 @@ set(LIBRARY_NAME "r-type_library")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(${LIBRARY_NAME} SHARED
+add_library(${LIBRARY_NAME}
     src/ModelAnimation.cpp
     src/Music.cpp
     src/Texture2D.cpp
@@ -77,8 +77,6 @@ target_include_directories(${LIBRARY_NAME}
 if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
 endif()
-
-target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
 find_package(raylib REQUIRED)
 target_link_libraries(${LIBRARY_NAME} raylib)
