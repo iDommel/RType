@@ -53,7 +53,8 @@ namespace ecs
             if (it.second.pressed && Window::isKeyPressed(it.first)) {
                 if (_netEvt)
                     emit writeMsg("Coucou");
-                it.second.pressed(manager);
+                else
+                    it.second.pressed(manager);
                 wasPressed = true;
             }
             if (it.second.down && Window::isKeyDown(it.first)) {

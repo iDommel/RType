@@ -7,6 +7,12 @@ Repository for the R-Type project
 
     For debugging:
     cmake -DCMAKE_BUILD_TYPE=Debug build
+
+# Usage
+The Server has to be launched BEFORE the clients for the connection to work.
+    ./r-type_server
+    ./r-type_client
+
 # Language:
 Use english EVERYWHERE !
 

@@ -49,8 +49,18 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
 
+        /// @brief Blocks the thread for ms milliseconds until a message is received
+        /// @param msg Message to be received
+        /// @param ms Milliseconds to wait; 30 000 by default; -1 no timeout
+        /// @return Returns true if the specified message was received, false otherwise
+        bool waitForMsg(std::string msg, int ms = 30000);
+
     public slots:
         void writeMsg(const std::string &msg);
+        void putMsgInQueue(std::string msg);
+
+    signals:
+        void clientConnection();
 
     private:
         QHostAddress _serverAddr;
@@ -58,6 +68,9 @@ namespace ecs
 
         NetworkRole _role = NetworkRole::UNDEFINED;
         UdpSocket *_socket;
+        std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
+
+        std::vector<std::string> _msgQueue;
     };
 
 }
