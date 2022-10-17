@@ -46,7 +46,7 @@
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 
-namespace rtype
+namespace ecs
 {
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -103,7 +103,7 @@ namespace rtype
 
     unsigned int GameSystem::nbr_ai;
 
-    void GameSystem::init(rtype::SceneManager &sceneManager)
+    void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
 
@@ -116,7 +116,7 @@ namespace rtype
         _aiSystem.init(sceneManager);
     }
 
-    void GameSystem::replaceTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (SceneManager::getCurrentSceneType() == SceneManager::SceneType::CONTROLLER)
         {
@@ -163,7 +163,7 @@ namespace rtype
         }
     }
 
-    void GameSystem::updateTextBindings(rtype::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
+    void GameSystem::updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
         if (players->changeUp == 1)
         {
@@ -202,7 +202,7 @@ namespace rtype
         }
     }
 
-    void GameSystem::update(rtype::SceneManager &sceneManager, uint64_t dt)
+    void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
         // int firstText = 9;
 
@@ -544,7 +544,7 @@ namespace rtype
         }
     }
 
-    std::unique_ptr<rtype::IScene> GameSystem::createMainMenu()
+    std::unique_ptr<ecs::IScene> GameSystem::createMainMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenu, this));
         std::shared_ptr<Entity> entity1 = std::make_shared<Entity>();
@@ -991,14 +991,14 @@ namespace rtype
         scene.addEntity(playerEntity);
     }
 
-    void GameSystem::loadEntity(std::shared_ptr<IEntity> entity)
+    void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
     {
-        _collideSystem.loadEntity(entity);
+        _collideSystem.onEntityAdded(entity);
     }
 
-    void GameSystem::unloadEntity(std::shared_ptr<IEntity> entity)
+    void GameSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
     {
-        _collideSystem.unloadEntity(entity);
+        _collideSystem.onEntityRemoved(entity);
         if (entity->hasComponent(IComponent::Type::PLAYER))
             nbr_player -= 1;
         else if (entity->hasComponent(IComponent::Type::AI))

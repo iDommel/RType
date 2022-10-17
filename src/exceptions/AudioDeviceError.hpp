@@ -10,13 +10,16 @@
 
 #include <string>
 
-namespace rtype {
-    class AudioDeviceError {
-        public:
-            AudioDeviceError(const std::string &msg): _msg(msg) {}
-            virtual const char *what() const throw() { return _msg.c_str(); }
-        private:
-            std::string _msg;
+namespace ecs
+{
+    class AudioDeviceError
+    {
+    public:
+        AudioDeviceError(const std::string &msg) : _msg(msg) {}
+        virtual const char *what() const throw() { return _msg.c_str(); }
+
+    private:
+        std::string _msg;
     };
 }
 

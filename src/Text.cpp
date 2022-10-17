@@ -9,7 +9,7 @@
 
 #include "Text.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Text::Text(const std::string &text, const std::string &fileName)

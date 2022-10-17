@@ -16,7 +16,7 @@
 
 #define UPDATE_DELTA 17
 
-namespace rtype
+namespace ecs
 {
     class Core
     {
@@ -36,24 +36,27 @@ namespace rtype
             AI
         };
 
-        Core();
+        /// @brief Construct a core with enabled systems
+        /// @param ActiveSystems systems to enable
+        Core(std::vector<SystemType> ActiveSystems);
 
         /// @brief Game loop
         void mainLoop();
 
         /**
-         * @brief Call each loadEntity system function, set as addEntity callback
+         * @brief Call each onEntityAdded system function, set as addEntity callback
          * @param entity Entity to load
          */
-        void loadEntity(std::shared_ptr<IEntity> entity);
+        void onEntityAdded(std::shared_ptr<IEntity> entity);
 
         /**
-         * @brief Call each unloadEntity system function, set as removeEntity callback
+         * @brief Call each onEntityRemoved system function, set as removeEntity callback
          * @param entity Entity to unload
          */
-        void unloadEntity(std::shared_ptr<IEntity> entity);
+        void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
     private:
+        void systemUpdate(SystemType, SceneManager &, int64_t);
         std::map<SystemType, std::unique_ptr<ISystem>> _systems;
         SceneManager _sceneManager;
         bool _end = false;

@@ -16,7 +16,7 @@
 #include "Sprite.hpp"
 #include "Model3D.hpp"
 
-namespace rtype
+namespace ecs
 {
     void CollideSystem::preInit(IScene &scene)
     {
@@ -38,7 +38,7 @@ namespace rtype
                     maybeUninitialized = std::make_shared<Hitbox>(toUpdateRect, pos2d);
                 } else if (collidable->hasComponent(IComponent::Type::MODEL)) {
                     Vector3 pos3d = {pos->x, pos->y, pos->z};
-                    Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0,0,0}, {0,0,0}}, pos3d));
+                    Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0, 0, 0}, {0, 0, 0}}, pos3d));
                 } else {
                     throw std::runtime_error("Uninitialized collidable entity has no rect or model");
                 }
@@ -48,8 +48,8 @@ namespace rtype
 
     void CollideSystem::init(SceneManager &sceneManager)
     {
-        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
-        std::shared_ptr<rtype::IComponent> maybeCollider = nullptr;
+        std::shared_ptr<ecs::Hitbox> hitbox = nullptr;
+        std::shared_ptr<ecs::IComponent> maybeCollider = nullptr;
 
         for (auto &scene : sceneManager.getScenes()) {
             auto collidables = (*scene.second)[IEntity::Tags::COLLIDABLE];
@@ -75,10 +75,10 @@ namespace rtype
         _collidables2D.clear();
     }
 
-    void CollideSystem::loadEntity(std::shared_ptr<IEntity> entity)
+    void CollideSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
     {
-        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
-        std::shared_ptr<rtype::IComponent> maybeCollider = nullptr;
+        std::shared_ptr<ecs::Hitbox> hitbox = nullptr;
+        std::shared_ptr<ecs::IComponent> maybeCollider = nullptr;
 
         if (!entity || (maybeCollider = (*entity)[IComponent::Type::HITBOX]) == nullptr || !maybeCollider->isInitialized())
             return;
@@ -89,7 +89,7 @@ namespace rtype
             _collidables2D.push_back(std::make_pair(entity, hitbox));
     }
 
-    void CollideSystem::unloadEntity(std::shared_ptr<IEntity> entity)
+    void CollideSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
     {
         for (auto it = _collidables3D.begin(); it != _collidables3D.end(); ++it)
             if (it->first == entity) {
@@ -242,8 +242,8 @@ namespace rtype
 
     void CollideSystem::reloadCollidables3D(SceneManager &sceneManager)
     {
-        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
-        std::shared_ptr<rtype::IComponent> maybeCollider = nullptr;
+        std::shared_ptr<ecs::Hitbox> hitbox = nullptr;
+        std::shared_ptr<ecs::IComponent> maybeCollider = nullptr;
 
         _collidables3D.clear();
         for (auto &scene : sceneManager.getScenes()) {

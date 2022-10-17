@@ -9,27 +9,28 @@
 
 #include "Shape3D.hpp"
 
-namespace rtype {
-Shape3D::Shape3D()
+namespace ecs
 {
-}
+    Shape3D::Shape3D()
+    {
+    }
 
-Shape3D::~Shape3D()
-{
-}
+    Shape3D::~Shape3D()
+    {
+    }
 
-void Shape3D::drawSphere(Vector3 centerPos, float radius, Color color)
-{
-    ::DrawSphere(centerPos, radius, color);
-}
+    void Shape3D::drawSphere(Vector3 centerPos, float radius, Color color)
+    {
+        ::DrawSphere(centerPos, radius, color);
+    }
 
-void Shape3D::drawCube(Vector3 position, Vector3 size, Color color)
-{
-    DrawCubeV(position, size, color);
-}
+    void Shape3D::drawCube(Vector3 position, Vector3 size, Color color)
+    {
+        DrawCubeV(position, size, color);
+    }
 
-void Shape3D::drawGrid(int slices, float spacing)
-{
-    ::DrawGrid(slices, spacing);
-}
+    void Shape3D::drawGrid(int slices, float spacing)
+    {
+        ::DrawGrid(slices, spacing);
+    }
 }

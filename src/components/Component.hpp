@@ -13,7 +13,7 @@
 
 #include "IComponent.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     class Component : public IComponent

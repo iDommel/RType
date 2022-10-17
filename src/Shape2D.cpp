@@ -9,7 +9,7 @@
 
 #include "Shape2D.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     Shape2D::Shape2D()

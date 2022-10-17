@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** RType
 ** File description:
-** main
+** main_server
 */
 
 #include <exception>
@@ -14,7 +14,9 @@
 
 int main(void)
 {
-    rtype::Core core;
+    ecs::Core core(
+        {ecs::Core::SystemType::GAME,
+         ecs::Core::SystemType::PARTICLE});
 
     try {
         core.mainLoop();

@@ -11,13 +11,11 @@
 
 #include "Core.hpp"
 
-namespace rtype
+namespace ecs
 {
 
-    Scene::Scene(std::function<std::unique_ptr<IScene>()> init):
-    _initFunc(init)
+    Scene::Scene(std::function<std::unique_ptr<IScene>()> init) : _initFunc(init)
     {
-
     }
 
     IScene &Scene::addEntity(std::shared_ptr<IEntity> entity)

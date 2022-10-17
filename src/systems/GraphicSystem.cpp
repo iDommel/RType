@@ -26,7 +26,7 @@
 #include "ModelAnimation.hpp"
 #include "ParticleCloud.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     GraphicSystem::GraphicSystem()
@@ -89,7 +89,7 @@ namespace rtype
         std::cerr << "GraphicSystem::destroy" << std::endl;
     }
 
-    void GraphicSystem::loadEntity(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D)) {
             std::cerr << "loadSprite" << std::endl;
@@ -101,7 +101,7 @@ namespace rtype
         }
     }
 
-    void GraphicSystem::unloadEntity(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D))
             unloadSprite(entity);
@@ -159,7 +159,7 @@ namespace rtype
     {
         static auto sphere = Sphere(1, BLUE);
         auto particlesCloudEntity = (*entity)[IComponent::Type::PARTICLES];
-        std::shared_ptr<rtype::ParticleCloud> particlesCloud = nullptr;
+        std::shared_ptr<ecs::ParticleCloud> particlesCloud = nullptr;
 
         if (particlesCloudEntity == nullptr)
             return;
@@ -201,7 +201,7 @@ namespace rtype
     {
         auto model = Component::castComponent<Model3D>((*entity)[IComponent::Type::MODEL]);
         auto boxComponent = (*entity)[IComponent::Type::HITBOX];
-        std::shared_ptr<rtype::Hitbox> hitbox = nullptr;
+        std::shared_ptr<ecs::Hitbox> hitbox = nullptr;
 
         if (_models.find(model->getModelPath()) != _models.end())
             _models[model->getModelPath()].second++;

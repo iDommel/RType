@@ -12,7 +12,7 @@
 
 #include "AVector.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     class Position : public AVector

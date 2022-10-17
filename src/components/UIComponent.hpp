@@ -11,7 +11,7 @@
 #include "Player.hpp"
 #include "String.hpp"
 
-namespace rtype
+namespace ecs
 {
 
     class UIComponent : public Component

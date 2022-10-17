@@ -11,7 +11,7 @@
 struct Vector3;
 struct Color;
 
-namespace rtype
+namespace ecs
 {
     /**struct Shape3D;
      * @brief Shape3D object

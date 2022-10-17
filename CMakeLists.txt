@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(r-type_client VERSION 1.0.0 LANGUAGES CXX)
+project(r-type VERSION 1.0.0 LANGUAGES CXX)
 
-add_executable(${PROJECT_NAME})
+set(CLIENT_NAME "r-type_client")
+set(SERVER_NAME "r-type_server")
+set(LIBRARY_NAME "r-type_library")
 
 # Call the cmake that checks and pulls the raylib
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -17,9 +19,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-target_sources(${PROJECT_NAME}
-    PRIVATE
-    src/main.cpp
+add_library(${LIBRARY_NAME} SHARED
     src/ModelAnimation.cpp
     src/Music.cpp
     src/Texture2D.cpp
@@ -75,8 +75,7 @@ target_sources(${PROJECT_NAME}
     test_functions/TestSound.cpp
     test_functions/TestModelAnimation.cpp
 )
-
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${LIBRARY_NAME}
     PUBLIC
     src/components
     src/exceptions
@@ -84,10 +83,29 @@ target_include_directories(${PROJECT_NAME}
     src
 )
 
+if(WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
+endif()
+
+target_compile_definitions(${LIBRARY_NAME} PUBLIC)
+
+find_package(raylib REQUIRED)
+target_link_libraries(${LIBRARY_NAME} raylib)
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    target_link_libraries(${LIBRARY_NAME} -lstdc++fs)
+endif(CMAKE_COMPILER_IS_GNUCXX)
+
+add_executable(${CLIENT_NAME} src/main_client.cpp)
+target_link_libraries(${CLIENT_NAME} ${LIBRARY_NAME})
+
+add_executable(${SERVER_NAME} src/main_server.cpp)
+target_link_libraries(${SERVER_NAME} ${LIBRARY_NAME})
+
 # Set default compile flags for GCC
 if(CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${PROJECT_NAME}
+    target_compile_options(${CLIENT_NAME}
         PRIVATE
         -Wall
         -Wextra
@@ -95,6 +113,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set_target_properties(
-    ${PROJECT_NAME} PROPERTIES
+    ${CLIENT_NAME} ${SERVER_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "../"
 )

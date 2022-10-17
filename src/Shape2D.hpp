@@ -11,10 +11,10 @@
 struct Vector2;
 struct Color;
 
-namespace rtype
+namespace ecs
 {
     struct Shape2D;
-     /// @brief Shape2D object
+    /// @brief Shape2D object
     class Shape2D
     {
     public:

@@ -9,10 +9,9 @@
 
 #include "Camera3DComponent.hpp"
 
-namespace rtype
+namespace ecs
 {
-    CameraComponent::CameraComponent(Vector3 target, Vector3 position):
-    Component(Type::CAMERA_3D), _camera(target, position)
+    CameraComponent::CameraComponent(Vector3 target, Vector3 position) : Component(Type::CAMERA_3D), _camera(target, position)
     {
         _isInitialized = true;
     }

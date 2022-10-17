@@ -12,7 +12,7 @@
 
 #include "Component.hpp"
 
-namespace rtype
+namespace ecs
 {
     class AVector : public Component
     {
