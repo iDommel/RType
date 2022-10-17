@@ -1,0 +1,117 @@
+{
+	"BUILD_DIR" : "/home/mcamille/delivery/3eme/RType/debug/r-type_client_autogen",
+	"CMAKE_BINARY_DIR" : "/home/mcamille/delivery/3eme/RType/debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/mcamille/delivery/3eme/RType/debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/mcamille/delivery/3eme/RType",
+	"CMAKE_EXECUTABLE" : "/usr/local/lib64/python3.10/site-packages/cmake/data/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/home/mcamille/delivery/3eme/RType/CMakeLists.txt",
+		"/home/mcamille/delivery/3eme/RType/debug/CMakeFiles/3.24.1/CMakeSystem.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeSystemSpecificInitialize.cmake",
+		"/home/mcamille/delivery/3eme/RType/debug/CMakeFiles/3.24.1/CMakeCXXCompiler.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeSystemSpecificInformation.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeGenericSystem.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeInitializeConfigs.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/Platform/Linux.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/Platform/UnixPaths.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeCXXInformation.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeLanguageInformation.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/Compiler/GNU-CXX.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/Compiler/GNU.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/Compiler/CMakeCommonCompilerMacros.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/Platform/Linux-GNU-CXX.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/Platform/Linux-GNU.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeCommonLanguageInclude.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5Config.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ModuleLocation.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreMacros.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeParseArguments.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5Config.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ModuleLocation.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Network/Qt5NetworkConfigVersion.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Network/Qt5NetworkConfig.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Network/Qt5Network_QConnmanEnginePlugin.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Network/Qt5Network_QGenericEnginePlugin.cmake",
+		"/home/mcamille/Qt/5.15.2/gcc_64/lib/cmake/Qt5Network/Qt5Network_QNetworkManagerEnginePlugin.cmake",
+		"/home/mcamille/delivery/3eme/RType/cmake/Findraylib.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/FetchContent.cmake",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/FetchContent/CMakeLists.cmake.in"
+	],
+	"CMAKE_SOURCE_DIR" : "/home/mcamille/delivery/3eme/RType",
+	"DEP_FILE" : "",
+	"DEP_FILE_RULE_NAME" : "",
+	"HEADERS" : [],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/home/mcamille/delivery/3eme/RType/debug/r-type_client_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/mcamille/delivery/3eme/RType/debug/r-type_client_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : 
+	[
+		"GRAPHICS_API_OPENGL_33",
+		"PLATFORM_DESKTOP",
+		"QT_CORE_LIB",
+		"QT_NETWORK_LIB"
+	],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/home/mcamille/delivery/3eme/RType/src/components",
+		"/home/mcamille/delivery/3eme/RType/src/exceptions",
+		"/home/mcamille/delivery/3eme/RType/src/systems",
+		"/home/mcamille/delivery/3eme/RType/src",
+		"/home/mcamille/delivery/3eme/RType/debug/_deps/raylib-src/src",
+		"/home/mcamille/delivery/3eme/RType/debug/_deps/raylib-src/src/external/glfw/include",
+		"/home/mcamille/Qt/5.15.2/gcc_64/include",
+		"/home/mcamille/Qt/5.15.2/gcc_64/include/QtCore",
+		"/home/mcamille/Qt/5.15.2/gcc_64/mkspecs/linux-g++",
+		"/home/mcamille/Qt/5.15.2/gcc_64/include/QtNetwork",
+		"/usr/include/c++/11",
+		"/usr/include/c++/11/x86_64-redhat-linux",
+		"/usr/include/c++/11/backward",
+		"/usr/lib/gcc/x86_64-redhat-linux/11/include",
+		"/usr/local/include",
+		"/usr/include"
+	],
+	"MOC_MACRO_NAMES" : [ "Q_OBJECT", "Q_GADGET", "Q_NAMESPACE", "Q_NAMESPACE_EXPORT" ],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/lib64/ccache/c++",
+		"-dM",
+		"-E",
+		"-c",
+		"/usr/local/lib64/python3.10/site-packages/cmake/data/share/cmake-3.24/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/home/mcamille/delivery/3eme/RType/debug/r-type_client_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : 
+	[
+		"/home/mcamille/delivery/3eme/RType/debug/r-type_library_autogen/mocs_compilation.cpp"
+	],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 4,
+	"PARSE_CACHE_FILE" : "/home/mcamille/delivery/3eme/RType/debug/CMakeFiles/r-type_client_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/home/mcamille/Qt/5.15.2/gcc_64/bin/moc",
+	"QT_UIC_EXECUTABLE" : "",
+	"QT_VERSION_MAJOR" : 5,
+	"QT_VERSION_MINOR" : 15,
+	"SETTINGS_FILE" : "/home/mcamille/delivery/3eme/RType/debug/CMakeFiles/r-type_client_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[ "/home/mcamille/delivery/3eme/RType/src/main_client.cpp", "Mu", null ]
+	],
+	"VERBOSITY" : 0
+}

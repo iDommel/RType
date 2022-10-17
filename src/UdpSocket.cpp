@@ -13,16 +13,16 @@ namespace ecs
 
 UdpSocket::UdpSocket(QObject *parent, QHostAddress address, int port, QAbstractSocket::BindMode mode) : QObject(parent)
 {
-    _socket = new QUdpSocket(parent);
+    _socket = new QUdpSocket(this);
     _socket->bind(address, port, mode);
-    // connect(_socket, &QUdpSocket::readyRead, this, &UdpSocket::readDatagrams);
+    if (!connect(_socket, &QUdpSocket::readyRead, this, &UdpSocket::readDatagrams))
+        std::cerr << "UDP socket: Couldn't connect" << std::endl;
 }
 
 void UdpSocket::joinMulticastGroup(QHostAddress groupAddress)
 {
     if (!_socket->joinMulticastGroup(groupAddress))
         throw std::runtime_error("Couldn't join multicast group: " + _socket->errorString().toStdString());
-    std::cerr << "Join multicast group" << std::endl;
 }
 
 void UdpSocket::readDatagrams()

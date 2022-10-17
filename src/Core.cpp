@@ -25,28 +25,28 @@ namespace ecs
     Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
     {
         // Connect signal doLoop to loop function
-        connect(this, &Core::doLoop, this, &Core::loop);
+        connect(this, &Core::doLoop, this, &Core::loop, Qt::QueuedConnection);
         connect(this, &Core::exitApp, this, &QCoreApplication::quit, Qt::QueuedConnection);
 
         for (auto &system : activeSystems) {
             switch (system) {
             case SystemType::GAME:
-                _systems[system] = std::make_unique<GameSystem>();
+                _systems[system] = new GameSystem();
                 break;
             case SystemType::EVENT:
-                    _systems[system] = std::make_unique<EventSystem>();
+                    _systems[system] = new EventSystem();
                 break;
             case SystemType::AUDIO:
-                _systems[system] = std::make_unique<AudioSystem>();
+                _systems[system] = new AudioSystem();
                 break;
             case SystemType::GRAPHIC:
-                _systems[system] = std::make_unique<GraphicSystem>();
+                _systems[system] = new GraphicSystem();
                 break;
             case SystemType::PARTICLE:
-                _systems[system] = std::make_unique<ParticlesSystem>();
+                _systems[system] = new ParticlesSystem();
                 break;
             case SystemType::NETWORK:
-                _systems[system] = std::make_unique<NetworkSystem>(role);
+                _systems[system] = new NetworkSystem(role);
                 break;
             default:
                 break;
@@ -61,10 +61,10 @@ namespace ecs
 
     Core::~Core()
     {
-        if (_systems.find(SystemType::NETWORK) != _systems.end())
-            _systems[SystemType::NETWORK].release();
-        if (_systems.find(SystemType::EVENT) != _systems.end())
-            _systems[SystemType::EVENT].release();
+        // if (_systems.find(SystemType::NETWORK) != _systems.end())
+        //     _systems[SystemType::NETWORK].release();
+        // if (_systems.find(SystemType::EVENT) != _systems.end())
+        //     _systems[SystemType::EVENT].release();
     }
 
     void Core::run()
@@ -128,8 +128,8 @@ namespace ecs
         else if (_running)
             throw std::runtime_error("Can't set event network while running");
 
-        auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK].get());
-        auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT].get());
+        auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
+        auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT]);
 
         connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
         evtSys->setNetworkedEvents();

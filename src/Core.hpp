@@ -76,7 +76,7 @@ namespace ecs
 
     private:
         void systemUpdate(SystemType, SceneManager &, int64_t);
-        std::map<SystemType, std::unique_ptr<ISystem>> _systems;
+        std::map<SystemType, ISystem *> _systems;
         SceneManager _sceneManager;
         bool _end = false;
         std::chrono::_V2::system_clock::time_point _clock;

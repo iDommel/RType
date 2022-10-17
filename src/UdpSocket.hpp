@@ -8,6 +8,7 @@
 #ifndef UDP_SOCKET_HPP
 #define UDP_SOCKET_HPP
 
+#define WAIT_CONNECTION     "WAIT"
 #define CONNECTION_OK       "OK"
 
 #include <QtNetwork>
