@@ -80,6 +80,10 @@ target_include_directories(${LIBRARY_NAME}
     src
 )
 
+if(WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
+endif()
+
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
