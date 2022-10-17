@@ -3,6 +3,7 @@ r-type_client
 build
 .vscode
 *.manifest
+conanfile.txt
 
 # Prerequisites
 *.d
