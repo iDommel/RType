@@ -15,8 +15,8 @@ UdpSocket::UdpSocket(QObject *parent, QHostAddress address, int port, QAbstractS
 {
     _socket = new QUdpSocket(this);
     _socket->bind(address, port, mode);
-    if (!connect(_socket, &QUdpSocket::readyRead, this, &UdpSocket::readDatagrams))
-        std::cerr << "UDP socket: Couldn't connect" << std::endl;
+    // if (!connect(_socket, &QUdpSocket::readyRead, this, &UdpSocket::readDatagrams))
+    //     std::cerr << "UDP socket: Couldn't connect" << std::endl;
 }
 
 void UdpSocket::joinMulticastGroup(QHostAddress groupAddress)

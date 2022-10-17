@@ -37,15 +37,15 @@ void NetworkSystem::init(SceneManager &)
 void NetworkSystem::update(SceneManager &, uint64_t)
 {
     // std::cerr << "NetworkSystem::update" << std::endl;
-    // if (_socket->canRead()) {
-    //     if (_role == NetworkRole::SERVER) {
-    //         if (_socket->readDatagram() == WAIT_CONNECTION) {
-    //             std::cerr << "Client connected: " << _socket->getLastAddress().toString().toStdString() << ":" << _socket->getLastPort() << std::endl;
-    //             writeMsg(CONNECTION_OK);
-    //         }
-    //     } else
-    //         _socket->readDatagrams();
-    // }
+    if (_socket->canRead()) {
+        if (_role == NetworkRole::SERVER) {
+            if (_socket->readDatagram() == WAIT_CONNECTION) {
+                std::cerr << "Client connected: " << _socket->getLastAddress().toString().toStdString() << ":" << _socket->getLastPort() << std::endl;
+                writeMsg(CONNECTION_OK);
+            }
+        } else
+            _socket->readDatagrams();
+    }
     /*
     Treat all the elements in the list of messages
 
