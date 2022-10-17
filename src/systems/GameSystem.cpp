@@ -204,6 +204,7 @@ namespace ecs
                 sceneManager.setCurrentScene(SceneManager::SceneType::MAIN_MENU);
             }
         }
+        updatePlayers(sceneManager, dt);
         // _aiSystem.update(sceneManager, dt);
         // _collideSystem.update(sceneManager, dt);
 
@@ -441,37 +442,16 @@ namespace ecs
             auto hitbox = Component::castComponent<Hitbox>((*player)[IComponent::Type::HITBOX]);
             auto splitVel = *vel;
 
-            splitVel.z = 0;
+            splitVel.y = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
             for (auto &collider : _collideSystem.getColliders(player)) {
-                if (collider->hasTag(IEntity::Tags::BONUS)) {
-                    auto bonusComp = Component::castComponent<Bonus>((*collider)[IComponent::Type::BONUS]);
-                    (*playerComp).handleBonus(*bonusComp);
-                    sceneManager.getCurrentScene().removeEntity(collider);
-                } else if (!collider->hasTag(IEntity::Tags::TIMED) && !collider->hasTag(IEntity::Tags::BOMB) && !collider->hasTag(IEntity::Tags::RADAR)) {
-                    (*pos).x = lastPos.x;
-                    (*hitbox) -= splitVel * (float)(dt / 1000.0f);
-                    break;
-                }
             }
 
-            splitVel.z = (*vel).z;
+            splitVel.y = (*vel).y;
             splitVel.x = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            for (auto &collider : _collideSystem.getColliders(player)) {
-                if (collider->hasTag(IEntity::Tags::BONUS)) {
-                    auto bonusComp = Component::castComponent<Bonus>((*collider)[IComponent::Type::BONUS]);
-                    (*playerComp).handleBonus(*bonusComp);
-                    sceneManager.getCurrentScene().removeEntity(collider);
-                } else if (!collider->hasTag(IEntity::Tags::TIMED) && !collider->hasTag(IEntity::Tags::BOMB) && !collider->hasTag(IEntity::Tags::RADAR)) {
-                    (*pos).z = lastPos.z;
-                    (*hitbox) -= splitVel * (float)(dt / 1000.0f);
-                    break;
-                }
-            }
-            playerComp->updateBombsVec();
         }
     }
 
@@ -517,6 +497,8 @@ namespace ecs
         std::shared_ptr<Entity> entity2 = std::make_shared<Entity>();
         std::shared_ptr<EventListener> listener = std::make_shared<EventListener>();
 
+        createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {800 / 2, 600 / 2, 0});
+
         listener->addKeyboardEvent(KEY_P, pauseCallbacks);
         entity2->addComponent(listener);
         createMusic(*scene);
@@ -542,6 +524,7 @@ namespace ecs
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(towerBoundingBox);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyBomb);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
+        std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/player/sprites/player1.png");
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
         ButtonCallbacks moveRightCallbacks(
             [player, playerEntity](SceneManager &manager) {
@@ -550,7 +533,10 @@ namespace ecs
             [player, playerEntity](SceneManager &manager) {
                 player->stopRight(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
+            [player, playerEntity, playerPos, playerVel](SceneManager &manager) {
+                std::cout << "move right, pos x: " << playerPos->x << "pos y : " << playerPos->y << std::endl;
+                std::cout << "vel x: " << playerVel->x << "vel y : " << playerVel->y << std::endl;
+                std::cout << "speed" << player->getSpeed() << std::endl;
                 player->moveRight(manager, playerEntity, 1);
             },
             [player, playerEntity](SceneManager &manager) {
@@ -613,7 +599,6 @@ namespace ecs
         playerListener->addKeyboardEvent((KeyboardKey)player->getTagLeft(), moveLeftCallbacks);
         playerListener->addKeyboardEvent((KeyboardKey)player->getTagRight(), moveRightCallbacks);
         playerListener->addKeyboardEvent((KeyboardKey)player->getTagDown(), moveDownCallbacks);
-        playerListener->addKeyboardEvent((KeyboardKey)player->getTagBomb(), bombCallbacks);
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_UP, moveUpCallbacks);
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);
@@ -621,7 +606,7 @@ namespace ecs
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_RIGHT_FACE_LEFT, bombCallbacks);
         playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_X, moveHorizontalStickCallback);
         playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
-        playerEntity->addComponents({player, playerPos, playerVel, playerHitbox, playerListener, destruct});
+        playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerHitbox, playerListener, destruct});
         scene.addEntity(playerEntity);
     }
 
