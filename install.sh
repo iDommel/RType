@@ -56,23 +56,6 @@ function script_header
 	echo -ne $C_RST
 }
 
-function handle_error
-{
-	result=$1
-	if test $result -eq 0; then
-		return
-	else
-		line "#" $C_RED
-		line "#" $C_YELLOW
-		echo -en $C_RED"[Erreur]"$C_RST" lors de l'installation, voulez-vous arreter le script ? [O/n]  "
-		read stop_script
-		case $stop_script in
-			n|N)	return;;
-			*)		exit 1;;
-		esac
-	fi
-}
-
 function get_os_type
 {
 	which zypper &> /dev/null && os="opensuse"
@@ -121,7 +104,6 @@ function sys_upgrade
 			sudo emerge -u world
 			;;
 	esac
-	handle_error $?
 }
 
 function sys_install
@@ -159,7 +141,6 @@ function sys_install
 	fi
 
 	sudo $cmd_install $package_name
-	handle_error $?
 }
 
 function script_install
@@ -169,9 +150,7 @@ function script_install
 		return
 	fi
 	sudo cp $files/$1 /usr/bin/$1
-	handle_error $?
 	sudo chmod 755 /usr/bin/$1
-	handle_error $?
 }
 
 script_init
@@ -225,7 +204,7 @@ if (which pip); then
     echo "pip already installed";
 else
 	echo "python not installed";
-    sys_install python3-pip;
+    sys_install pip python3-pip;
 fi;
 
 script_header "INSTALLATION DE CONAN PIP"
@@ -273,30 +252,30 @@ cat /etc/os-release | grep "fedora"
 if [[ $? -ne 0 ]]; then
     echo "bad os";
 else
-	sys_install libglvnd-devel
-  	sys_install libfontenc-devel
-	sys_install libXaw-devel
-	sys_install libXcomposite-devel
-	sys_install libXcursor-devel
-	sys_install libXdmcp-devel
-	sys_install libXtst-devel
-	sys_install libXinerama-devel
-	sys_install libxkbfile-devel
-	sys_install libXrandr-devel
-	sys_install libXres-devel
-	sys_install libXScrnSaver-devel
-	sys_install libXvMC-devel
-	sys_install xorg-x11-xtrans-devel
-	sys_install xcb-util-wm-devel
-	sys_install xcb-util-image-devel
-	sys_install xcb-util-keysyms-devel
-	sys_install xcb-util-renderutil-devel
-	sys_install libXdamage-devel
-	sys_install libXxf86vm-devel
-	sys_install libXv-devel
-	sys_install xcb-util-devel
-	sys_install libuuid-devel
-	sys_install xkeyboard-config-devel;
+	sudo dnf install libglvnd-devel
+  	sudo dnf install libfontenc-devel
+	sudo dnf install libXaw-devel
+	sudo dnf install libXcomposite-devel
+	sudo dnf install libXcursor-devel
+	sudo dnf install libXdmcp-devel
+	sudo dnf install libXtst-devel
+	sudo dnf install libXinerama-devel
+	sudo dnf install libxkbfile-devel
+	sudo dnf install libXrandr-devel
+	sudo dnf install libXres-devel
+	sudo dnf install libXScrnSaver-devel
+	sudo dnf install libXvMC-devel
+	sudo dnf install xorg-x11-xtrans-devel
+	sudo dnf install xcb-util-wm-devel
+	sudo dnf install xcb-util-image-devel
+	sudo dnf install xcb-util-keysyms-devel
+	sudo dnf install xcb-util-renderutil-devel
+	sudo dnf install libXdamage-devel
+	sudo dnf install libXxf86vm-devel
+	sudo dnf install libXv-devel
+	sudo dnf install xcb-util-devel
+	sudo dnf install libuuid-devel
+	sudo dnf install xkeyboard-config-devel;
 fi
 
 ##Si ubuntu :
