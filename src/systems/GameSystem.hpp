@@ -118,8 +118,8 @@ namespace ecs
         std::unique_ptr<IScene> ReadMap();
         
         std::unique_ptr<IScene> createGameScene();
-        std::unique_ptr<IScene> createSplashScreen();
-        std::unique_ptr<IScene> createMainMenu();
+        std::unique_ptr<IScene> createSplashScreenScene();
+        std::unique_ptr<IScene> createMainMenuScene();
 
         void changeBindings(SceneManager &SceneManager, int id_player, int button);
         void replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);

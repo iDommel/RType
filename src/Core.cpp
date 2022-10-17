@@ -17,28 +17,36 @@
 #include "systems/GraphicSystem.hpp"
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
+#include "systems/NetworkSystem.hpp"
 
 namespace ecs
 {
 
-    Core::Core(std::vector<SystemType> activeSystems)
+    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
     {
+        // Connect signal doLoop to loop function
+        connect(this, &Core::doLoop, this, &Core::loop, Qt::QueuedConnection);
+        connect(this, &Core::exitApp, this, &QCoreApplication::quit, Qt::QueuedConnection);
+
         for (auto &system : activeSystems) {
             switch (system) {
             case SystemType::GAME:
-                _systems[system] = std::make_unique<GameSystem>();
+                _systems[system] = new GameSystem();
                 break;
             case SystemType::EVENT:
-                _systems[system] = std::make_unique<EventSystem>();
+                    _systems[system] = new EventSystem();
                 break;
             case SystemType::AUDIO:
-                _systems[system] = std::make_unique<AudioSystem>();
+                _systems[system] = new AudioSystem();
                 break;
             case SystemType::GRAPHIC:
-                _systems[system] = std::make_unique<GraphicSystem>();
+                _systems[system] = new GraphicSystem();
                 break;
             case SystemType::PARTICLE:
-                _systems[system] = std::make_unique<ParticlesSystem>();
+                _systems[system] = new ParticlesSystem();
+                break;
+            case SystemType::NETWORK:
+                _systems[system] = new NetworkSystem(role);
                 break;
             default:
                 break;
@@ -51,30 +59,47 @@ namespace ecs
         // _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
     }
 
-    void Core::mainLoop()
+    Core::~Core()
     {
-        auto clock = std::chrono::high_resolution_clock::now();
+        // if (_systems.find(SystemType::NETWORK) != _systems.end())
+        //     _systems[SystemType::NETWORK].release();
+        // if (_systems.find(SystemType::EVENT) != _systems.end())
+        //     _systems[SystemType::EVENT].release();
+    }
+
+    void Core::run()
+    {
+        _running = true;
+        _clock = std::chrono::high_resolution_clock::now();
 
         for (auto &system : _systems)
             system.second->init(_sceneManager);
         _sceneManager.setAddEntityCallback(std::bind(&Core::onEntityAdded, this, std::placeholders::_1));
         _sceneManager.setRemoveEntityCallback(std::bind(&Core::onEntityRemoved, this, std::placeholders::_1));
-        while (!_sceneManager.getShouldClose()) {
-            auto time = std::chrono::high_resolution_clock::now();
-            auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(time - clock).count();
-            if (deltaTime < UPDATE_DELTA) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELTA - deltaTime));
-                continue;
-            }
+
+        emit doLoop();
+    }
+
+    void Core::loop()
+    {
+        auto time = std::chrono::high_resolution_clock::now();
+        auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(time - _clock).count();
+
+        if (deltaTime < UPDATE_DELTA) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_DELTA - deltaTime));
+        } else {
             systemUpdate(SystemType::EVENT, _sceneManager, deltaTime);
             systemUpdate(SystemType::GAME, _sceneManager, deltaTime);
+            systemUpdate(SystemType::NETWORK, _sceneManager, deltaTime);
             systemUpdate(SystemType::AUDIO, _sceneManager, deltaTime);
             systemUpdate(SystemType::PARTICLE, _sceneManager, deltaTime);
             systemUpdate(SystemType::GRAPHIC, _sceneManager, deltaTime);
-            clock = time;
+            _clock = time;
         }
-        for (auto &system : _systems)
-            system.second->destroy();
+        if (!_sceneManager.getShouldClose())
+            emit doLoop();
+        else
+            emit exitApp();
     }
 
     void Core::systemUpdate(SystemType type, SceneManager &manager, int64_t deltaTime)
@@ -94,5 +119,19 @@ namespace ecs
     {
         for (auto &system : _systems)
             system.second->onEntityRemoved(entity);
+    }
+
+    void Core::setEventNetwork()
+    {
+        if (_systems.find(SystemType::EVENT) == _systems.end() || _systems.find(SystemType::NETWORK) == _systems.end())
+            throw std::runtime_error("Missing system");
+        else if (_running)
+            throw std::runtime_error("Can't set event network while running");
+
+        auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
+        auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT]);
+
+        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        evtSys->setNetworkedEvents();
     }
 }

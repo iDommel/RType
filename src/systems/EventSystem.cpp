@@ -18,8 +18,11 @@ namespace ecs
 {
     std::map<int, std::vector<std::shared_ptr<EventListener>>> EventSystem::_listeners;
 
+    EventSystem::EventSystem() : QObject(nullptr) {}
+
     void EventSystem::init(SceneManager &sceneManager)
     {
+        std::cerr << "EventSystem::init" << std::endl;
         for (auto &index : sceneManager.getSceneTypeList()) {
             for (auto &entity : sceneManager.getScene(index)[IEntity::Tags::CALLABLE]) {
                 auto listener = Component::castComponent<EventListener>((*entity)[IComponent::Type::EVT_LISTENER]);
@@ -48,6 +51,8 @@ namespace ecs
         for (auto &it : listener->getKeyboardMappings()) {
             bool wasPressed = false;
             if (it.second.pressed && Window::isKeyPressed(it.first)) {
+                if (_netEvt)
+                    emit writeMsg("Coucou");
                 it.second.pressed(manager);
                 wasPressed = true;
             }
@@ -157,4 +162,10 @@ namespace ecs
 
         _listeners[(int)sceneType] = newListeners;
     }
+
+    void EventSystem::setNetworkedEvents()
+    {
+        _netEvt = true;
+    }
+
 }

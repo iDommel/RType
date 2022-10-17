@@ -9,17 +9,21 @@
 #include <iostream>
 
 #include "Core.hpp"
+#include "NetworkSystem.hpp"
 
 #include "TestHeaders.hpp"
 
-int main(void)
+int main(int ac, char **av)
 {
-    ecs::Core core(
-        {ecs::Core::SystemType::GAME,
-         ecs::Core::SystemType::PARTICLE});
+    ecs::Core core(ac, av, {
+        // {ecs::Core::SystemType::GAME,
+         ecs::Core::SystemType::NETWORK,},
+        //  ecs::Core::SystemType::PARTICLE},
+        ecs::NetworkRole::SERVER);
 
     try {
-        core.mainLoop();
+        core.run();
+        return core.exec();
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;

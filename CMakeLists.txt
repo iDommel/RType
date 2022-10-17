@@ -19,7 +19,11 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(${LIBRARY_NAME} SHARED
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+add_library(${LIBRARY_NAME}
     src/ModelAnimation.cpp
     src/Music.cpp
     src/Texture2D.cpp
@@ -38,6 +42,7 @@ add_library(${LIBRARY_NAME} SHARED
     src/MouseCallbacks.cpp
     src/GamepadStickCallbacks.cpp
     src/Sound.cpp
+    src/UdpSocket.cpp
 
     src/systems/AudioSystem.cpp
     src/systems/GraphicSystem.cpp
@@ -46,6 +51,7 @@ add_library(${LIBRARY_NAME} SHARED
     src/systems/CollideSystem.cpp
     src/systems/ParticlesSystem.cpp
     src/systems/AISystem.cpp
+    src/systems/NetworkSystem.cpp
 
     src/components/Component.cpp
     src/components/EventListener.cpp
@@ -87,10 +93,10 @@ if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
 endif()
 
-target_compile_definitions(${LIBRARY_NAME} PUBLIC)
-
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Network REQUIRED)
 find_package(raylib REQUIRED)
-target_link_libraries(${LIBRARY_NAME} raylib)
+target_link_libraries(${LIBRARY_NAME} raylib Qt5::Core Qt5::Network)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(${LIBRARY_NAME} -lstdc++fs)
