@@ -476,7 +476,6 @@ namespace ecs
         std::shared_ptr<Entity> playButtonEntity = createImage("assets/menus/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
         std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/background/bg-preview-big.png");
         std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
-        std::shared_ptr<EventListener> listener = std::make_shared<EventListener>();
 
         backgroundEntity->addComponent(component2)
             .addComponent(component);
