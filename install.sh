@@ -120,7 +120,7 @@ function sys_install
 				echo "pacman --noconfirm -S"
 				;;
 			fedora)
-				echo "dnf -y install"
+				echo "dnf install -y"
 				;;
 			debian)
 				echo "apt -y install"
@@ -252,30 +252,54 @@ cat /etc/os-release | grep "fedora"
 if [[ $? -ne 0 ]]; then
     echo "bad os";
 else
-	sudo dnf install libglvnd-devel
-  	sudo dnf install libfontenc-devel
-	sudo dnf install libXaw-devel
-	sudo dnf install libXcomposite-devel
-	sudo dnf install libXcursor-devel
-	sudo dnf install libXdmcp-devel
-	sudo dnf install libXtst-devel
-	sudo dnf install libXinerama-devel
-	sudo dnf install libxkbfile-devel
-	sudo dnf install libXrandr-devel
-	sudo dnf install libXres-devel
-	sudo dnf install libXScrnSaver-devel
-	sudo dnf install libXvMC-devel
-	sudo dnf install xorg-x11-xtrans-devel
-	sudo dnf install xcb-util-wm-devel
-	sudo dnf install xcb-util-image-devel
-	sudo dnf install xcb-util-keysyms-devel
-	sudo dnf install xcb-util-renderutil-devel
-	sudo dnf install libXdamage-devel
-	sudo dnf install libXxf86vm-devel
-	sudo dnf install libXv-devel
-	sudo dnf install xcb-util-devel
-	sudo dnf install libuuid-devel
-	sudo dnf install xkeyboard-config-devel;
+	sudo dnf install -y libglvnd-devel
+	sys_install libglvnd-devel
+  	sudo dnf install -y libfontenc-devel
+  	sys_install libfontenc-devel
+	sudo dnf install -y libXaw-devel
+	sys_install libXaw-devel
+	sudo dnf install -y libXcomposite-devel
+	sys_install libXcomposite-devel
+	sudo dnf install -y libXcursor-devel
+	sys_install libXcursor-devel
+	sudo dnf install -y libXdmcp-devel
+	sys_install libXdmcp-devel
+	sudo dnf install -y libXtst-devel
+	sys_install libXtst-devel
+	sudo dnf install -y libXinerama-devel
+	sys_install libXinerama-devel
+	sudo dnf install -y libxkbfile-devel
+	sys_install libxkbfile-devel
+	sudo dnf install -y libXrandr-devel
+	sys_install libXrandr-devel
+	sudo dnf install -y libXres-devel
+	sys_install libXres-devel
+	sudo dnf install -y libXScrnSaver-devel
+	sys_install libXScrnSaver-devel
+	sudo dnf install -y libXvMC-devel
+	sys_install libXvMC-devel
+	sudo dnf install -y xorg-x11-xtrans-devel
+	sys_install xorg-x11-xtrans-devel
+	sudo dnf install -y xcb-util-wm-devel
+	sys_install xcb-util-wm-devel
+	sudo dnf install -y xcb-util-image-devel
+	sys_install xcb-util-image-devel
+	sudo dnf install -y xcb-util-keysyms-devel
+	sys_install xcb-util-keysyms-devel
+	sudo dnf install -y xcb-util-renderutil-devel
+	sys_install xcb-util-renderutil-devel
+	sudo dnf install -y libXdamage-devel
+	sys_install libXdamage-devel
+	sudo dnf install -y libXxf86vm-devel
+	sys_install libXxf86vm-devel
+	sudo dnf install -y libXv-devel
+	sys_install libXv-devel
+	sudo dnf install -y xcb-util-devel
+	sys_install xcb-util-devel
+	sudo dnf install -y libuuid-devel
+	sys_install libuuid-devel
+	sudo dnf install -y xkeyboard-config-devel;
+	sys_install xkeyboard-config-devel;
 fi
 
 ##Si ubuntu :
