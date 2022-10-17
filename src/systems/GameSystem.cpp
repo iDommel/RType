@@ -106,8 +106,9 @@ namespace ecs
     {
         std::cerr << "GameSystem::init" << std::endl;
 
-        sceneManager.addScene(createMainMenu(), SceneManager::SceneType::MAIN_MENU);
-        sceneManager.addScene(createSplashScreen(), SceneManager::SceneType::SPLASH);
+        sceneManager.addScene(createMainMenuScene(), SceneManager::SceneType::MAIN_MENU);
+        sceneManager.addScene(createSplashScreenScene(), SceneManager::SceneType::SPLASH);
+        sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
         sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
@@ -221,22 +222,6 @@ namespace ecs
         //             component->getCurrentFrame() = 0;
         //     }
         // }
-    }
-
-    std::unique_ptr<IScene> GameSystem::createSplashScreen()
-    {
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSplashScreen, this));
-        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<Position> pos = std::make_shared<Position>(550, 350);
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
-        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
-        std::shared_ptr<Entity> entity3 = createText("Made by Idiots", Position(250, 100), 30);
-        std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nLéo Maman\nCyril Dehaese\nRoxanne Baert", Position(10, 450), 15);
-
-        entity->addComponent(pos)
-            .addComponent(sprite);
-        scene->addEntities({entity, entity2, entity3, entity4});
-        return scene;
     }
 
     void GameSystem::destroy()
@@ -490,16 +475,32 @@ namespace ecs
         }
     }
 
-    std::unique_ptr<ecs::IScene> GameSystem::createMainMenu()
+    std::unique_ptr<IScene> GameSystem::createSplashScreenScene()
     {
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenu, this));
-        std::shared_ptr<Entity> entity1 = std::make_shared<Entity>();
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSplashScreenScene, this));
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+        std::shared_ptr<Position> pos = std::make_shared<Position>(550, 350);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
+        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
+        std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(250, 100), 30);
+        std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nLéo Maman\nCyril Dehaese\nRoxanne Baert", Position(10, 450), 15);
+
+        scene->addEntities({entity, entity2, entity3, entity4});
+        return scene;
+    }
+
+    std::unique_ptr<ecs::IScene> GameSystem::createMainMenuScene()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenuScene, this));
+        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
+        std::shared_ptr<Entity> playButtonEntity = createImage("assets/menus/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
         std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/background/bg-preview-big.png");
         std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
 
-        entity1->addComponent(component2)
+        backgroundEntity->addComponent(component2)
             .addComponent(component);
-        scene->addEntity(entity1);
+        createSceneEvent(playButtonEntity, SceneManager::SceneType::GAME);
+        scene->addEntities({backgroundEntity, playButtonEntity});
         return scene;
     }
 
