@@ -107,7 +107,7 @@ namespace rtype
     {
         std::cerr << "GameSystem::init" << std::endl;
 
-        sceneManager.addScene(createMainMenu(), SceneManager::SceneType::MAIN_MENU);
+        // sceneManager.addScene(createMainMenu(), SceneManager::SceneType::MAIN_MENU);
         sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
         sceneManager.addScene(createSplashScreen(), SceneManager::SceneType::SPLASH);
         sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
@@ -247,14 +247,14 @@ namespace rtype
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSplashScreen, this));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(550, 350);
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
-        // std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
+        // std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTop.png");
+        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
         std::shared_ptr<Entity> entity3 = createText("Made by Idiots", Position(250, 100), 30);
         std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nLéo Maman\nCyril Dehaese\nRoxanne Baert", Position(10, 450), 15);
 
-        entity->addComponent(pos)
-            .addComponent(sprite);
-        //scene->addEntities({entity, entity2, entity3, entity4});
+        entity->addComponent(pos);
+            // .addComponent(sprite);
+        scene->addEntities({entity, entity2, entity3, entity4});
         return scene;
     }
 
@@ -548,11 +548,11 @@ namespace rtype
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenu, this));
         std::shared_ptr<Entity> entity1 = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/background/bg-preview-big.png");
+        //std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/background/bg-preview-big.png");
         std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
 
-        entity1->addComponent(component2)
-            .addComponent(component);
+        entity1->addComponent(component2);
+            //.addComponent(component);
         scene->addEntity(entity1);
         return scene;
     }
@@ -561,24 +561,112 @@ namespace rtype
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this));
         std::ifstream file;
-        file.open("map/Map test.txt");
+        file.open("map/Map Test.txt");
         std::string lineContent;
+        int HscaleSpacing = 64;
+        int VscaleSpacing = 64;
 
-        for (int row = 0; row < 170 && std::getline(file, lineContent); row++)
+        std::getline(file, lineContent);
+        std::cout << lineContent << std::endl;
+        for (int row = 0; row < 170 && lineContent != ""; row++)
+        {
             for (int line = 0; line < 11 && line <= lineContent.size(); line++)
             {
                 if (lineContent[line] == '*');
                 else if (lineContent[line] == 'a')
                 {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("asset/Blue Ground/BlueGroundTop.png");
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTop.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
-                    std::shared_ptr<Position> position = std::make_shared<Position>(row, 11 - line, 0);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'c')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundLeft.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'd')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundRight.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'e')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopLeft.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'f')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopRight.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'i')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundCenter.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'n')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundInAngleTopLeft.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'o')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundInAngleTopRight.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 'r')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundOutAngleTopLeft.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
+                    entity->addComponent(position);
+                    //Need to add hitbox but no idea of the size of the grounds in the window
+                    scene->addEntity(entity);
+                } else if (lineContent[line] == 's')
+                {
+                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundOutAngleTopRight.png", 0.0f, 2.0f);
+                    entity->addComponent(sprite);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
                     entity->addComponent(position);
                     //Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
                 }
             }
+        std::getline(file, lineContent);
+        }
         return (scene);
     }
 

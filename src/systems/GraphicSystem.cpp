@@ -142,16 +142,16 @@ namespace rtype
         auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
         auto sprite = Component::castComponent<Sprite>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
+        Vector2 p = {pos->x, pos->y};
 
         try {
             auto rect = (*entity)[IComponent::Type::RECT];
             auto r = Component::castComponent<Rect>(rect);
-            Vector2 p = {pos->x, pos->y};
 
             _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
             _textures.at(sprite->getValue()).first->drawRec(p);
         } catch (std::runtime_error &) {
-            _textures.at(sprite->getValue()).first->draw(pos->x, pos->y);
+            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
         }
     }
 

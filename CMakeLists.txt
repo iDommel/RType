@@ -6,6 +6,7 @@ add_executable(${PROJECT_NAME})
 
 # Call the cmake that checks and pulls the raylib
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(raylib REQUIRED)
 target_link_libraries(${PROJECT_NAME} raylib)

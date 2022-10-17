@@ -55,6 +55,15 @@ namespace rtype {
             void draw(int posX, int posY);
 
             /**
+             * @brief Draw a Texture2D with more params
+             * @param pos The Texture position
+             * @param rotation The texture rotation
+             * @param scale The texture scale
+             * @param tint The color tint
+             */
+            void drawEx(Vector2 pos, float rotation, float scale, Color tint);
+
+            /**
              * @brief Set the params of the texture's rect
              * @param x The horizontal position
              * @param y The vertical position

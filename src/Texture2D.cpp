@@ -39,7 +39,8 @@ namespace rtype
 
     void Texture::unload()
     {
-        if (_isLoaded) {
+        if (_isLoaded)
+        {
             UnloadTexture(*_texture);
             _isLoaded = false;
         }
@@ -71,6 +72,13 @@ namespace rtype
         if (!_isLoaded)
             throw TextureError("Texture draw: Texture not loaded");
         DrawTexture(*_texture, posX, posY, WHITE);
+    }
+
+    void Texture::drawEx(Vector2 pos, float rotation, float scale, Color tint = WHITE)
+    {
+        if (!_isLoaded)
+            throw TextureError("Texture draw: Texture not loaded");
+        DrawTextureEx(*_texture, pos, rotation, scale, tint);
     }
 
     void Texture::setRect(float x, float y, float width, float height)
