@@ -13,6 +13,7 @@
 #include "ISystem.hpp"
 #include "UdpSocket.hpp"
 #include <QtCore>
+#include "ProtocolTraductor.hpp"
 
 class QHostAddress;
 class QThread;
@@ -58,6 +59,7 @@ namespace ecs
 
         NetworkRole _role = NetworkRole::UNDEFINED;
         UdpSocket *_socket;
+        ProtocolTraductor _protocolTraductor;
     };
 
 }

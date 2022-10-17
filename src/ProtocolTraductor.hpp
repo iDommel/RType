@@ -10,16 +10,16 @@
 
 namespace ecs
 {
-    namespace network
+    class ProtocolTraductor
     {
-        class ProtocolTraductor
-        {
-            public:
-                ProtocolTraductor();
-                ~ProtocolTraductor();
-            private:
-        };
-    } // namespace netw
+        public:
+            ProtocolTraductor();
+            ~ProtocolTraductor();
+            void setId(int id);
+            bool serializeEvent();
+            bool deserialize();
+        private:
+    };
 } // namespace ecs
 
 #endif /* !PROTOCOLTRADUCTOR_HPP_ */

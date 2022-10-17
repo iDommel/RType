@@ -6,11 +6,15 @@
 */
 
 #include "ProtocolTraductor.hpp"
+#include "NetworkSystem.hpp"
 
-ProtocolTraductor::ProtocolTraductor()
+namespace ecs
 {
-}
+    ProtocolTraductor::ProtocolTraductor()
+    {
+    }
 
-ProtocolTraductor::~ProtocolTraductor()
-{
-}
+    ProtocolTraductor::~ProtocolTraductor()
+    {
+    }
+} // namespace ecs
