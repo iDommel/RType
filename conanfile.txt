@@ -1,6 +1,0 @@
-[requires]
-qt/5.15.2
-raylib/4.0.0
-
-[generators]
-cmake
