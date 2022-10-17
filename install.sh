@@ -192,7 +192,7 @@ git clone https://github.com/rox51124/File-R-Type.git; cd File-R-Type; mv conanf
 
 ##which python marche pas
 script_header "INSTALLATION DE PYTHON"
-if (which python); then
+if (which python3); then
     echo "python already installed";
 else
 	echo "python not installed";
