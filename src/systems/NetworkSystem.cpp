@@ -82,15 +82,90 @@ namespace ecs
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
         std::string axis = msg.substr(7, msg.find(' ', 7) - 7);
         std::string action = msg.substr(msg.find(' ', 7) + 1, msg.find(' ', msg.find(' ', 7) + 1) - msg.find(' ', 7) - 1);
-        std::cerr << "Axis: " << axis << std::endl;
-        std::cerr << "Action: " << action << std::endl;
         if (axis == "RIGHT" && action == "DOWN") {
-            std::cerr << "--- CURRENT SCENE TYPE:  " << (int)SceneManager::getCurrentSceneType() << std::endl;
-            std::cerr << "MOVING PLAYER RIGHT: " << players.size() << std::endl;
             for (auto &p : players) {
                 auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->moveRight(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+        if (axis == "RIGHT" && action == "RELEASED") {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->stopRight(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+        if (axis == "LEFT" && action == "DOWN") {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->moveLeft(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+
+        if (axis == "LEFT" && action == "RELEASED") {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->stopLeft(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+
+        if (axis == "UP" && action == "DOWN") {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->moveUp(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+
+        if (axis == "UP" && action == "RELEASED") {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->stopUp(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+
+        if (axis == "DOWN" && action == "DOWN") {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->moveDown(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+
+        if (axis == "DOWN" && action == "RELEASED") {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->stopDown(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+
+        if (axis == "POS") {
+            std::cerr << "POS: " << players.size() << std::endl;
+            for (auto &p : players) {
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                pos->x = std::stof(action);
+                pos->y = std::stof(msg.substr(msg.find(' ', msg.find(' ', 7) + 1) + 1));
                 std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
             }
         }
