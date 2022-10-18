@@ -761,13 +761,7 @@ namespace ecs
                 }
                 else if (lineContent[line] == 'P')
                 {
-                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
-                    entity->addComponent(sprite);
-                    std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
-                    entity->addComponent(position);
-                    // Need to add hitbox but no idea of the size of the grounds in the window
-                    scene->addEntity(entity);
+                    createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {row * HscaleSpacing, (15 - line) * VscaleSpacing, 0});
                 }
                 else if (lineContent[line] == '1')
                 {
@@ -817,7 +811,7 @@ namespace ecs
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(towerBoundingBox);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyBomb);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
-        std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/player/sprites/player1.png");
+        std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
         ButtonCallbacks moveRightCallbacks(
             [player, playerEntity](SceneManager &manager) {
