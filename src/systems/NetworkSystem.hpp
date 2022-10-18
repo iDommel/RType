@@ -27,7 +27,6 @@ namespace ecs
 
     class NetworkSystem : public QObject, public ISystem
     {
-
         Q_OBJECT
 
     public:
@@ -68,6 +67,9 @@ namespace ecs
         void clientConnection();
 
     private:
+        /// @brief Gets a player event message and moves entities accordingly
+        /// @param msg The received message
+        void handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t deltaTime);
         QHostAddress _serverAddr;
         unsigned short _port;
 

@@ -19,6 +19,7 @@
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
 #include "NetworkSystem.hpp"
+#include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
 #define GAME_MAP_HEIGHT 15
@@ -34,8 +35,9 @@ namespace ecs
     class Scene;
     class Position;
 
-    class GameSystem : public ISystem
+    class GameSystem : public QObject, public ISystem
     {
+        Q_OBJECT
     public:
         GameSystem() : _aiSystem(_collideSystem)
         {
@@ -82,6 +84,15 @@ namespace ecs
 
         static void setNbrAi(unsigned int nbr) { nbr_ai = nbr; };
 
+        /// @brief Toggles if the network functionalities are enabled
+        void activateNetwork();
+        /// @brief Checks if network is enabled
+        /// @return if network is enabled
+        bool isNetworkActivated();
+
+    signals:
+        void writeMsg(const std::string &message);
+
     private:
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
@@ -112,7 +123,10 @@ namespace ecs
         void createSceneEvent(std::shared_ptr<Entity> &scene, SceneManager::SceneType sceneType);
         void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
 
-        static void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
+
+
+        std::unique_ptr<IScene> ReadMap();
 
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
@@ -132,6 +146,8 @@ namespace ecs
         static const std::map<int, std::string> _bindings;
         CollideSystem _collideSystem;
         AISystem _aiSystem;
+
+        bool _networkActivated = false;
     };
 }
 
