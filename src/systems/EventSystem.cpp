@@ -51,10 +51,7 @@ namespace ecs
         for (auto &it : listener->getKeyboardMappings()) {
             bool wasPressed = false;
             if (it.second.pressed && Window::isKeyPressed(it.first)) {
-                if (_netEvt)
-                    emit writeMsg("Coucou");
-                else
-                    it.second.pressed(manager);
+                it.second.pressed(manager);
                 wasPressed = true;
             }
             if (it.second.down && Window::isKeyDown(it.first)) {

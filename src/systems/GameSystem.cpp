@@ -532,6 +532,16 @@ namespace ecs
         scene.addEntities({musicEntity});
     }
 
+    void GameSystem::activateNetwork()
+    {
+        _networkActivated = true;
+    }
+
+    bool GameSystem::isNetworkActivated()
+    {
+        return _networkActivated;
+    }
+
     void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos)
     {
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>();
@@ -544,69 +554,117 @@ namespace ecs
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/player/sprites/player1.png");
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
         ButtonCallbacks moveRightCallbacks(
-            [player, playerEntity](SceneManager &manager) {
-                player->moveRight(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("RIGHT PRESSED");
+                else
+                    player->moveRight(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopRight(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("RIGHT RELEASED");
+                else
+                    player->stopRight(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->moveRight(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("RIGHT DOWN");
+                else
+                    player->moveRight(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopRight(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("RIGHT UP");
+                else
+                    player->stopRight(manager, playerEntity, 1);
             });
         ButtonCallbacks moveLeftCallbacks(
-            [player, playerEntity](SceneManager &manager) {
-                player->moveLeft(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("LEFT PRESSED");
+                else
+                    player->moveLeft(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopLeft(manager, playerEntity, 17);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("LEFT RELEASED");
+                else
+                    player->stopLeft(manager, playerEntity, 17);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->moveLeft(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("LEFT DOWN");
+                else
+                    player->moveLeft(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopLeft(manager, playerEntity, 17);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("LEFT UP");
+                else
+                    player->stopLeft(manager, playerEntity, 17);
             });
         ButtonCallbacks moveUpCallbacks(
-            [player, playerEntity](SceneManager &manager) {
-                player->moveUp(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("UP PRESSED");
+                else
+                    player->moveUp(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopUp(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("UP RELEASED");
+                else
+                    player->stopUp(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->moveUp(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("UP DOWN");
+                else
+                    player->moveUp(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopUp(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("UP UP");
+                else
+                    player->stopUp(manager, playerEntity, 1);
             });
         ButtonCallbacks moveDownCallbacks(
-            [player, playerEntity](SceneManager &manager) {
-                player->moveDown(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("DOWN PRESSED");
+                else
+                    player->moveDown(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopDown(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("DOWN RELEASED");
+                else
+                    player->stopDown(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->moveDown(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("DOWN DOWN");
+                else
+                    player->moveDown(manager, playerEntity, 1);
             },
-            [player, playerEntity](SceneManager &manager) {
-                player->stopDown(manager, playerEntity, 1);
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg("DOWN UP");
+                else
+                    player->stopDown(manager, playerEntity, 1);
             });
-        ButtonCallbacks bombCallbacks(
-            [player, playerEntity](SceneManager &manager) {
-                player->generateBomb(manager, playerEntity);
-            },
-            [player, playerEntity](SceneManager &) {},
-            [player, playerEntity](SceneManager &) {},
-            [player, playerEntity](SceneManager &) {});
-        std::function<void(SceneManager &, float)> moveHorizontalStickCallback = [player, playerEntity](SceneManager &manager, float value) {
-            player->moveHorizontal(manager, playerEntity, value);
+
+        std::function<void(SceneManager &, float)> moveHorizontalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value) {
+            if (this->isNetworkActivated())
+                emit writeMsg("STICK MOVED HORIZONTALLY");
+            else
+                player->moveHorizontal(manager, playerEntity, value);
         };
-        std::function<void(SceneManager &, float)> moveVerticalStickCallback = [player, playerEntity](SceneManager &manager, float value) {
-            player->moveVertical(manager, playerEntity, value);
+        std::function<void(SceneManager &, float)> moveVerticalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value) {
+            if (this->isNetworkActivated())
+                emit writeMsg("STICK MOVED VERTICALLY");
+            else
+                player->moveVertical(manager, playerEntity, value);
         };
 
         playerListener->addKeyboardEvent((KeyboardKey)player->getTagUp(), moveUpCallbacks);
@@ -617,7 +675,6 @@ namespace ecs
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_LEFT, moveLeftCallbacks);
-        playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_RIGHT_FACE_LEFT, bombCallbacks);
         playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_X, moveHorizontalStickCallback);
         playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
         playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerHitbox, playerListener, destruct});
