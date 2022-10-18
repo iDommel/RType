@@ -34,7 +34,7 @@ namespace ecs
                 _systems[system] = new GameSystem(role);
                 break;
             case SystemType::EVENT:
-                    _systems[system] = new EventSystem();
+                _systems[system] = new EventSystem();
                 break;
             case SystemType::AUDIO:
                 _systems[system] = new AudioSystem();
@@ -128,20 +128,23 @@ namespace ecs
 
     void Core::setEventNetwork()
     {
-        if (_systems.find(SystemType::EVENT) == _systems.end() || _systems.find(SystemType::NETWORK) == _systems.end())
+        if (_systems.find(SystemType::EVENT) == _systems.end() || _systems.find(SystemType::NETWORK) == _systems.end() || _systems.find(SystemType::GAME) == _systems.end())
             throw std::runtime_error("Missing system");
         else if (_running)
             throw std::runtime_error("Can't set event network while running");
 
         auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
         auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT]);
+        auto gameSys = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
 
         connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
         evtSys->setNetworkedEvents();
+        connect(gameSys, &GameSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        gameSys->activateNetwork();
     }
 
     void Core::onClientConnection()
     {
-        _sceneManager.setCurrentScene(SceneManager::SceneType::MAIN_MENU);
+        _sceneManager.setCurrentScene(SceneManager::SceneType::GAME);
     }
 }
