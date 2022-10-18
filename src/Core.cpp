@@ -145,6 +145,6 @@ namespace ecs
 
     void Core::onClientConnection()
     {
-        _sceneManager.setCurrentScene(SceneManager::SceneType::MAIN_MENU);
+        _sceneManager.setCurrentScene(SceneManager::SceneType::GAME);
     }
 }

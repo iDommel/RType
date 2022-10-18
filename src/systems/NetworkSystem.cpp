@@ -10,7 +10,8 @@
 #include <iostream>
 #include <thread>
 #include "SceneManager.hpp"
-
+#include "Player.hpp"
+#include "Position.hpp"
 namespace ecs
 {
 
@@ -34,7 +35,7 @@ namespace ecs
         connect(_socket, &UdpSocket::transferMsgToSystem, this, &NetworkSystem::putMsgInQueue);
     }
 
-    void NetworkSystem::update(SceneManager &manager, uint64_t)
+    void NetworkSystem::update(SceneManager &manager, uint64_t dt)
     {
         static bool waiting = false;
         // std::cerr << "NetworkSystem::update" << std::endl;
@@ -69,8 +70,30 @@ namespace ecs
                 emit clientConnection();
                 waiting = false;
             }
+            if (s.rfind("PLAYER ", 0) == 0) {
+                handlePlayerEvent(manager, s, dt);
+            }
         }
         _msgQueue.clear();
+    }
+
+    void NetworkSystem::handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t dt)
+    {
+        auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
+        std::string axis = msg.substr(7, msg.find(' ', 7) - 7);
+        std::string action = msg.substr(msg.find(' ', 7) + 1, msg.find(' ', msg.find(' ', 7) + 1) - msg.find(' ', 7) - 1);
+        std::cerr << "Axis: " << axis << std::endl;
+        std::cerr << "Action: " << action << std::endl;
+        if (axis == "RIGHT" && action == "DOWN") {
+            std::cerr << "--- CURRENT SCENE TYPE:  " << (int)SceneManager::getCurrentSceneType() << std::endl;
+            std::cerr << "MOVING PLAYER RIGHT: " << players.size() << std::endl;
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->moveRight(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+            }
+        }
     }
 
     void NetworkSystem::destroy() {}
@@ -82,10 +105,8 @@ namespace ecs
     void NetworkSystem::writeMsg(const std::string &msg)
     {
         if (_role == NetworkRole::CLIENT) {
-            std::cerr << "Write to server" << std::endl;
             _socket->write(msg, _serverAddr, _port);
         } else if (_role == NetworkRole::SERVER) {
-            std::cerr << "Write to clients" << std::endl;
             for (auto &client : _senders)
                 _socket->write(msg, QHostAddress(client.first), client.second);
         }
@@ -109,8 +130,11 @@ namespace ecs
         // _senders[_socket->getLastAddress().toString()] = _socket->getLastPort();
         // if (msg == CONNECTION_OK && _role == NetworkRole::CLIENT)
         //     std::cerr << "Connected to server." << std::endl;
-        if (msg == WAIT_CONNECTION && _role == NetworkRole::SERVER)
+        if (msg == WAIT_CONNECTION && _role == NetworkRole::SERVER) {
             _socket->write(CONNECTION_OK, QHostAddress(addr), port);
+            // TODO: This isn't good
+            emit clientConnection();
+        }
     }
 
 }
