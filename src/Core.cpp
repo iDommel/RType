@@ -22,8 +22,10 @@
 namespace ecs
 {
 
-    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av), _role(role)
+    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
     {
+        networkRole = role;
+
         // Connect signal doLoop to loop function
         connect(this, &Core::doLoop, this, &Core::loop, Qt::QueuedConnection);
         connect(this, &Core::exitApp, this, &QCoreApplication::quit, Qt::QueuedConnection);
@@ -31,7 +33,7 @@ namespace ecs
         for (auto &system : activeSystems) {
             switch (system) {
             case SystemType::GAME:
-                _systems[system] = new GameSystem(role);
+                _systems[system] = new GameSystem();
                 break;
             case SystemType::EVENT:
                     _systems[system] = new EventSystem();
@@ -46,31 +48,20 @@ namespace ecs
                 _systems[system] = new ParticlesSystem();
                 break;
             case SystemType::NETWORK:
-                _systems[system] = new NetworkSystem(role);
+                _systems[system] = new NetworkSystem();
                 break;
             default:
                 break;
             }
         }
 
-        if (_role == NetworkRole::CLIENT) {
+        if (networkRole == NetworkRole::CLIENT) {
             auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
             connect(netSys, &NetworkSystem::clientConnection, this, &Core::onClientConnection);
         }
-        // _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
-        // _systems[SystemType::GAME] = std::make_unique<GameSystem>();
-        // _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
-        // _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
-        // _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
     }
 
-    Core::~Core()
-    {
-        // if (_systems.find(SystemType::NETWORK) != _systems.end())
-        //     _systems[SystemType::NETWORK].release();
-        // if (_systems.find(SystemType::EVENT) != _systems.end())
-        //     _systems[SystemType::EVENT].release();
-    }
+    Core::~Core() {}
 
     void Core::run()
     {

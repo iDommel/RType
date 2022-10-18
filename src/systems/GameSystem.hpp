@@ -37,7 +37,7 @@ namespace ecs
     class GameSystem : public ISystem
     {
     public:
-        GameSystem(NetworkRole role = NetworkRole::UNDEFINED) : _aiSystem(_collideSystem), _role(role)
+        GameSystem() : _aiSystem(_collideSystem)
         {
             nbr_player = 4;
             nbr_ai = 0;
@@ -132,7 +132,6 @@ namespace ecs
         static const std::map<int, std::string> _bindings;
         CollideSystem _collideSystem;
         AISystem _aiSystem;
-        NetworkRole _role = NetworkRole::UNDEFINED;
     };
 }
 

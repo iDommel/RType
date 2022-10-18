@@ -10,24 +10,27 @@
 #include <iostream>
 #include <thread>
 #include "SceneManager.hpp"
+#include "Core.hpp"
 
 namespace ecs
 {
 
-NetworkSystem::NetworkSystem(NetworkRole role) : QObject(nullptr), _role(role)
+    NetworkRole Core::networkRole;
+
+NetworkSystem::NetworkSystem() : QObject(nullptr)
 {
     _serverAddr = QHostAddress::LocalHost;
     _port = 8080;
-    if (_role == NetworkRole::UNDEFINED)
+    if (Core::networkRole == NetworkRole::UNDEFINED)
         throw std::invalid_argument("NetworkRole undefined");
 }
 
 void NetworkSystem::init(SceneManager &)
 {
     std::cerr << "NetworkSystem::init" << std::endl;
-    if (_role == NetworkRole::CLIENT) {
+    if (Core::networkRole == NetworkRole::CLIENT) {
         _socket = new UdpSocket(this, QHostAddress::AnyIPv4, 0);
-    } else if (_role == NetworkRole::SERVER) {
+    } else if (Core::networkRole == NetworkRole::SERVER) {
         _socket = new UdpSocket(this, _serverAddr, _port);
     }
 
@@ -37,35 +40,15 @@ void NetworkSystem::init(SceneManager &)
 void NetworkSystem::update(SceneManager &manager, uint64_t)
 {
     static bool waiting = false;
-    // std::cerr << "NetworkSystem::update" << std::endl;
-    // if (_socket->canRead()) {
-    //     if (_role == NetworkRole::SERVER) {
-    //         if (_socket->readDatagram() == WAIT_CONNECTION) {
-    //             std::cerr << "Client connected: " << _socket->getLastAddress().toString().toStdString() << ":" << _socket->getLastPort() << std::endl;
-    //             writeMsg(CONNECTION_OK);
-    //         }
-    //     } else {
-    //         if (_socket->readDatagram() == WAIT_CONNECTION
-    //         _socket->readDatagrams();
-    //     }
-    // }
-    /*
-    Treat all the elements in the list of messages
 
-    if (role == CLIENT)
-        correct game entities
-
-    else if (role == SERVER)
-        correct game entities & send modifications to clients
-    */
-   if (manager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION && _role == NetworkRole::CLIENT && !waiting) {
+   if (manager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION && Core::networkRole == NetworkRole::CLIENT && !waiting) {
         writeMsg(WAIT_CONNECTION);
         waiting = true;
    }
 
    for (auto &s : _msgQueue) {
        std::cerr << s << std::endl;
-       if (waiting && s == CONNECTION_OK && _role == NetworkRole::CLIENT) {
+       if (waiting && s == CONNECTION_OK && Core::networkRole == NetworkRole::CLIENT) {
            emit clientConnection();
            waiting = false;
        }
@@ -81,10 +64,10 @@ void NetworkSystem::onEntityRemoved(std::shared_ptr<IEntity>) {}
 
 void NetworkSystem::writeMsg(const std::string &msg)
 {
-    if (_role == NetworkRole::CLIENT) {
+    if (Core::networkRole == NetworkRole::CLIENT) {
         std::cerr << "write to server" << std::endl;
         _socket->write(msg, _serverAddr, _port);
-    } else if (_role == NetworkRole::SERVER) {
+    } else if (Core::networkRole == NetworkRole::SERVER) {
         std::cerr << "Write to clients" << std::endl;
         for (auto &client : _senders)
             _socket->write(msg, QHostAddress(client.first), client.second);
@@ -109,7 +92,7 @@ void NetworkSystem::putMsgInQueue(std::string msg)
     // _senders[_socket->getLastAddress().toString()] = _socket->getLastPort();
     // if (msg == CONNECTION_OK && _role == NetworkRole::CLIENT)
     //     std::cerr << "Connected to server." << std::endl;
-    if (msg == WAIT_CONNECTION && _role == NetworkRole::SERVER)
+    if (msg == WAIT_CONNECTION && Core::networkRole == NetworkRole::SERVER)
         _socket->write(CONNECTION_OK, QHostAddress(addr), port);
 }
 

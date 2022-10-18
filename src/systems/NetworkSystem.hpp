@@ -32,7 +32,7 @@ namespace ecs
 
     public:
 
-        NetworkSystem(NetworkRole role);
+        NetworkSystem();
 
         void init(SceneManager &manager) final;
         void update(SceneManager &manager, uint64_t deltaTime) final;
@@ -71,7 +71,6 @@ namespace ecs
         QHostAddress _serverAddr;
         unsigned short _port;
 
-        NetworkRole _role = NetworkRole::UNDEFINED;
         UdpSocket *_socket;
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
 

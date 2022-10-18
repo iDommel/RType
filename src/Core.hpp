@@ -14,12 +14,12 @@
 
 #include "systems/ISystem.hpp"
 #include "SceneManager.hpp"
+#include "NetworkSystem.hpp"
 
 #define UPDATE_DELTA 17
 
 namespace ecs
 {
-    enum class NetworkRole;
 
     class Core : public QCoreApplication
     {
@@ -45,7 +45,7 @@ namespace ecs
 
         /// @brief Construct a core with enabled systems
         /// @param ActiveSystems systems to enable
-        Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role);
+        Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role = NetworkRole::UNDEFINED);
         ~Core();
 
         /// @brief Connect EventSystem & NetworkSystem for networked events
@@ -67,6 +67,9 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
+        /// @brief Network role: Client or Server
+        static NetworkRole networkRole;
+
     private slots:
         void loop();
         void onClientConnection();
@@ -82,8 +85,6 @@ namespace ecs
         bool _end = false;
         std::chrono::_V2::system_clock::time_point _clock;
         bool _running = false;
-
-        NetworkRole _role;
     };
 }
 

@@ -207,7 +207,7 @@ namespace ecs
         } else if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION) {
             timeElasped += dt;
             // for connection waiting timeout
-            if (timeElasped > 30000 && _role == NetworkRole::CLIENT) {
+            if (timeElasped > 30000 && Core::networkRole == NetworkRole::CLIENT) {
                 std::cerr << "Connection failed" << std::endl;
                 sceneManager.setShouldClose(true);
             }
