@@ -108,6 +108,7 @@ namespace ecs
         sceneManager.addScene(createMainMenuScene(), SceneManager::SceneType::MAIN_MENU);
         sceneManager.addScene(createSplashScreenScene(), SceneManager::SceneType::SPLASH);
         sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
+        sceneManager.addScene(createConnectionScene(), SceneManager::SceneType::CONNECTION);
         sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
