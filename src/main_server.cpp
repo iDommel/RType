@@ -15,10 +15,10 @@
 
 int main(int ac, char **av)
 {
-    ecs::Core core(ac, av, {
-        // {ecs::Core::SystemType::GAME,
-         ecs::Core::SystemType::NETWORK,},
-        //  ecs::Core::SystemType::PARTICLE},
+    ecs::Core core(ac, av,
+        {ecs::Core::SystemType::GAME,
+         ecs::Core::SystemType::NETWORK,
+         ecs::Core::SystemType::PARTICLE},
         ecs::NetworkRole::SERVER);
 
     try {

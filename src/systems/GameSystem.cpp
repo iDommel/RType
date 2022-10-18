@@ -105,10 +105,10 @@ namespace ecs
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
-
         sceneManager.addScene(createMainMenuScene(), SceneManager::SceneType::MAIN_MENU);
         sceneManager.addScene(createSplashScreenScene(), SceneManager::SceneType::SPLASH);
         sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
+        sceneManager.addScene(createConnectionScene(), SceneManager::SceneType::CONNECTION);
         sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
@@ -201,7 +201,15 @@ namespace ecs
         if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::SPLASH) {
             timeElasped += dt;
             if (timeElasped > 3000) {
-                sceneManager.setCurrentScene(SceneManager::SceneType::MAIN_MENU);
+                sceneManager.setCurrentScene(SceneManager::SceneType::CONNECTION);
+                timeElasped = 0;
+            }
+        } else if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION) {
+            timeElasped += dt;
+            // for connection waiting timeout
+            if (timeElasped > 30000 && _role == NetworkRole::CLIENT) {
+                std::cerr << "Connection failed" << std::endl;
+                sceneManager.setShouldClose(true);
             }
         }
         updatePlayers(sceneManager, dt);
@@ -223,6 +231,15 @@ namespace ecs
         //             component->getCurrentFrame() = 0;
         //     }
         // }
+    }
+
+    std::unique_ptr<IScene> GameSystem::createConnectionScene()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createConnectionScene, this));
+        std::shared_ptr<Entity> entity = createText("Waiting for connection...", Position(200, 150), 30);
+
+        scene->addEntity(entity);
+        return scene;
     }
 
     void GameSystem::destroy()

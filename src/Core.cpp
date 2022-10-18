@@ -22,7 +22,7 @@
 namespace ecs
 {
 
-    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
+    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av), _role(role)
     {
         // Connect signal doLoop to loop function
         connect(this, &Core::doLoop, this, &Core::loop, Qt::QueuedConnection);
@@ -31,7 +31,7 @@ namespace ecs
         for (auto &system : activeSystems) {
             switch (system) {
             case SystemType::GAME:
-                _systems[system] = new GameSystem();
+                _systems[system] = new GameSystem(role);
                 break;
             case SystemType::EVENT:
                     _systems[system] = new EventSystem();
@@ -51,6 +51,11 @@ namespace ecs
             default:
                 break;
             }
+        }
+
+        if (_role == NetworkRole::CLIENT) {
+            auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
+            connect(netSys, &NetworkSystem::clientConnection, this, &Core::onClientConnection);
         }
         // _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
         // _systems[SystemType::GAME] = std::make_unique<GameSystem>();
@@ -133,5 +138,10 @@ namespace ecs
 
         connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
         evtSys->setNetworkedEvents();
+    }
+
+    void Core::onClientConnection()
+    {
+        _sceneManager.setCurrentScene(SceneManager::SceneType::MAIN_MENU);
     }
 }

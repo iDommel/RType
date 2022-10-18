@@ -69,6 +69,7 @@ namespace ecs
 
     private slots:
         void loop();
+        void onClientConnection();
 
     signals:
         void doLoop();
@@ -81,6 +82,8 @@ namespace ecs
         bool _end = false;
         std::chrono::_V2::system_clock::time_point _clock;
         bool _running = false;
+
+        NetworkRole _role;
     };
 }
 

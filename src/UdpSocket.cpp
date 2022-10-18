@@ -15,8 +15,8 @@ UdpSocket::UdpSocket(QObject *parent, QHostAddress address, int port, QAbstractS
 {
     _socket = new QUdpSocket(this);
     _socket->bind(address, port, mode);
-    // if (!connect(_socket, &QUdpSocket::readyRead, this, &UdpSocket::readDatagrams))
-    //     std::cerr << "UDP socket: Couldn't connect" << std::endl;
+    if (!connect(_socket, &QUdpSocket::readyRead, this, &UdpSocket::readDatagrams))
+        throw std::runtime_error("UDP socket: Couldn't connect");
 }
 
 void UdpSocket::joinMulticastGroup(QHostAddress groupAddress)
@@ -32,15 +32,15 @@ void UdpSocket::readDatagrams()
     }
 }
 
-std::string UdpSocket::readDatagram()
+void UdpSocket::readDatagram()
 {
     if (!_socket->hasPendingDatagrams())
-        return "";
+        return;
     QNetworkDatagram data = _socket->receiveDatagram();
     _lastPort = data.senderPort();
     _lastAddr = data.senderAddress();
     std::cerr << "Message received: " << data.data().toStdString() << std::endl;
-    return data.data().toStdString();
+    emit transferMsgToSystem(data.data().toStdString());
 }
 
 bool UdpSocket::canRead()
@@ -48,15 +48,9 @@ bool UdpSocket::canRead()
     return _socket->hasPendingDatagrams();
 }
 
-bool UdpSocket::waitForServerConnection()
+bool UdpSocket::waitReadyRead(int ms)
 {
-    if (!_socket->waitForReadyRead())
-        return false;
-    auto response = readDatagram();
-    if (response == CONNECTION_OK)
-        return true;
-    std::cerr << response << std::endl;
-    return false;
+    return _socket->waitForReadyRead(ms);
 }
 
 void UdpSocket::write(const std::string &msg, const QHostAddress &address, int port)

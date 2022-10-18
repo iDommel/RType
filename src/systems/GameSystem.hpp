@@ -18,6 +18,7 @@
 #include "Player.hpp"
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
+#include "NetworkSystem.hpp"
 
 #define GAME_MAP_WIDTH 15
 #define GAME_MAP_HEIGHT 15
@@ -36,7 +37,7 @@ namespace ecs
     class GameSystem : public ISystem
     {
     public:
-        GameSystem() : _aiSystem(_collideSystem)
+        GameSystem(NetworkRole role = NetworkRole::UNDEFINED) : _aiSystem(_collideSystem), _role(role)
         {
             nbr_player = 4;
             nbr_ai = 0;
@@ -114,6 +115,7 @@ namespace ecs
         static void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
 
         std::unique_ptr<IScene> createGameScene();
+        std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();
         std::unique_ptr<IScene> createMainMenuScene();
 
@@ -130,6 +132,7 @@ namespace ecs
         static const std::map<int, std::string> _bindings;
         CollideSystem _collideSystem;
         AISystem _aiSystem;
+        NetworkRole _role = NetworkRole::UNDEFINED;
     };
 }
 
