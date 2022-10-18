@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <fstream>
 
 #include "GameSystem.hpp"
 #include "EventSystem.hpp"
