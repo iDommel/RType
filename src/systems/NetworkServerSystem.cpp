@@ -2,56 +2,26 @@
 ** EPITECH PROJECT, 2022
 ** Untitled (Workspace)
 ** File description:
-** NetworkSystem.cpp
+** NetworkServerSystem.cpp
 */
 
-#include "NetworkSystem.hpp"
-#include <QtNetwork>
-#include <iostream>
-#include <thread>
 #include "SceneManager.hpp"
-#include "Core.hpp"
-#include "Player.hpp"
-#include "Position.hpp"
+#include "NetworkServerSystem.hpp"
 
 namespace ecs
 {
 
-    NetworkRole Core::networkRole;
-
-    NetworkSystem::NetworkSystem() : QObject(nullptr)
+    void NetworkServerSystem::init(SceneManager &)
     {
-        _serverAddr = QHostAddress::LocalHost;
-        _port = 8080;
-        if (Core::networkRole == NetworkRole::UNDEFINED)
-            throw std::invalid_argument("NetworkRole undefined");
-    }
-
-    void NetworkSystem::init(SceneManager &)
-    {
-        std::cerr << "NetworkSystem::init" << std::endl;
-        if (Core::networkRole == NetworkRole::CLIENT) {
-            _socket = new UdpSocket(this, QHostAddress::AnyIPv4, 0);
-        } else if (Core::networkRole == NetworkRole::SERVER) {
-            _socket = new UdpSocket(this, _serverAddr, _port);
-        }
+        std::cerr << "NetworkServerSystem::init" << std::endl;
+        _socket = new UdpSocket(this, _serverAddr, _port);
         connect(_socket, &UdpSocket::transferMsgToSystem, this, &NetworkSystem::putMsgInQueue);
     }
 
-    void NetworkSystem::update(SceneManager &manager, uint64_t dt)
+    void NetworkServerSystem::update(SceneManager &manager, uint64_t dt)
     {
-        static bool waitCo = false;
-
-        if (manager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION && Core::networkRole == NetworkRole::CLIENT && !_connected && !waitCo) {
-            writeMsg(WAIT_CONNECTION);
-            waitCo = true;
-        }
-
         for (auto &s : _msgQueue) {
             std::cerr << s << std::endl;
-            if (waitCo && !_connected && s == CONNECTION_OK) {
-                emit clientConnection();
-            }
             if (s.rfind("PLAYER ", 0) == 0) {
                 handlePlayerEvent(manager, s, dt);
             }
@@ -59,7 +29,7 @@ namespace ecs
         _msgQueue.clear();
     }
 
-    void NetworkSystem::handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t dt)
+    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
         std::string axis = msg.substr(7, msg.find(' ', 7) - 7);
@@ -141,32 +111,12 @@ namespace ecs
                 writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
             }
         }
-
-        if (axis == "POS") {
-            std::cerr << "POS: " << players.size() << std::endl;
-            for (auto &p : players) {
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                pos->x = std::stof(action);
-                pos->y = std::stof(msg.substr(msg.find(' ', msg.find(' ', 7) + 1) + 1));
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-            }
-        }
     }
 
-    void NetworkSystem::destroy() {}
-
-    void NetworkSystem::onEntityAdded(std::shared_ptr<IEntity>) {}
-
-    void NetworkSystem::onEntityRemoved(std::shared_ptr<IEntity>) {}
-
-    void NetworkSystem::writeMsg(const std::string &msg)
+    void NetworkServerSystem::writeMsg(const std::string &msg)
     {
-        if (Core::networkRole == NetworkRole::CLIENT) {
-            _socket->write(msg, _serverAddr, _port);
-        } else if (Core::networkRole == NetworkRole::SERVER) {
-            for (auto &client : _senders)
-                _socket->write(msg, QHostAddress(client.first), client.second);
-        }
+        for (auto &client : _senders)
+            _socket->write(msg, QHostAddress(client.first), client.second);
     }
 
     void NetworkSystem::putMsgInQueue(std::string msg)

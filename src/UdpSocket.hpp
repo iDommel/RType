@@ -10,6 +10,7 @@
 
 #define WAIT_CONNECTION     "WAIT"
 #define CONNECTION_OK       "OK"
+#define DECONNECTED          "STOP"
 
 #include <QtNetwork>
 #include <string>

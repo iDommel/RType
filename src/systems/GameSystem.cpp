@@ -106,10 +106,11 @@ namespace ecs
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
-        // sceneManager.addScene(createMainMenuScene(), SceneManager::SceneType::MAIN_MENU);
         sceneManager.addScene(createSplashScreenScene(), SceneManager::SceneType::SPLASH);
-        sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
+        // sceneManager.addScene(createMainMenuScene(), SceneManager::SceneType::MAIN_MENU);
         sceneManager.addScene(createConnectionScene(), SceneManager::SceneType::CONNECTION);
+        sceneManager.addScene(createLobbyScene(), SceneManager::SceneType::LOBBY);
+        sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
         sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
@@ -502,6 +503,19 @@ namespace ecs
             .addComponent(component);
         createSceneEvent(playButtonEntity, SceneManager::SceneType::GAME);
         scene->addEntities({backgroundEntity, playButtonEntity});
+        return scene;
+    }
+
+    std::unique_ptr<IScene> GameSystem::createLobbyScene()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this));
+        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
+        std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background1.png");
+        std::shared_ptr<Position> bgPos = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
+
+        backgroundEntity->addComponent(bg)
+                         .addComponent(bgPos);
+        scene->addEntities({backgroundEntity});
         return scene;
     }
 
