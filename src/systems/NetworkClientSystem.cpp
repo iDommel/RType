@@ -17,7 +17,7 @@ namespace ecs
     void NetworkClientSystem::destroy()
     {
         if (_connected)
-            writeMsg(DECONNECTED);
+            writeMsg(DISCONNECTED);
     }
 
     void NetworkClientSystem::init(SceneManager &)

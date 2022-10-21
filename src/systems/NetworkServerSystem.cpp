@@ -25,7 +25,7 @@ namespace ecs
     {
         for (auto &s : _msgQueue) {
             std::cerr << s.first << std::endl;
-            if (s.first == DECONNECTED)
+            if (s.first == DISCONNECTED)
                 deconnectClient(s.second.first, s.second.second);
             else if (s.first == WAIT_CONNECTION && manager.getCurrentSceneType() == SceneManager::SceneType::LOBBY)
                 connectClient(s.second.first, s.second.second);

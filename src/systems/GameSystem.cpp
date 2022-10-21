@@ -205,7 +205,7 @@ namespace ecs
         // }
         if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::SPLASH) {
             timeElasped += dt;
-            if (timeElasped > 3000) {
+            if (timeElasped > SPLASH_TIMEOUT) {
                 if (Core::networkRole == NetworkRole::CLIENT)
                     sceneManager.setCurrentScene(SceneManager::SceneType::CONNECTION);
                 if (Core::networkRole == NetworkRole::SERVER)
@@ -215,7 +215,7 @@ namespace ecs
         } else if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION) {
             timeElasped += dt;
             // for connection waiting timeout
-            if (timeElasped > 30000 && Core::networkRole == NetworkRole::CLIENT) {
+            if (timeElasped > CONNECTION_TIMEOUT && Core::networkRole == NetworkRole::CLIENT) {
                 std::cerr << "Connection failed" << std::endl;
                 sceneManager.setShouldClose(true);
             }
