@@ -125,6 +125,10 @@ namespace ecs
         void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
         void createSceneEvent(std::shared_ptr<Entity> &scene, SceneManager::SceneType sceneType);
         void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
+
+        /// @brief Create a MouseEvent that writes a msg through the NetworkSystem
+        /// @param entity Entity to add the mouse event to
+        /// @param msg Message to send when left mouse button is pressed
         void createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg);
 
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);

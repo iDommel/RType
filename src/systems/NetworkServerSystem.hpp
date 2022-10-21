@@ -22,6 +22,7 @@ namespace ecs {
     public:
 
         void init(SceneManager &manager);
+        /// @brief Reads all received messages and processes them
         void update(SceneManager &manager, uint64_t deltaTime);
         void destroy() {};
 

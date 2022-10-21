@@ -20,6 +20,10 @@ namespace ecs {
     public:
 
         void init(SceneManager &manager);
+        /** @brief Reads all received messages and processes them
+          * @note If not connected writes to server to connect.
+          * @see NetworkServerSystem::update()
+          */
         void update(SceneManager &manager, uint64_t deltaTime);
         void destroy();
 
