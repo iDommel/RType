@@ -42,7 +42,8 @@ namespace ecs
                 manager.setCurrentScene(SceneManager::SceneType::LOBBY);
                 waitCo = false;
                 _connected = true;
-            }
+            } else if (s == READY)
+                manager.setCurrentScene(SceneManager::SceneType::GAME);
             if (s.rfind("PLAYER ", 0) == 0) {
                 handlePlayerEvent(manager, s, dt);
             }

@@ -46,6 +46,7 @@ namespace ecs {
 
         void connectClient(QString addr, unsigned short port);
         void deconnectClient(QString addr, unsigned short port);
+        void setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client);
 
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
@@ -53,7 +54,7 @@ namespace ecs {
 
         std::map<std::string, std::pair<QString /*addr*/, unsigned short /*port*/>> _msgQueue;
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
-        std::map<QString /*addr*/, ANetworkSystem::ClientState> _states;
+        std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, ANetworkSystem::ClientState> _states;
 
     };
 

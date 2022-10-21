@@ -29,6 +29,8 @@ namespace ecs
                 deconnectClient(s.second.first, s.second.second);
             else if (s.first == WAIT_CONNECTION)
                 connectClient(s.second.first, s.second.second);
+            else if (s.first == READY)
+                setClientReady(s.second);
             if (s.first.rfind("PLAYER ", 0) == 0) {
                 handlePlayerEvent(manager, s.first, dt);
             }
@@ -147,7 +149,7 @@ namespace ecs
                 return;
         }
         _senders.push_back(std::make_pair(addr, port));
-        _states[addr] = ClientState::CONNECTED;
+        _states[std::make_pair(addr, port)] = ClientState::CONNECTED;
         _socket->write(CONNECTION_OK, QHostAddress(addr), port);
         // TODO: This isn't good
         emit clientConnection();
@@ -159,11 +161,22 @@ namespace ecs
         for (auto s : _senders) {
             if (s.first == addr && s.second == port) {
                 _senders.erase(_senders.begin() + i);
+                _states.erase(s);
                 std::cerr << "Removed client" << std::endl;
                 break;
             }
             i++;
         }
+    }
+
+    void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client)
+    {
+        _states[client] = ClientState::READYTOPLAY;
+        for (auto s : _states) {
+            if (s.second != ClientState::READYTOPLAY)
+                return;
+        }
+        writeMsg(READY);
     }
 
 }

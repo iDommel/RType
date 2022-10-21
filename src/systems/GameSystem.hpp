@@ -122,6 +122,7 @@ namespace ecs
         void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
         void createSceneEvent(std::shared_ptr<Entity> &scene, SceneManager::SceneType sceneType);
         void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
+        void createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg);
 
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
 

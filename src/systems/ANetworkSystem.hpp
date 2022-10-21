@@ -32,7 +32,7 @@ namespace ecs
         enum class ClientState {
             UNDEFINED = -1,
             CONNECTED,
-            READY,
+            READYTOPLAY,
             PLAYING
         };
 
