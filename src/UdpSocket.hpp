@@ -62,7 +62,7 @@ namespace ecs
         void readDatagram();
 
     signals:
-        /// @brief Transferts the received message to the NetworkSystem
+        /// @brief Transferts the received message to the ANetworkSystem
         /// @param msg Massage to be transfered
         void transferMsgToSystem(std::string msg);
 

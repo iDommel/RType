@@ -14,7 +14,7 @@
 
 #include "systems/ISystem.hpp"
 #include "SceneManager.hpp"
-#include "NetworkSystem.hpp"
+#include "ANetworkSystem.hpp"
 
 #define UPDATE_DELTA 17
 
@@ -48,7 +48,7 @@ namespace ecs
         Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role = NetworkRole::UNDEFINED);
         ~Core();
 
-        /// @brief Connect EventSystem & NetworkSystem for networked events
+        /// @brief Connect EventSystem & ANetworkSystem for networked events
         /// @throw Needs to be called before run() & both systems needs to be active
         void setEventNetwork();
 

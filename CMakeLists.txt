@@ -42,7 +42,7 @@ add_library(${LIBRARY_NAME}
     src/systems/CollideSystem.cpp
     src/systems/ParticlesSystem.cpp
     src/systems/AISystem.cpp
-    src/systems/NetworkSystem.cpp
+    src/systems/ANetworkSystem.cpp
     src/systems/NetworkServerSystem.cpp
     src/systems/NetworkClientSystem.cpp
 

@@ -62,8 +62,8 @@ namespace ecs
         }
 
         // if (networkRole == NetworkRole::CLIENT) {
-        //     auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
-        //     connect(netSys, &NetworkSystem::clientConnection, this, &Core::onClientConnection);
+        //     auto netSys = dynamic_cast<ANetworkSystem *>(_systems[SystemType::NETWORK]);
+        //     connect(netSys, &ANetworkSystem::clientConnection, this, &Core::onClientConnection);
         // }
     }
 

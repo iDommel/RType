@@ -8,11 +8,11 @@
 #ifndef _NETWORK_CLIENT_SYSTEM_HPP
 #define _NETWORK_CLIENT_SYSTEM_HPP
 
-#include "NetworkSystem.hpp"
+#include "ANetworkSystem.hpp"
 
 namespace ecs {
 
-    class NetworkClientSystem : public NetworkSystem
+    class NetworkClientSystem : public ANetworkSystem
     {
 
         Q_OBJECT
@@ -38,6 +38,7 @@ namespace ecs {
         void handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t deltaTime);
 
 
+        std::vector<std::string> _msgQueue;
         bool _connected = false;
     };
 

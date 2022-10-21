@@ -2,10 +2,10 @@
 ** EPITECH PROJECT, 2022
 ** Untitled (Workspace)
 ** File description:
-** NetworkSystem.cpp
+** ANetworkSystem.cpp
 */
 
-#include "NetworkSystem.hpp"
+#include "ANetworkSystem.hpp"
 #include <QtNetwork>
 #include <iostream>
 #include <thread>
@@ -19,7 +19,7 @@ namespace ecs
 
     NetworkRole Core::networkRole;
 
-    NetworkSystem::NetworkSystem() : QObject(nullptr)
+    ANetworkSystem::ANetworkSystem() : QObject(nullptr)
     {
         _serverAddr = QHostAddress::LocalHost;
         _port = 8080;
@@ -27,18 +27,18 @@ namespace ecs
             throw std::invalid_argument("NetworkRole undefined");
     }
 
-    // void NetworkSystem::init(SceneManager &)
+    // void ANetworkSystem::init(SceneManager &)
     // {
-    //     std::cerr << "NetworkSystem::init" << std::endl;
+    //     std::cerr << "ANetworkSystem::init" << std::endl;
     //     if (Core::networkRole == NetworkRole::CLIENT) {
     //         _socket = new UdpSocket(this, QHostAddress::AnyIPv4, 0);
     //     } else if (Core::networkRole == NetworkRole::SERVER) {
     //         _socket = new UdpSocket(this, _serverAddr, _port);
     //     }
-    //     connect(_socket, &UdpSocket::transferMsgToSystem, this, &NetworkSystem::putMsgInQueue);
+    //     connect(_socket, &UdpSocket::transferMsgToSystem, this, &ANetworkSystem::putMsgInQueue);
     // }
 
-    // void NetworkSystem::update(SceneManager &manager, uint64_t dt)
+    // void ANetworkSystem::update(SceneManager &manager, uint64_t dt)
     // {
     //     static bool waitCo = false;
 
@@ -59,7 +59,7 @@ namespace ecs
     //     _msgQueue.clear();
     // }
 
-    // void NetworkSystem::handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t dt)
+    // void ANetworkSystem::handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t dt)
     // {
     //     auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
     //     std::string axis = msg.substr(7, msg.find(' ', 7) - 7);
@@ -153,13 +153,13 @@ namespace ecs
     //     }
     // }
 
-    // void NetworkSystem::destroy() {}
+    // void ANetworkSystem::destroy() {}
 
-    void NetworkSystem::onEntityAdded(std::shared_ptr<IEntity>) {}
+    void ANetworkSystem::onEntityAdded(std::shared_ptr<IEntity>) {}
 
-    void NetworkSystem::onEntityRemoved(std::shared_ptr<IEntity>) {}
+    void ANetworkSystem::onEntityRemoved(std::shared_ptr<IEntity>) {}
 
-    // void NetworkSystem::writeMsg(const std::string &msg)
+    // void ANetworkSystem::writeMsg(const std::string &msg)
     // {
     //     if (Core::networkRole == NetworkRole::CLIENT) {
     //         _socket->write(msg, _serverAddr, _port);
@@ -169,7 +169,7 @@ namespace ecs
     //     }
     // }
 
-    // void NetworkSystem::putMsgInQueue(std::string msg)
+    // void ANetworkSystem::putMsgInQueue(std::string msg)
     // {
     //     if (!msg.empty())
     //         _msgQueue.push_back(msg);

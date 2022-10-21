@@ -18,7 +18,7 @@
 #include "Player.hpp"
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
-#include "NetworkSystem.hpp"
+#include "ANetworkSystem.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15

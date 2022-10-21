@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2022
 ** Untitled (Workspace)
 ** File description:
-** NetworkSystem.hpp
+** ANetworkSystem.hpp
 */
 
 #ifndef NETWORK_SYSTEM_HPP
@@ -23,13 +23,20 @@ namespace ecs
         CLIENT
     };
 
-    class NetworkSystem : public QObject, public ISystem
+    class ANetworkSystem : public QObject, public ISystem
     {
         Q_OBJECT
 
     public:
 
-        NetworkSystem();
+        enum class ClientState {
+            UNDEFINED = -1,
+            CONNECTED,
+            READY,
+            PLAYING
+        };
+
+        ANetworkSystem();
 
         virtual void init(SceneManager &manager) = 0;
         virtual void update(SceneManager &manager, uint64_t deltaTime) = 0;
@@ -64,7 +71,6 @@ namespace ecs
         unsigned short _port;
 
         UdpSocket *_socket;
-        std::vector<std::string> _msgQueue;
     };
 
 }

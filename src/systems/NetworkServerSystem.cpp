@@ -24,9 +24,13 @@ namespace ecs
     void NetworkServerSystem::update(SceneManager &manager, uint64_t dt)
     {
         for (auto &s : _msgQueue) {
-            std::cerr << s << std::endl;
-            if (s.rfind("PLAYER ", 0) == 0) {
-                handlePlayerEvent(manager, s, dt);
+            std::cerr << s.first << std::endl;
+            if (s.first == DECONNECTED)
+                deconnectClient(s.second.first, s.second.second);
+            else if (s.first == WAIT_CONNECTION)
+                connectClient(s.second.first, s.second.second);
+            if (s.first.rfind("PLAYER ", 0) == 0) {
+                handlePlayerEvent(manager, s.first, dt);
             }
         }
         _msgQueue.clear();
@@ -129,15 +133,11 @@ namespace ecs
 
     void NetworkServerSystem::putMsgInQueue(std::string msg)
     {
-        if (!msg.empty())
-            _msgQueue.push_back(msg);
-
         QString addr = _socket->getLastAddress().toString();
         unsigned short port = _socket->getLastPort();
-        if (msg == DECONNECTED)
-            deconnectClient(addr, port);
-        else if (msg == WAIT_CONNECTION)
-            connectClient(addr, port);
+
+        if (!msg.empty())
+            _msgQueue[msg] = std::make_pair(addr, port);
     }
 
     void NetworkServerSystem::connectClient(QString addr, unsigned short port)
@@ -147,6 +147,7 @@ namespace ecs
                 return;
         }
         _senders.push_back(std::make_pair(addr, port));
+        _states[addr] = ClientState::CONNECTED;
         _socket->write(CONNECTION_OK, QHostAddress(addr), port);
         // TODO: This isn't good
         emit clientConnection();
