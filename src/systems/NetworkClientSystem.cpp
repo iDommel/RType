@@ -7,16 +7,24 @@
 
 #include "NetworkClientSystem.hpp"
 #include "SceneManager.hpp"
+#include "Core.hpp"
+#include "Player.hpp"
+#include "Position.hpp"
 
 
 namespace ecs
 {
+    void NetworkClientSystem::destroy()
+    {
+        if (_connected)
+            writeMsg(DECONNECTED);
+    }
 
     void NetworkClientSystem::init(SceneManager &)
     {
         std::cerr << "NetworkClientSystem::init" << std::endl;
         _socket = new UdpSocket(this, QHostAddress::AnyIPv4, 0);
-        connect(_socket, &UdpSocket::transferMsgToSystem, this, &NetworkSystem::putMsgInQueue);
+        connect(_socket, &UdpSocket::transferMsgToSystem, this, &NetworkClientSystem::putMsgInQueue);
     }
 
     void NetworkClientSystem::update(SceneManager &manager, uint64_t dt)
@@ -42,19 +50,15 @@ namespace ecs
         _msgQueue.clear();
     }
 
-    void NetworkClientSystem::destroy()
-    {
-        writeMsg(DECONNECTED);
-    }
-
     void NetworkClientSystem::putMsgInQueue(std::string msg)
     {
         if (!msg.empty())
             _msgQueue.push_back(msg);
     }
 
-    void NetworkSystem::writeMsg(const std::string &msg)
+    void NetworkClientSystem::writeMsg(const std::string &msg)
     {
+        // std::cerr << "write: " << msg << std::endl;
         _socket->write(msg, _serverAddr, _port);
     }
 

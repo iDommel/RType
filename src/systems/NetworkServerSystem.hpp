@@ -13,7 +13,7 @@
 
 namespace ecs {
 
-    class NetworkServerSystem : public NetworkServer
+    class NetworkServerSystem : public NetworkSystem
     {
 
         Q_OBJECT
@@ -22,12 +22,17 @@ namespace ecs {
 
         void init(SceneManager &manager);
         void update(SceneManager &manager, uint64_t deltaTime);
-        void destroy();
+        void destroy() {};
 
     public slots:
         /// @brief Sends msg through the UdpSocket to all connected clients
         /// @param msg Message to send
         void writeMsg(const std::string &msg);
+
+        /// @brief Sends msg through the UdpSocket to the specified client
+        /// @param msg Message to send
+        /// @param clientId Client ID to send msg to
+        void writeToClient(const std::string &msg, int clientId);
 
         /// @brief Puts received message in the system's queue
         /// @param msg Message received
@@ -37,6 +42,9 @@ namespace ecs {
         void clientConnection();
 
     private:
+
+        void connectClient(QString addr, unsigned short port);
+        void deconnectClient(QString addr, unsigned short port);
 
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message

@@ -43,6 +43,8 @@ add_library(${LIBRARY_NAME}
     src/systems/ParticlesSystem.cpp
     src/systems/AISystem.cpp
     src/systems/NetworkSystem.cpp
+    src/systems/NetworkServerSystem.cpp
+    src/systems/NetworkClientSystem.cpp
 
     src/components/Component.cpp
     src/components/EventListener.cpp

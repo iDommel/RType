@@ -17,7 +17,8 @@
 #include "systems/GraphicSystem.hpp"
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
-#include "systems/NetworkSystem.hpp"
+#include "systems/NetworkClientSystem.hpp"
+#include "systems/NetworkServerSystem.hpp"
 
 namespace ecs
 {
@@ -48,17 +49,22 @@ namespace ecs
                 _systems[system] = new ParticlesSystem();
                 break;
             case SystemType::NETWORK:
-                _systems[system] = new NetworkSystem();
+                if (role == NetworkRole::CLIENT) {
+                    auto client = new NetworkClientSystem();
+                    _systems[system] = client;
+                    connect(this, &QCoreApplication::aboutToQuit, client, &NetworkClientSystem::destroy);
+                } else if (role == NetworkRole::SERVER)
+                    _systems[system] = new NetworkServerSystem();
                 break;
             default:
                 break;
             }
         }
 
-        if (networkRole == NetworkRole::CLIENT) {
-            auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
-            connect(netSys, &NetworkSystem::clientConnection, this, &Core::onClientConnection);
-        }
+        // if (networkRole == NetworkRole::CLIENT) {
+        //     auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
+        //     connect(netSys, &NetworkSystem::clientConnection, this, &Core::onClientConnection);
+        // }
     }
 
     Core::~Core() {}
@@ -124,13 +130,13 @@ namespace ecs
         else if (_running)
             throw std::runtime_error("Can't set event network while running");
 
-        auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
+        auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
         auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT]);
         auto gameSys = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
 
-        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkClientSystem::writeMsg);
         evtSys->setNetworkedEvents();
-        connect(gameSys, &GameSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        connect(gameSys, &GameSystem::writeMsg, netSys, &NetworkClientSystem::writeMsg);
         gameSys->activateNetwork();
     }
 

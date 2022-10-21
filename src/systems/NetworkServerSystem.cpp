@@ -7,6 +7,9 @@
 
 #include "SceneManager.hpp"
 #include "NetworkServerSystem.hpp"
+#include "Core.hpp"
+#include "Player.hpp"
+#include "Position.hpp"
 
 namespace ecs
 {
@@ -15,7 +18,7 @@ namespace ecs
     {
         std::cerr << "NetworkServerSystem::init" << std::endl;
         _socket = new UdpSocket(this, _serverAddr, _port);
-        connect(_socket, &UdpSocket::transferMsgToSystem, this, &NetworkSystem::putMsgInQueue);
+        connect(_socket, &UdpSocket::transferMsgToSystem, this, &NetworkServerSystem::putMsgInQueue);
     }
 
     void NetworkServerSystem::update(SceneManager &manager, uint64_t dt)
@@ -119,23 +122,46 @@ namespace ecs
             _socket->write(msg, QHostAddress(client.first), client.second);
     }
 
-    void NetworkSystem::putMsgInQueue(std::string msg)
+    void NetworkServerSystem::writeToClient(const std::string &msg, int clientId)
+    {
+        _socket->write(msg, QHostAddress(_senders[clientId].first), _senders[clientId].second);
+    }
+
+    void NetworkServerSystem::putMsgInQueue(std::string msg)
     {
         if (!msg.empty())
             _msgQueue.push_back(msg);
 
         QString addr = _socket->getLastAddress().toString();
         unsigned short port = _socket->getLastPort();
+        if (msg == DECONNECTED)
+            deconnectClient(addr, port);
+        else if (msg == WAIT_CONNECTION)
+            connectClient(addr, port);
+    }
+
+    void NetworkServerSystem::connectClient(QString addr, unsigned short port)
+    {
         for (auto &s : _senders) {
             if (s.first == addr && s.second == port)
                 return;
         }
         _senders.push_back(std::make_pair(addr, port));
+        _socket->write(CONNECTION_OK, QHostAddress(addr), port);
+        // TODO: This isn't good
+        emit clientConnection();
+    }
 
-        if (msg == WAIT_CONNECTION && Core::networkRole == NetworkRole::SERVER) {
-            _socket->write(CONNECTION_OK, QHostAddress(addr), port);
-            // TODO: This isn't good
-            emit clientConnection();
+    void NetworkServerSystem::deconnectClient(QString addr, unsigned short port)
+    {
+        unsigned i = 0;
+        for (auto s : _senders) {
+            if (s.first == addr && s.second == port) {
+                _senders.erase(_senders.begin() + i);
+                std::cerr << "Removed client" << std::endl;
+                break;
+            }
+            i++;
         }
     }
 

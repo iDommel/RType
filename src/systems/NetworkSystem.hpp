@@ -31,9 +31,9 @@ namespace ecs
 
         NetworkSystem();
 
-        void init(SceneManager &manager);
-        void update(SceneManager &manager, uint64_t deltaTime);
-        void destroy();
+        virtual void init(SceneManager &manager) = 0;
+        virtual void update(SceneManager &manager, uint64_t deltaTime) = 0;
+        virtual void destroy() = 0;
 
         /**
          * @brief The callback to be called when an entity is added to a scene
@@ -46,17 +46,17 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
-    public slots:
-        /// @brief Sends msg through the UdpSocket
-        /// @param msg Message to send
-        /// @note Depending on the network role; sends to server or all clients
-        void writeMsg(const std::string &msg);
-        /// @brief Puts received message in the system's queue
-        /// @param msg Message received
-        void putMsgInQueue(std::string msg);
+    // public slots:
+    //     /// @brief Sends msg through the UdpSocket
+    //     /// @param msg Message to send
+    //     /// @note Depending on the network role; sends to server or all clients
+    //     void writeMsg(const std::string &msg);
+    //     /// @brief Puts received message in the system's queue
+    //     /// @param msg Message received
+    //     void putMsgInQueue(std::string msg);
 
-    signals:
-        void clientConnection();
+    // signals:
+    //     void clientConnection();
 
     protected:
 
