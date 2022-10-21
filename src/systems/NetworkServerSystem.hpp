@@ -40,7 +40,7 @@ namespace ecs {
         void putMsgInQueue(std::string msg);
 
     signals:
-        void clientConnection();
+        void changeScene(SceneManager::SceneType scene);
 
     private:
 

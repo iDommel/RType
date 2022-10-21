@@ -16,7 +16,8 @@
 #include "SceneManager.hpp"
 #include "ANetworkSystem.hpp"
 
-#define UPDATE_DELTA 17
+#define UPDATE_DELTA        17
+#define NB_CLIENTS_MAX      4
 
 namespace ecs
 {
@@ -72,7 +73,7 @@ namespace ecs
 
     private slots:
         void loop();
-        void onClientConnection();
+        void onChangeScene(SceneManager::SceneType scene);
 
     signals:
         void doLoop();

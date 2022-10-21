@@ -27,7 +27,7 @@ namespace ecs
             std::cerr << s.first << std::endl;
             if (s.first == DECONNECTED)
                 deconnectClient(s.second.first, s.second.second);
-            else if (s.first == WAIT_CONNECTION)
+            else if (s.first == WAIT_CONNECTION && manager.getCurrentSceneType() == SceneManager::SceneType::LOBBY)
                 connectClient(s.second.first, s.second.second);
             else if (s.first == READY)
                 setClientReady(s.second);
@@ -144,6 +144,8 @@ namespace ecs
 
     void NetworkServerSystem::connectClient(QString addr, unsigned short port)
     {
+        if (_senders.size() >= NB_CLIENTS_MAX)
+            return;
         for (auto &s : _senders) {
             if (s.first == addr && s.second == port)
                 return;
@@ -151,8 +153,6 @@ namespace ecs
         _senders.push_back(std::make_pair(addr, port));
         _states[std::make_pair(addr, port)] = ClientState::CONNECTED;
         _socket->write(CONNECTION_OK, QHostAddress(addr), port);
-        // TODO: This isn't good
-        emit clientConnection();
     }
 
     void NetworkServerSystem::deconnectClient(QString addr, unsigned short port)
@@ -176,7 +176,9 @@ namespace ecs
             if (s.second != ClientState::READYTOPLAY)
                 return;
         }
+        // notify clients game can start
         writeMsg(READY);
+        emit changeScene(SceneManager::SceneType::GAME);
     }
 
 }

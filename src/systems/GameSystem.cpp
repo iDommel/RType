@@ -111,7 +111,10 @@ namespace ecs
         sceneManager.addScene(createConnectionScene(), SceneManager::SceneType::CONNECTION);
         sceneManager.addScene(createLobbyScene(), SceneManager::SceneType::LOBBY);
         sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
-        sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
+        if (Core::networkRole == NetworkRole::CLIENT)
+            sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
+        else if (Core::networkRole == NetworkRole::SERVER)
+            sceneManager.setCurrentScene(SceneManager::SceneType::LOBBY);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
         _aiSystem.init(sceneManager);

@@ -53,8 +53,11 @@ namespace ecs
                     auto client = new NetworkClientSystem();
                     _systems[system] = client;
                     connect(this, &QCoreApplication::aboutToQuit, client, &NetworkClientSystem::destroy);
-                } else if (role == NetworkRole::SERVER)
-                    _systems[system] = new NetworkServerSystem();
+                } else if (role == NetworkRole::SERVER) {
+                    auto server = new NetworkServerSystem();
+                    _systems[system] = server;
+                    connect(server, &NetworkServerSystem::changeScene, this, &Core::onChangeScene);
+                }
                 break;
             default:
                 break;
@@ -140,8 +143,8 @@ namespace ecs
         gameSys->activateNetwork();
     }
 
-    void Core::onClientConnection()
+    void Core::onChangeScene(SceneManager::SceneType scene)
     {
-        _sceneManager.setCurrentScene(SceneManager::SceneType::GAME);
+        _sceneManager.setCurrentScene(scene);
     }
 }
