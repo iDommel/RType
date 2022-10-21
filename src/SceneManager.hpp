@@ -25,6 +25,7 @@ namespace ecs
             GAME,
             MAIN_MENU,
             CONNECTION,
+            LOBBY,
             CONTROLLER,
             HELP,
             PAUSE,

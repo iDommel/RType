@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "Core.hpp"
-#include "NetworkSystem.hpp"
+#include "ANetworkSystem.hpp"
 
 #include "TestHeaders.hpp"
 

@@ -10,6 +10,8 @@
 
 #define WAIT_CONNECTION     "WAIT"
 #define CONNECTION_OK       "OK"
+#define DISCONNECTED         "STOP"
+#define READY               "READY"
 
 #include <QtNetwork>
 #include <string>
@@ -61,7 +63,7 @@ namespace ecs
         void readDatagram();
 
     signals:
-        /// @brief Transferts the received message to the NetworkSystem
+        /// @brief Transferts the received message to the ANetworkSystem
         /// @param msg Massage to be transfered
         void transferMsgToSystem(std::string msg);
 

@@ -18,7 +18,7 @@
 #include "Player.hpp"
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
-#include "NetworkSystem.hpp"
+#include "ANetworkSystem.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
@@ -26,6 +26,9 @@
 #define GAME_TILE_SIZE 12
 #define GAME_NB_INDESTRUCTIBLE_WALL 0  //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
+
+#define SPLASH_TIMEOUT  3000 // value in milliseconds
+#define CONNECTION_TIMEOUT 30000 // value in milliseconds
 
 struct Vector3;
 
@@ -39,7 +42,7 @@ namespace ecs
     {
         Q_OBJECT
     public:
-        GameSystem(NetworkRole role = NetworkRole::UNDEFINED) : _aiSystem(_collideSystem), _role(role)
+        GameSystem() : _aiSystem(_collideSystem)
         {
             nbr_player = 4;
             nbr_ai = 0;
@@ -123,6 +126,11 @@ namespace ecs
         void createSceneEvent(std::shared_ptr<Entity> &scene, SceneManager::SceneType sceneType);
         void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
 
+        /// @brief Create a MouseEvent that writes a msg through the NetworkSystem
+        /// @param entity Entity to add the mouse event to
+        /// @param msg Message to send when left mouse button is pressed
+        void createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg);
+
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
 
 
@@ -132,6 +140,7 @@ namespace ecs
         std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();
         std::unique_ptr<IScene> createMainMenuScene();
+        std::unique_ptr<IScene> createLobbyScene();
 
         void changeBindings(SceneManager &SceneManager, int id_player, int button);
         void replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
@@ -146,7 +155,7 @@ namespace ecs
         static const std::map<int, std::string> _bindings;
         CollideSystem _collideSystem;
         AISystem _aiSystem;
-        NetworkRole _role = NetworkRole::UNDEFINED;
+
         bool _networkActivated = false;
     };
 }

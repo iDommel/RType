@@ -106,11 +106,15 @@ namespace ecs
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
-        // sceneManager.addScene(createMainMenuScene(), SceneManager::SceneType::MAIN_MENU);
         sceneManager.addScene(createSplashScreenScene(), SceneManager::SceneType::SPLASH);
-        sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
+        // sceneManager.addScene(createMainMenuScene(), SceneManager::SceneType::MAIN_MENU);
         sceneManager.addScene(createConnectionScene(), SceneManager::SceneType::CONNECTION);
-        sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
+        sceneManager.addScene(createLobbyScene(), SceneManager::SceneType::LOBBY);
+        sceneManager.addScene(createGameScene(), SceneManager::SceneType::GAME);
+        if (Core::networkRole == NetworkRole::CLIENT)
+            sceneManager.setCurrentScene(SceneManager::SceneType::SPLASH);
+        else if (Core::networkRole == NetworkRole::SERVER)
+            sceneManager.setCurrentScene(SceneManager::SceneType::LOBBY);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
         _aiSystem.init(sceneManager);
@@ -201,17 +205,16 @@ namespace ecs
         // }
         if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::SPLASH) {
             timeElasped += dt;
-            if (timeElasped > 3000) {
-                if (_role == NetworkRole::CLIENT)
+            if (timeElasped > SPLASH_TIMEOUT) {
+                if (Core::networkRole == NetworkRole::CLIENT)
                     sceneManager.setCurrentScene(SceneManager::SceneType::CONNECTION);
-                if (_role == NetworkRole::SERVER)
+                if (Core::networkRole == NetworkRole::SERVER)
                     sceneManager.setCurrentScene(SceneManager::SceneType::GAME);
                 timeElasped = 0;
             }
         } else if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION) {
             timeElasped += dt;
-            // for connection waiting timeout
-            if (timeElasped > 30000 && _role == NetworkRole::CLIENT) {
+            if (timeElasped > CONNECTION_TIMEOUT && Core::networkRole == NetworkRole::CLIENT) {
                 std::cerr << "Connection failed" << std::endl;
                 sceneManager.setShouldClose(true);
             }
@@ -337,6 +340,29 @@ namespace ecs
             [](SceneManager &, Vector2 /*mousePosition*/) {});
 
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
+
+        eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
+        entity->addComponent(eventListener);
+    }
+
+    void GameSystem::createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg)
+    {
+        std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
+        MouseCallbacks mouseCallbacks(
+            [entity, this, msg](SceneManager &sceneManager, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
+                auto pos = Component::castComponent<Position>(comp[1]);
+                auto sprite = Component::castComponent<Sprite>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[2]);
+
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
+                    emit writeMsg(msg);
+                }
+            },
+            [](SceneManager &, Vector2 /*mousePosition*/) {},
+            [](SceneManager &, Vector2 /*mousePosition*/) {},
+            [](SceneManager &, Vector2 /*mousePosition*/) {});
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -501,6 +527,21 @@ namespace ecs
         backgroundEntity->addComponent(component2)
             .addComponent(component);
         createSceneEvent(playButtonEntity, SceneManager::SceneType::GAME);
+        scene->addEntities({backgroundEntity, playButtonEntity});
+        return scene;
+    }
+
+    std::unique_ptr<IScene> GameSystem::createLobbyScene()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this));
+        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
+        std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background1.png");
+        std::shared_ptr<Position> bgPos = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
+        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
+
+        backgroundEntity->addComponent(bg)
+                         .addComponent(bgPos);
+        createMsgEvent(playButtonEntity, READY);
         scene->addEntities({backgroundEntity, playButtonEntity});
         return scene;
     }
