@@ -1,10 +1,5 @@
 ::TELECHARGE FICHIER
 @ECHO OFF
-git clone https://github.com/rox51124/File-R-Type.git
-cd File-R-Type
-move conanfile.txt "%~dp0"
-cd ..
-RMDIR /s /q "File-R-Type"
 
 ::INSTALL CMAKE
 "%~dp0\executable\cmake.msi"
@@ -13,4 +8,6 @@ RMDIR /s /q "File-R-Type"
 "%~dp0\executable\conan.exe"
 
 ::EXECUTE CONAN
-conan install conanfile.txt --build=qt -c tools.system.package_manager:mode=install --build=missing
+conan install . --install-folder cmake-build-release --build=missing -c tools.system.package_manager:mode=install
+cmake . -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build .
