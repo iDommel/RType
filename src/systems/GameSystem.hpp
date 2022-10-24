@@ -99,7 +99,7 @@ namespace ecs
         void writeMsg(const std::string &message);
 
     public slots:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
 
     private:
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it

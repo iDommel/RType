@@ -59,6 +59,7 @@ namespace ecs
         /**
          * @brief Call each onEntityAdded system function, set as addEntity callback
          * @param entity Entity to load
+         * @param scene Scene to add entity into
          */
         void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene);
 

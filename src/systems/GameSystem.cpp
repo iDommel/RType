@@ -877,7 +877,7 @@ namespace ecs
         return _networkActivated;
     }
 
-    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos)
+    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe)
     {
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>();
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
@@ -889,103 +889,102 @@ namespace ecs
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
         ButtonCallbacks moveRightCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
-                std::cerr << "MoveRight" << std::endl;
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT PRESSED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" RIGHT PRESSED");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT RELEASED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" RIGHT RELEASED");
                 else
                     player->stopRight(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT DOWN");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" RIGHT DOWN");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT UP");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" RIGHT UP");
                 else
                     player->stopRight(manager, playerEntity, 1);
             });
         ButtonCallbacks moveLeftCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT PRESSED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" LEFT PRESSED");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT RELEASED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" LEFT RELEASED");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT DOWN");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" LEFT DOWN");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT UP");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" LEFT UP");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             });
         ButtonCallbacks moveUpCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP PRESSED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" UP PRESSED");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP RELEASED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" UP RELEASED");
                 else
                     player->stopUp(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP DOWN");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" UP DOWN");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP UP");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" UP UP");
                 else
                     player->stopUp(manager, playerEntity, 1);
             });
         ButtonCallbacks moveDownCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN PRESSED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" DOWN PRESSED");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN RELEASED");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" DOWN RELEASED");
                 else
                     player->stopDown(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN DOWN");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" DOWN DOWN");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity, id](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN UP");
+                    emit writeMsg("PLAYER "+ std::to_string(id) +" DOWN UP");
                 else
                     player->stopDown(manager, playerEntity, 1);
             });
@@ -1003,17 +1002,20 @@ namespace ecs
                 player->moveVertical(manager, playerEntity, value);
         };
 
-        playerListener->addKeyboardEvent((KeyboardKey)player->getTagUp(), moveUpCallbacks);
-        playerListener->addKeyboardEvent((KeyboardKey)player->getTagLeft(), moveLeftCallbacks);
-        playerListener->addKeyboardEvent((KeyboardKey)player->getTagRight(), moveRightCallbacks);
-        playerListener->addKeyboardEvent((KeyboardKey)player->getTagDown(), moveDownCallbacks);
-        playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_UP, moveUpCallbacks);
-        playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
-        playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);
-        playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_LEFT, moveLeftCallbacks);
-        playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_X, moveHorizontalStickCallback);
-        playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
-        playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerHitbox, playerListener, destruct});
+        if (isMe) {
+            playerListener->addKeyboardEvent((KeyboardKey)player->getTagUp(), moveUpCallbacks);
+            playerListener->addKeyboardEvent((KeyboardKey)player->getTagLeft(), moveLeftCallbacks);
+            playerListener->addKeyboardEvent((KeyboardKey)player->getTagRight(), moveRightCallbacks);
+            playerListener->addKeyboardEvent((KeyboardKey)player->getTagDown(), moveDownCallbacks);
+            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_UP, moveUpCallbacks);
+            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
+            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);
+            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_LEFT, moveLeftCallbacks);
+            playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_X, moveHorizontalStickCallback);
+            playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
+            playerEntity->addComponent(playerListener);
+        }
+        playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerHitbox, destruct});
         scene.addEntity(playerEntity);
     }
 

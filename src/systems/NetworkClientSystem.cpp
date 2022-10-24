@@ -48,8 +48,10 @@ namespace ecs
                 manager.setCurrentScene(SceneType::GAME);
             } else if (s.rfind(CR_PLAYER, 0) == 0) {
                 int idPlayer = std::stoi(s.substr(std::string(CR_PLAYER).size()));
-                std::cerr << "Player " << idPlayer << std::endl;
-                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer]);
+                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], false);
+            } else if (s.rfind(CR_ME, 0) == 0) {
+                int idPlayer = std::stoi(s.substr(std::string(CR_ME).size()));
+                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], true);
             }
             if (s.rfind("PLAYER ", 0) == 0) {
                 handlePlayerEvent(manager, s, dt);
@@ -66,23 +68,37 @@ namespace ecs
 
     void NetworkClientSystem::writeMsg(const std::string &msg)
     {
-        // std::cerr << "write: " << msg << std::endl;
         _socket->write(msg, _serverAddr, _port);
     }
 
-    void NetworkClientSystem::handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t dt)
+    void NetworkClientSystem::handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
-        std::string axis = msg.substr(7, msg.find(' ', 7) - 7);
-        std::string action = msg.substr(msg.find(' ', 7) + 1, msg.find(' ', msg.find(' ', 7) + 1) - msg.find(' ', 7) - 1);
 
-        if (axis == "POS") {
+        msg.erase(0, 7);
+        int playerId = std::stoi(msg.substr(0, msg.find(' ')));
+        msg.erase(0, msg.find(' ') + 1);
+        std::string comp = msg.substr(0, msg.find(' '));
+        msg.erase(0, msg.find(' ') + 1);
+        float x = std::stof(msg.substr(0, msg.find(' ')));
+        msg.erase(0, msg.find(' ') + 1);
+        float y = std::stof(msg);
+        // std::string axis = msg.substr(7, msg.find(' ', 7) - 7);
+        // std::string action = msg.substr(msg.find(' ', 7) + 1, msg.find(' ', msg.find(' ', 7) + 1) - msg.find(' ', 7) - 1);
+
+        if (comp == "POS") {
             std::cerr << "POS: " << players.size() << std::endl;
             for (auto &p : players) {
+                auto player = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                if (player->getId() != playerId)
+                    continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                pos->x = std::stof(action);
-                pos->y = std::stof(msg.substr(msg.find(' ', msg.find(' ', 7) + 1) + 1));
+                pos->x = x;
+                pos->y = y;
+                // pos->x = std::stof(action);
+                // pos->y = std::stof(msg.substr(msg.find(' ', msg.find(' ', 7) + 1) + 1));
                 std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                break;
             }
         }
     }

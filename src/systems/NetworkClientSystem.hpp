@@ -30,7 +30,7 @@ namespace ecs {
         void destroy();
 
     signals:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
 
     public slots:
         /// @brief Sends msg to server
@@ -44,7 +44,7 @@ namespace ecs {
     private:
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
-        void handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t deltaTime);
+        void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
 
 
         std::vector<std::string> _msgQueue;
