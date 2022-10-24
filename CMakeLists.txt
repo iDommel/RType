@@ -104,7 +104,3 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         -Wextra
     )
 endif(CMAKE_COMPILER_IS_GNUCXX)
-
-set_target_properties(
-    ${CLIENT_NAME} ${SERVER_NAME} PROPERTIES
-)
