@@ -7,10 +7,10 @@ cd ..
 RMDIR /s /q "File-R-Type"
 
 ::INSTALL CMAKE
-"%~dp0\Executable\cmake.msi"
+"%~dp0\executable\cmake.msi"
 
 ::INSTALL CONAN
-"%~dp0\Executable\conan.exe"
+"%~dp0\executable\conan.exe"
 
 ::EXECUTE CONAN
 conan install conanfile.txt --build=qt -c tools.system.package_manager:mode=install --build=missing
