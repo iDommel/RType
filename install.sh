@@ -169,9 +169,6 @@ else
     sys_install git;
 fi;
 
-script_header "TELECHARGE FICHIER"
-git clone https://github.com/rox51124/File-R-Type.git; cd File-R-Type; mv conanfile.txt ../; cd ..; rm -rf File-R-Type
-
 ##which python marche pas
 script_header "INSTALLATION DE PYTHON"
 if (which python3); then
@@ -206,8 +203,9 @@ else
 fi;
 
 script_header "LANCE CONAN"
-conan install ./ --build=missing -c tools.system.package_manager:mode=install
-rm -rf conan.lock conanbuildinfo.cmake conanbuildinfo.txt conanfile.txt conaninfo.txt graph_info.json
+conan install . --install-folder cmake-build-release --build=missing -c tools.system.package_manager:mode=install
+cmake . -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build .
 
 script_header "VOTRE INSTALLATION EST FINI" $C_BWHITE
 

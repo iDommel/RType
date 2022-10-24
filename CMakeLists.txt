@@ -80,8 +80,10 @@ endif()
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
-find_package(raylib REQUIRED)
-target_link_libraries(${LIBRARY_NAME} raylib)
+find_package(raylib CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Network CONFIG REQUIRED)
+
+target_link_libraries(${LIBRARY_NAME} raylib; Qt5::Core; Qt5::Network)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(${LIBRARY_NAME} -lstdc++fs)
