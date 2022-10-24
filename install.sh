@@ -16,7 +16,7 @@ fake=0
 ## colors
 
 ESC="\033["
-C_RED=$ESC"0;31m"
+C_GREEN=$ESC"0;32m"
 C_YELLOW=$ESC"0;33m"
 C_BWHITE=$ESC"1;37m"
 C_RST=$ESC"0m"
@@ -207,151 +207,25 @@ else
     sys_install pip python3-pip;
 fi;
 
-script_header "INSTALLATION DE CONAN PIP"
+script_header "INSTALLATION DE CONAN"
 if (which conan); then
     echo "conan already installed";
 else
-	echo "pip not installed";
-    pip install conan;
+	echo "conan not installed";
+    sudo pip install conan;
 fi;
 
-script_header "INSTALLATION PACKET"
-
-##cat /etc/os-release | grep "fedora"
-##if [[ $? -ne 0 ]]; then
-##    echo "bad os";
-##else
-##	sudo dnf group install "Development Tools"
-##	sudo dnf group install "Development Libraries"
-##	sys_install libglvnd-devel
-##fi
-
-if (which perl); then
-    echo "perl already installed";
-else
-	echo "perl not installed";
-    sys_install perl;
-fi;
-
-if (which openssl); then
-    echo "openssl already installed";
-else
-	echo "openssl not installed";
-    sys_install openssl;
-fi;
-
+script_header "INSTALLATION DE PKG"
 if (which pkg-config); then
-   echo "pkg-config already installed";
+    echo "pkg-config already installed";
 else
 	echo "pkg-config not installed";
     sys_install pkg-config;
-fi
-
-##Si fedora :
-cat /etc/os-release | grep "fedora"
-if [[ $? -ne 0 ]]; then
-    echo "bad os";
-else
-	sudo dnf install -y libglvnd-devel
-	sys_install libglvnd-devel
-  	sudo dnf install -y libfontenc-devel
-  	sys_install libfontenc-devel
-	sudo dnf install -y libXaw-devel
-	sys_install libXaw-devel
-	sudo dnf install -y libXcomposite-devel
-	sys_install libXcomposite-devel
-	sudo dnf install -y libXcursor-devel
-	sys_install libXcursor-devel
-	sudo dnf install -y libXdmcp-devel
-	sys_install libXdmcp-devel
-	sudo dnf install -y libXtst-devel
-	sys_install libXtst-devel
-	sudo dnf install -y libXinerama-devel
-	sys_install libXinerama-devel
-	sudo dnf install -y libxkbfile-devel
-	sys_install libxkbfile-devel
-	sudo dnf install -y libXrandr-devel
-	sys_install libXrandr-devel
-	sudo dnf install -y libXres-devel
-	sys_install libXres-devel
-	sudo dnf install -y libXScrnSaver-devel
-	sys_install libXScrnSaver-devel
-	sudo dnf install -y libXvMC-devel
-	sys_install libXvMC-devel
-	sudo dnf install -y xorg-x11-xtrans-devel
-	sys_install xorg-x11-xtrans-devel
-	sudo dnf install -y xcb-util-wm-devel
-	sys_install xcb-util-wm-devel
-	sudo dnf install -y xcb-util-image-devel
-	sys_install xcb-util-image-devel
-	sudo dnf install -y xcb-util-keysyms-devel
-	sys_install xcb-util-keysyms-devel
-	sudo dnf install -y xcb-util-renderutil-devel
-	sys_install xcb-util-renderutil-devel
-	sudo dnf install -y libXdamage-devel
-	sys_install libXdamage-devel
-	sudo dnf install -y libXxf86vm-devel
-	sys_install libXxf86vm-devel
-	sudo dnf install -y libXv-devel
-	sys_install libXv-devel
-	sudo dnf install -y xcb-util-devel
-	sys_install xcb-util-devel
-	sudo dnf install -y libuuid-devel
-	sys_install libuuid-devel
-	sudo dnf install -y xkeyboard-config-devel;
-	sys_install xkeyboard-config-devel;
-fi
-
-##Si ubuntu :
-cat /etc/os-release | grep "ubuntu"
-if [[ $? -ne 0 ]]; then
-    echo "bad os";
-else
-	sys_install build-essential
-    sys_install libxcb-util-dev
-    sys_install libgl-dev
-    sys_install libx11-xcb-dev
-    sys_install libfontenc-dev
-    sys_install libice-dev
-    sys_install libsm-dev
-    sys_install libxaw7-dev
-    sys_install libxcomposite-dev
-    sys_install libxcursor-dev
-    sys_install libxdamage-dev
-    sys_install libxext-dev
-    sys_install libxfixes-dev
-    sys_install libxi-dev
-    sys_install libxinerama-dev
-    sys_install libxkbfile-dev
-    sys_install libxmu-dev
-    sys_install libxmuu-dev
-    sys_install libxpm-dev
-    sys_install libxrandr-dev
-    sys_install libxrender-dev
-    sys_install libxres-dev
-    sys_install libxss-dev
-    sys_install libxt-dev
-    sys_install libxtst-dev
-    sys_install libxv-dev
-    sys_install libxvmc-dev
-    sys_install libxxf86vm-dev
-    sys_install libxcb-render0-dev
-    sys_install libxcb-render-util0-dev
-    sys_install libxcb-xkb-dev
-    sys_install libxcb-icccm4-dev
-    sys_install libxcb-image0-dev
-    sys_install libxcb-keysyms1-dev
-    sys_install libxcb-randr0-dev
-    sys_install libxcb-shape0-dev
-    sys_install libxcb-sync-dev
-    sys_install libxcb-xfixes0-dev
-    sys_install libxcb-xinerama0-dev
-    sys_install libxcb-dri3-dev
-    sys_install uuid-dev;
-fi
+fi;
 
 script_header "LANCE CONAN"
-conan install conanfile.txt --build=qt -c tools.system.package_manager:mode=install --build=missing
+conan install ./ --build=missing -c tools.system.package_manager:mode=install
+rm -rf conan.lock conanbuildinfo.cmake conanbuildinfo.txt conanfile.txt conaninfo.txt graph_info.json
 
 script_header "VOTRE INSTALLATION EST FINI" $C_BWHITE
 
