@@ -493,6 +493,8 @@ namespace ecs
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
             for (auto &collider : _collideSystem.getColliders(player)) {
+                std::cout << "PERDU !" << std::endl;
+                //sceneManager.setCurrentScene(SceneManager::SceneType::END);
             }
 
             splitVel.y = (*vel).y;
@@ -831,6 +833,9 @@ namespace ecs
                     entity->addComponent(sprite);
                     std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
                     entity->addComponent(position);
+                    Rectangle rect = {position->x, position->y, 32, 32};
+                    std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
+                    entity->addComponent(hitbox);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
                 }
@@ -878,8 +883,8 @@ namespace ecs
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>();
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
-        BoundingBox towerBoundingBox = {{pos.x - 4.2f, pos.y + 0.0f, pos.z - 4.0f}, {pos.x + 4.2f, pos.y + 23.0f, pos.z + 4.0f}};
-        std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(towerBoundingBox);
+        Rectangle rect = {pos.x, pos.y, 32, 32};
+        std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyBomb);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
