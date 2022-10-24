@@ -52,7 +52,7 @@ namespace ecs
 
     std::shared_ptr<Entity> GameSystem::whichEntity(std::string mapAround, int x, int y)
     {
-        int LastLine = 15;
+        int lastLine = 15;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::string path;
 
@@ -131,17 +131,17 @@ namespace ecs
             }
         }
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
-        std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (LastLine - y) * SCALE, 0);
+        std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
         entity->addComponent(sprite).addComponent(position);
         return entity;
     }
 
     std::unique_ptr<IScene> GameSystem::ReadMap()
     {
-        int FirstRow = 0;
-        int LastRow = 169;
-        int FirstLine = 0;
-        int LastLine = 15;
+        int firstRow = 0;
+        int lastRow = 169;
+        int firstLine = 0;
+        int lastLine = 15;
 
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this));
 
@@ -171,32 +171,32 @@ namespace ecs
         std::string strCube;
         std::getline(file, lineTwo);
         std::getline(file, lineThree);
-        for (int row = FirstRow; row <= LastRow && lineThree != ""; row++)
+        for (int row = firstRow; row <= lastRow && lineThree != ""; row++)
         {
-            if (lineTwo[FirstLine] == 'a')
+            if (lineTwo[firstLine] == 'a')
             {
                 strCube.clear();
                 strCube.push_back('a');
-                strCube.push_back(lineOne[FirstLine]);
-                strCube.push_back(lineThree[FirstLine]);
-                strCube.push_back(lineTwo[FirstLine + 1]);
-                scene->addEntity(whichEntity(strCube, row, FirstLine));
+                strCube.push_back(lineOne[firstLine]);
+                strCube.push_back(lineThree[firstLine]);
+                strCube.push_back(lineTwo[firstLine + 1]);
+                scene->addEntity(whichEntity(strCube, row, firstLine));
             }
-            if (lineTwo[LastLine] == 'a')
+            if (lineTwo[lastLine] == 'a')
             {
                 strCube.clear();
-                strCube.push_back(lineTwo[LastLine - 1]);
-                strCube.push_back(lineOne[LastLine]);
-                strCube.push_back(lineThree[LastLine]);
+                strCube.push_back(lineTwo[lastLine - 1]);
+                strCube.push_back(lineOne[lastLine]);
+                strCube.push_back(lineThree[lastLine]);
                 strCube.push_back('a');
-                scene->addEntity(whichEntity(strCube, row, LastLine));
+                scene->addEntity(whichEntity(strCube, row, lastLine));
             }
 
-            for (int line = FirstLine; line <= LastLine && line <= lineTwo.size(); line++)
+            for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++)
             {
                 if (lineTwo[line] == '*')
                     ;
-                else if (line != FirstLine && line != LastLine && lineTwo[line] == 'a')
+                else if (line != firstLine && line != lastLine && lineTwo[line] == 'a')
                 {
                     strCube.clear();
                     strCube.push_back(lineTwo[line - 1]);
@@ -206,12 +206,12 @@ namespace ecs
                     scene->addEntity(whichEntity(strCube, row, line));
                 }
                 else if (lineTwo[line] == 'P')
-                    createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {row * SCALE, (LastLine - line) * SCALE, 0});
+                    createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {row * SCALE, (lastLine - line) * SCALE, 0});
                 else if (lineTwo[line] == '1')
                 {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
-                    std::shared_ptr<Position> position = std::make_shared<Position>(row * SCALE, (LastLine - line) * SCALE, 0);
+                    std::shared_ptr<Position> position = std::make_shared<Position>(row * SCALE, (lastLine - line) * SCALE, 0);
                     entity->addComponent(sprite).addComponent(position);
                     scene->addEntity(entity);
                 }
