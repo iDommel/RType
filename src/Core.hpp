@@ -14,12 +14,13 @@
 
 #include "systems/ISystem.hpp"
 #include "SceneManager.hpp"
+#include "ANetworkSystem.hpp"
 
-#define UPDATE_DELTA 17
+#define UPDATE_DELTA        17
+#define NB_CLIENTS_MAX      4
 
 namespace ecs
 {
-    enum class NetworkRole;
 
     class Core : public QCoreApplication
     {
@@ -45,10 +46,10 @@ namespace ecs
 
         /// @brief Construct a core with enabled systems
         /// @param ActiveSystems systems to enable
-        Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role);
+        Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role = NetworkRole::UNDEFINED);
         ~Core();
 
-        /// @brief Connect EventSystem & NetworkSystem for networked events
+        /// @brief Connect EventSystem & ANetworkSystem for networked events
         /// @throw Needs to be called before run() & both systems needs to be active
         void setEventNetwork();
 
@@ -67,8 +68,12 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
+        /// @brief Network role: Client or Server
+        static NetworkRole networkRole;
+
     private slots:
         void loop();
+        void onChangeScene(SceneManager::SceneType scene);
 
     signals:
         void doLoop();

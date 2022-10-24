@@ -11,6 +11,8 @@
 #include <functional>
 #include <map>
 
+#include "raylib.h"
+
 #include "ButtonCallbacks.hpp"
 #include "Component.hpp"
 #include "GamepadStickCallbacks.hpp"

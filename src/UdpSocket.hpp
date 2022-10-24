@@ -10,6 +10,8 @@
 
 #define WAIT_CONNECTION     "WAIT"
 #define CONNECTION_OK       "OK"
+#define DISCONNECTED         "STOP"
+#define READY               "READY"
 
 #include <QtNetwork>
 #include <string>
@@ -42,14 +44,11 @@ namespace ecs
         /// @param port Port to send message to
         void write(const std::string &msg, const QHostAddress &address, int port);
 
-        /// @brief Read a message from the queue
-        std::string readDatagram();
-
         /// @brief Tells if datagrams are available
         /// @return Returns True if the queue is not empty, false otherwise
         bool canRead();
 
-        bool waitForServerConnection();
+        bool waitReadyRead(int ms = 30000);
 
         /// @brief Returns the address of the last sender
         QHostAddress getLastAddress() { return _lastAddr; };
@@ -58,7 +57,15 @@ namespace ecs
         unsigned short getLastPort() { return _lastPort; };
 
     public slots:
+        /// @brief Reads all pending messages
         void readDatagrams();
+        /// @brief Reads a message from the queue
+        void readDatagram();
+
+    signals:
+        /// @brief Transferts the received message to the ANetworkSystem
+        /// @param msg Massage to be transfered
+        void transferMsgToSystem(std::string msg);
 
     private:
         QUdpSocket *_socket;

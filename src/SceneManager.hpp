@@ -24,6 +24,8 @@ namespace ecs
             NONE = -1,
             GAME,
             MAIN_MENU,
+            CONNECTION,
+            LOBBY,
             CONTROLLER,
             HELP,
             PAUSE,

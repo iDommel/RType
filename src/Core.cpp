@@ -17,13 +17,16 @@
 #include "systems/GraphicSystem.hpp"
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
-#include "systems/NetworkSystem.hpp"
+#include "systems/NetworkClientSystem.hpp"
+#include "systems/NetworkServerSystem.hpp"
 
 namespace ecs
 {
 
     Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
     {
+        networkRole = role;
+
         // Connect signal doLoop to loop function
         connect(this, &Core::doLoop, this, &Core::loop, Qt::QueuedConnection);
         connect(this, &Core::exitApp, this, &QCoreApplication::quit, Qt::QueuedConnection);
@@ -34,7 +37,7 @@ namespace ecs
                 _systems[system] = new GameSystem();
                 break;
             case SystemType::EVENT:
-                    _systems[system] = new EventSystem();
+                _systems[system] = new EventSystem();
                 break;
             case SystemType::AUDIO:
                 _systems[system] = new AudioSystem();
@@ -46,26 +49,28 @@ namespace ecs
                 _systems[system] = new ParticlesSystem();
                 break;
             case SystemType::NETWORK:
-                _systems[system] = new NetworkSystem(role);
+                if (role == NetworkRole::CLIENT) {
+                    auto client = new NetworkClientSystem();
+                    _systems[system] = client;
+                    connect(this, &QCoreApplication::aboutToQuit, client, &NetworkClientSystem::destroy);
+                } else if (role == NetworkRole::SERVER) {
+                    auto server = new NetworkServerSystem();
+                    _systems[system] = server;
+                    connect(server, &NetworkServerSystem::changeScene, this, &Core::onChangeScene);
+                }
                 break;
             default:
                 break;
             }
         }
-        // _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
-        // _systems[SystemType::GAME] = std::make_unique<GameSystem>();
-        // _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
-        // _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
-        // _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
+
+        // if (networkRole == NetworkRole::CLIENT) {
+        //     auto netSys = dynamic_cast<ANetworkSystem *>(_systems[SystemType::NETWORK]);
+        //     connect(netSys, &ANetworkSystem::clientConnection, this, &Core::onClientConnection);
+        // }
     }
 
-    Core::~Core()
-    {
-        // if (_systems.find(SystemType::NETWORK) != _systems.end())
-        //     _systems[SystemType::NETWORK].release();
-        // if (_systems.find(SystemType::EVENT) != _systems.end())
-        //     _systems[SystemType::EVENT].release();
-    }
+    Core::~Core() {}
 
     void Core::run()
     {
@@ -123,15 +128,23 @@ namespace ecs
 
     void Core::setEventNetwork()
     {
-        if (_systems.find(SystemType::EVENT) == _systems.end() || _systems.find(SystemType::NETWORK) == _systems.end())
+        if (_systems.find(SystemType::EVENT) == _systems.end() || _systems.find(SystemType::NETWORK) == _systems.end() || _systems.find(SystemType::GAME) == _systems.end())
             throw std::runtime_error("Missing system");
         else if (_running)
             throw std::runtime_error("Can't set event network while running");
 
-        auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
+        auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
         auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT]);
+        auto gameSys = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
 
-        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkClientSystem::writeMsg);
         evtSys->setNetworkedEvents();
+        connect(gameSys, &GameSystem::writeMsg, netSys, &NetworkClientSystem::writeMsg);
+        gameSys->activateNetwork();
+    }
+
+    void Core::onChangeScene(SceneManager::SceneType scene)
+    {
+        _sceneManager.setCurrentScene(scene);
     }
 }

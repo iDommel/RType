@@ -9,16 +9,16 @@
 #include <iostream>
 
 #include "Core.hpp"
-#include "NetworkSystem.hpp"
+#include "ANetworkSystem.hpp"
 
 #include "TestHeaders.hpp"
 
 int main(int ac, char **av)
 {
-    ecs::Core core(ac, av, {
-        // {ecs::Core::SystemType::GAME,
-         ecs::Core::SystemType::NETWORK,},
-        //  ecs::Core::SystemType::PARTICLE},
+    ecs::Core core(ac, av,
+        {ecs::Core::SystemType::GAME,
+         ecs::Core::SystemType::NETWORK,
+         ecs::Core::SystemType::PARTICLE},
         ecs::NetworkRole::SERVER);
 
     try {
