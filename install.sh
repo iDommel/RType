@@ -205,8 +205,8 @@ fi;
 script_header "LANCE CONAN"
 export CONAN_SYSREQUIRES_MODE=enabled
 sudo conan install . --install-folder cmake-build-release --build=missing -c tools.system.package_manager:mode=install
-cmake . -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-cmake --build .
+sudo cmake . -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+sudo cmake --build .
 
 script_header "VOTRE INSTALLATION EST FINI" $C_BWHITE
 
