@@ -56,7 +56,7 @@ namespace ecs
          * @brief The callback to be called when an entity is added to a scene
          * @param entity The Entity that was added
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity) final;
+        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene) final;
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
@@ -93,8 +93,13 @@ namespace ecs
         /// @return if network is enabled
         bool isNetworkActivated();
 
+        static std::vector<Position> _playerSpawns;
+
     signals:
         void writeMsg(const std::string &message);
+
+    public slots:
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
 
     private:
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
@@ -123,7 +128,7 @@ namespace ecs
         std::shared_ptr<IEntity> create3DCamera(Vector3 camPos, Vector3 camTarget);
         void createSoundEvent(std::shared_ptr<Entity> &sound, std::string value);
         void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
-        void createSceneEvent(std::shared_ptr<Entity> &scene, SceneManager::SceneType sceneType);
+        void createSceneEvent(std::shared_ptr<Entity> &scene, SceneType sceneType);
         void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
 
         /// @brief Create a MouseEvent that writes a msg through the NetworkSystem
@@ -131,8 +136,7 @@ namespace ecs
         /// @param msg Message to send when left mouse button is pressed
         void createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg);
 
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
-
+        // void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
 
         std::unique_ptr<IScene> ReadMap();
 
@@ -153,6 +157,7 @@ namespace ecs
         static unsigned int nbr_ai;
         static const Position _uiPos[4];
         static const std::map<int, std::string> _bindings;
+
         CollideSystem _collideSystem;
         AISystem _aiSystem;
 

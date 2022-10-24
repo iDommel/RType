@@ -64,10 +64,21 @@ namespace ecs
             }
         }
 
-        // if (networkRole == NetworkRole::CLIENT) {
-        //     auto netSys = dynamic_cast<ANetworkSystem *>(_systems[SystemType::NETWORK]);
-        //     connect(netSys, &ANetworkSystem::clientConnection, this, &Core::onClientConnection);
-        // }
+        if (networkRole == NetworkRole::SERVER) {
+            auto netSys = dynamic_cast<NetworkServerSystem *>(_systems[SystemType::NETWORK]);
+            auto game = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
+
+            if (netSys == nullptr || game == nullptr)
+                return;
+            connect(netSys, &NetworkServerSystem::createPlayer, game, &GameSystem::createPlayer);
+        } else if (networkRole == NetworkRole::CLIENT) {
+            auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
+            auto game = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
+
+            if (netSys == nullptr || game == nullptr)
+                return;
+            connect(netSys, &NetworkClientSystem::createPlayer, game, &GameSystem::createPlayer);
+        }
     }
 
     Core::~Core() {}
@@ -79,7 +90,7 @@ namespace ecs
 
         for (auto &system : _systems)
             system.second->init(_sceneManager);
-        _sceneManager.setAddEntityCallback(std::bind(&Core::onEntityAdded, this, std::placeholders::_1));
+        _sceneManager.setAddEntityCallback(std::bind(&Core::onEntityAdded, this, std::placeholders::_1, std::placeholders::_2));
         _sceneManager.setRemoveEntityCallback(std::bind(&Core::onEntityRemoved, this, std::placeholders::_1));
 
         emit doLoop();
@@ -114,10 +125,10 @@ namespace ecs
         _systems[type]->update(manager, deltaTime);
     }
 
-    void Core::onEntityAdded(std::shared_ptr<IEntity> entity)
+    void Core::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene)
     {
         for (auto &system : _systems)
-            system.second->onEntityAdded(entity);
+            system.second->onEntityAdded(entity, scene);
     }
 
     void Core::onEntityRemoved(std::shared_ptr<IEntity> entity)
@@ -143,7 +154,7 @@ namespace ecs
         gameSys->activateNetwork();
     }
 
-    void Core::onChangeScene(SceneManager::SceneType scene)
+    void Core::onChangeScene(SceneType scene)
     {
         _sceneManager.setCurrentScene(scene);
     }

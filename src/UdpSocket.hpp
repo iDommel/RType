@@ -12,6 +12,7 @@
 #define CONNECTION_OK       "OK"
 #define DISCONNECTED         "STOP"
 #define READY               "READY"
+#define CR_PLAYER           "CR_PLAYER"
 
 #include <QtNetwork>
 #include <string>

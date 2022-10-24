@@ -32,14 +32,14 @@ namespace ecs
          * @brief The callback to be called when an entity is added to a scene
          * @param entity The Entity that was added
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity) final;
+        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene) final;
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
 
-        static void reloadScene(SceneManager &manager, SceneManager::SceneType sceneType);
+        static void reloadScene(SceneManager &manager, SceneType sceneType);
 
         void setNetworkedEvents();
 

@@ -10,6 +10,7 @@
 #include "Core.hpp"
 #include "Player.hpp"
 #include "Position.hpp"
+#include "GameSystem.hpp"
 
 namespace ecs
 {
@@ -27,10 +28,10 @@ namespace ecs
             std::cerr << s.first << std::endl;
             if (s.first == DISCONNECTED)
                 deconnectClient(s.second.first, s.second.second);
-            else if (s.first == WAIT_CONNECTION && manager.getCurrentSceneType() == SceneManager::SceneType::LOBBY)
+            else if (s.first == WAIT_CONNECTION && manager.getCurrentSceneType() == SceneType::LOBBY)
                 connectClient(s.second.first, s.second.second);
             else if (s.first == READY)
-                setClientReady(s.second);
+                setClientReady(s.second, manager);
             if (s.first.rfind("PLAYER ", 0) == 0) {
                 handlePlayerEvent(manager, s.first, dt);
             }
@@ -133,6 +134,11 @@ namespace ecs
         _socket->write(msg, QHostAddress(_senders[clientId].first), _senders[clientId].second);
     }
 
+    void NetworkServerSystem::writeToClient(const std::string &msg, std::pair<QString /*addr*/, unsigned short /*port*/> client)
+    {
+        _socket->write(msg, QHostAddress(client.first), client.second);
+    }
+
     void NetworkServerSystem::putMsgInQueue(std::string msg)
     {
         QString addr = _socket->getLastAddress().toString();
@@ -169,16 +175,24 @@ namespace ecs
         }
     }
 
-    void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client)
+    void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)
     {
+        if (_states[client] != ClientState::CONNECTED)
+            return;
         _states[client] = ClientState::READYTOPLAY;
+        // add new player entity
+        _playersId[client] = ++_players;
+        emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, _players, GameSystem::_playerSpawns[_players]);
+        writeMsg(std::string(CR_PLAYER) + std::to_string(_players));
+
+        // check if all players are ready
         for (auto s : _states) {
             if (s.second != ClientState::READYTOPLAY)
                 return;
         }
         // notify clients game can start
         writeMsg(READY);
-        emit changeScene(SceneManager::SceneType::GAME);
+        emit changeScene(SceneType::GAME);
     }
 
 }

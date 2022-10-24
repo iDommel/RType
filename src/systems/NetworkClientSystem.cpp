@@ -10,10 +10,12 @@
 #include "Core.hpp"
 #include "Player.hpp"
 #include "Position.hpp"
+#include "GameSystem.hpp"
 
 
 namespace ecs
 {
+
     void NetworkClientSystem::destroy()
     {
         if (_connected)
@@ -31,7 +33,7 @@ namespace ecs
     {
         static bool waitCo = false;
 
-        if (manager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION && !_connected && !waitCo) {
+        if (manager.getCurrentSceneType() == SceneType::CONNECTION && !_connected && !waitCo) {
             writeMsg(WAIT_CONNECTION);
             waitCo = true;
         }
@@ -39,11 +41,16 @@ namespace ecs
         for (auto &s : _msgQueue) {
             std::cerr << s << std::endl;
             if (waitCo && !_connected && s == CONNECTION_OK) {
-                manager.setCurrentScene(SceneManager::SceneType::LOBBY);
+                manager.setCurrentScene(SceneType::LOBBY);
                 waitCo = false;
                 _connected = true;
-            } else if (s == READY)
-                manager.setCurrentScene(SceneManager::SceneType::GAME);
+            } else if (s == READY) {
+                manager.setCurrentScene(SceneType::GAME);
+            } else if (s.rfind(CR_PLAYER, 0) == 0) {
+                int idPlayer = std::stoi(s.substr(std::string(CR_PLAYER).size()));
+                std::cerr << "Player " << idPlayer << std::endl;
+                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer]);
+            }
             if (s.rfind("PLAYER ", 0) == 0) {
                 handlePlayerEvent(manager, s, dt);
             }

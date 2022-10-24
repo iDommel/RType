@@ -14,7 +14,7 @@
 namespace ecs
 {
 
-    Scene::Scene(std::function<std::unique_ptr<IScene>()> init) : _initFunc(init)
+    Scene::Scene(std::function<std::unique_ptr<IScene>()> init, SceneType scene) : _initFunc(init), _type(scene)
     {
     }
 
@@ -24,7 +24,7 @@ namespace ecs
             _taggedEntities[tag].push_back(entity);
         }
         if (_addEntityCallback)
-            _addEntityCallback(entity);
+            _addEntityCallback(entity, _type);
         return *this;
     }
 
@@ -35,7 +35,7 @@ namespace ecs
                 _taggedEntities[tag].push_back(entity);
             }
             if (_addEntityCallback)
-                _addEntityCallback(entity);
+                _addEntityCallback(entity, _type);
         }
         return *this;
     }
@@ -68,7 +68,7 @@ namespace ecs
         return taggedEntities;
     }
 
-    void Scene::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback)
+    void Scene::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback)
     {
         _addEntityCallback = callback;
     }

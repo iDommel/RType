@@ -9,6 +9,8 @@
 #define _NETWORK_CLIENT_SYSTEM_HPP
 
 #include "ANetworkSystem.hpp"
+#include "IScene.hpp"
+#include "Position.hpp"
 
 namespace ecs {
 
@@ -26,6 +28,9 @@ namespace ecs {
           */
         void update(SceneManager &manager, uint64_t deltaTime);
         void destroy();
+
+    signals:
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
 
     public slots:
         /// @brief Sends msg to server
