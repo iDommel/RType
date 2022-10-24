@@ -53,7 +53,78 @@ namespace ecs
     std::shared_ptr<Entity> GameSystem::whichEntity(std::string mapAround, int x, int y)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundCenter.png", 0.0f, 2.0f);
+        std::string path;
+        // std::cout << mapAround.size() << std::endl;
+        // std::cout << mapAround.substr(0, 2) << "\n" << mapAround.substr(3, 5) << "\n" << mapAround.substr(6, 8) << "\n" << std::endl;
+
+        // if (mapAround[1] == 'a')
+        // {
+        //     if (mapAround[3] == 'a')
+        //     {
+        //         if (mapAround[5] == 'a')
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/Center.png";
+        //             else
+        //                 path = "assets/Blue Ground/Top.png";
+        //         } else
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/Right.png";
+        //             else
+        //                 path = "assets/Blue Ground/TopRight.png";
+        //         }
+        //     } else
+        //     {
+        //         if (mapAround[5] == 'a')
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/Left.png";
+        //             else
+        //                 path = "assets/Blue Ground/TopLeft.png";
+        //         } else
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/LeftRight.png";
+        //             else
+        //                 path = "assets/Blue Ground/TopLeftRight.png";
+        //         }
+        //     }
+        // } else
+        // {
+        //     if (mapAround[3] == 'a')
+        //     {
+        //         if (mapAround[5] == 'a')
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/Bot.png";
+        //             else
+        //                 path = "assets/Blue Ground/TopBot.png";
+        //         } else
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/BotRight.png";
+        //             else
+        //                 path = "assets/Blue Ground/TopBotRight.png";
+        //         }
+        //     } else
+        //     {
+        //         if (mapAround[5] == 'a')
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/BotLeft.png";
+        //             else
+        //                 path = "assets/Blue Ground/TopBotLeft.png";
+        //         } else
+        //         {
+        //             if (mapAround[7] == 'a')
+        //                 path = "assets/Blue Ground/BotLeftRight.png";
+        //             else
+        //                 path = "assets/Blue Ground/TopBotLeftRight.png";
+        //         }
+        //     }
+        // }
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
         entity->addComponent(sprite);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (15 - y) * SCALE, 0);
         entity->addComponent(position);
@@ -95,11 +166,11 @@ namespace ecs
         std::getline(file, lineThree);
         for (int row = 0; row < 170 && lineThree != ""; row++)
         {
+            std::cout << lineOne << "\n" << lineTwo << "\n" << lineThree << "\n" << std::endl;
             if (lineTwo[0] == 'a')
             {
                 strCube.clear();
-                strCube = "***";
-                strCube = strCube + lineOne[0] + lineTwo[0] + lineThree[0] + lineOne[1] + lineTwo[1] + lineThree[1];
+                strCube = "***" + lineOne[0] + lineTwo[0] + lineThree[0] + lineOne[1] + lineTwo[1] + lineThree[1];
                 scene->addEntity(whichEntity(strCube, row, 0));
             }
             if (lineTwo[15] == 'a')
