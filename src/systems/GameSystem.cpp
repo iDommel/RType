@@ -122,36 +122,42 @@ namespace ecs
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
-        if (SceneManager::getCurrentSceneType() == SceneManager::SceneType::CONTROLLER) {
-            if (players->changeUp == 2 || players->changeUp == 0) {
+        if (SceneManager::getCurrentSceneType() == SceneManager::SceneType::CONTROLLER)
+        {
+            if (players->changeUp == 2 || players->changeUp == 0)
+            {
                 auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText];
                 auto text = (*components)[IComponent::Type::TEXT];
                 auto value = Component::castComponent<String>(text);
                 value->getValue() = players->getUp();
                 players->changeUp = 0;
             }
-            if (players->changeLeft == 2 || players->changeLeft == 0) {
+            if (players->changeLeft == 2 || players->changeLeft == 0)
+            {
                 auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 1];
                 auto text = components->getFilteredComponents({IComponent::Type::TEXT});
                 auto value = Component::castComponent<String>(text[0]);
                 value->getValue() = players->getLeft();
                 players->changeLeft = 0;
             }
-            if (players->changeRight == 2 || players->changeRight == 0) {
+            if (players->changeRight == 2 || players->changeRight == 0)
+            {
                 auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 2];
                 auto text = (*components)[IComponent::Type::TEXT];
                 auto value = Component::castComponent<String>(text);
                 value->getValue() = players->getRight();
                 players->changeRight = 0;
             }
-            if (players->changeDown == 2 || players->changeDown == 0) {
+            if (players->changeDown == 2 || players->changeDown == 0)
+            {
                 auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 3];
                 auto text = (*components)[IComponent::Type::TEXT];
                 auto value = Component::castComponent<String>(text);
                 value->getValue() = players->getDown();
                 players->changeDown = 0;
             }
-            if (players->changeBomb == 2 || players->changeBomb == 0) {
+            if (players->changeBomb == 2 || players->changeBomb == 0)
+            {
                 auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 4];
                 auto text = (*components)[IComponent::Type::TEXT];
                 auto value = Component::castComponent<String>(text);
@@ -163,27 +169,36 @@ namespace ecs
 
     void GameSystem::updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
     {
-        if (players->changeUp == 1) {
+        if (players->changeUp == 1)
+        {
             auto entity = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText];
             auto text = (*entity)[IComponent::Type::TEXT];
             auto value = Component::castComponent<String>(text);
             value->getValue() = "|";
-        } else if (players->changeLeft == 1) {
+        }
+        else if (players->changeLeft == 1)
+        {
             auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 1];
             auto text = (*components)[IComponent::Type::TEXT];
             auto value = Component::castComponent<String>(text);
             value->getValue() = "|";
-        } else if (players->changeRight == 1) {
+        }
+        else if (players->changeRight == 1)
+        {
             auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 2];
             auto text = (*components)[IComponent::Type::TEXT];
             auto value = Component::castComponent<String>(text);
             value->getValue() = "|";
-        } else if (players->changeDown == 1) {
+        }
+        else if (players->changeDown == 1)
+        {
             auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 3];
             auto text = (*components)[IComponent::Type::TEXT];
             auto value = Component::castComponent<String>(text);
             value->getValue() = "|";
-        } else if (players->changeBomb == 1) {
+        }
+        else if (players->changeBomb == 1)
+        {
             auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 4];
             auto text = (*components)[IComponent::Type::TEXT];
             auto value = Component::castComponent<String>(text);
@@ -203,18 +218,23 @@ namespace ecs
         //         firstText += 5;
         //     }
         // }
-        if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::SPLASH) {
+        if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::SPLASH)
+        {
             timeElasped += dt;
-            if (timeElasped > SPLASH_TIMEOUT) {
+            if (timeElasped > SPLASH_TIMEOUT)
+            {
                 if (Core::networkRole == NetworkRole::CLIENT)
                     sceneManager.setCurrentScene(SceneManager::SceneType::CONNECTION);
                 if (Core::networkRole == NetworkRole::SERVER)
                     sceneManager.setCurrentScene(SceneManager::SceneType::GAME);
                 timeElasped = 0;
             }
-        } else if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION) {
+        }
+        else if (sceneManager.getCurrentSceneType() == SceneManager::SceneType::CONNECTION)
+        {
             timeElasped += dt;
-            if (timeElasped > CONNECTION_TIMEOUT && Core::networkRole == NetworkRole::CLIENT) {
+            if (timeElasped > CONNECTION_TIMEOUT && Core::networkRole == NetworkRole::CLIENT)
+            {
                 std::cerr << "Connection failed" << std::endl;
                 sceneManager.setShouldClose(true);
             }
@@ -281,7 +301,8 @@ namespace ecs
 
     void GameSystem::createSoundEvent(std::shared_ptr<Entity> &entity, std::string value)
     {
-        MouseCallbacks mouseCallbacks([value, entity](SceneManager &sceneManger, Vector2 mousePosition) {
+        MouseCallbacks mouseCallbacks([value, entity](SceneManager &sceneManger, Vector2 mousePosition)
+                                      {
                 auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
                 auto pos = Component::castComponent<Position>(comp[1]);
                 auto sprite = Component::castComponent<Sprite>(comp[0]);
@@ -315,23 +336,29 @@ namespace ecs
     void GameSystem::createSceneEvent(std::shared_ptr<Entity> &entity, SceneManager::SceneType scenetype)
     {
         MouseCallbacks mouseCallbacks(
-            [scenetype, entity, this](SceneManager &sceneManager, Vector2 mousePosition) {
+            [scenetype, entity, this](SceneManager &sceneManager, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
                 auto pos = Component::castComponent<Position>(comp[1]);
                 auto sprite = Component::castComponent<Sprite>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[2]);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
-                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                {
                     if (scenetype == SceneManager::SceneType::PREVIOUS)
                         sceneManager.setCurrentScene(SceneManager::getPreviousSceneType());
-                    else if (scenetype == SceneManager::SceneType::NONE) {
+                    else if (scenetype == SceneManager::SceneType::NONE)
+                    {
                         exit(0);
-                    } else if (scenetype == SceneManager::SceneType::GAME && sceneManager.getCurrentSceneType() != SceneManager::SceneType::PAUSE) {
+                    }
+                    else if (scenetype == SceneManager::SceneType::GAME && sceneManager.getCurrentSceneType() != SceneManager::SceneType::PAUSE)
+                    {
                         sceneManager.setCurrentScene(SceneManager::SceneType::GAME, true);
                         _collideSystem.reloadCollidables3D(sceneManager);
                         EventSystem::reloadScene(sceneManager, SceneManager::SceneType::GAME);
-                    } else
+                    }
+                    else
                         sceneManager.setCurrentScene(scenetype);
                 }
             },
@@ -349,14 +376,16 @@ namespace ecs
     {
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
         MouseCallbacks mouseCallbacks(
-            [entity, this, msg](SceneManager &sceneManager, Vector2 mousePosition) {
+            [entity, this, msg](SceneManager &sceneManager, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
                 auto pos = Component::castComponent<Position>(comp[1]);
                 auto sprite = Component::castComponent<Sprite>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[2]);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
-                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                {
                     emit writeMsg(msg);
                 }
             },
@@ -371,18 +400,21 @@ namespace ecs
     void GameSystem::createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button)
     {
         MouseCallbacks mouseCallbacks(
-            [entity, button, id_player, this](SceneManager &sceneManager, Vector2 mousePosition) {
+            [entity, button, id_player, this](SceneManager &sceneManager, Vector2 mousePosition)
+            {
                 auto comp = (*entity)[IComponent::Type::POSITION];
                 auto pos = Component::castComponent<Position>(comp);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + 50 &&
-                    mousePosition.y > pos->y && mousePosition.y < pos->y + 20) {
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + 20)
+                {
                     changeBindings(sceneManager, id_player, button);
                 }
             },
             [](SceneManager &, Vector2 /*mousePosition*/) {},
             [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [entity, button, id_player](SceneManager &sceneManager, Vector2 /*mousePosition*/) {
+            [entity, button, id_player](SceneManager &sceneManager, Vector2 /*mousePosition*/)
+            {
                 auto component = sceneManager.getScene(SceneManager::SceneType::GAME)[IEntity::Tags::PLAYER][id_player];
                 auto comp = component->getFilteredComponents({IComponent::Type::PLAYER, IComponent::Type::EVT_LISTENER});
                 auto player = Component::castComponent<Player>(comp[0]);
@@ -390,41 +422,55 @@ namespace ecs
                 std::string get = "";
                 char input = 0;
 
-                if (player->changeUp == 1) {
+                if (player->changeUp == 1)
+                {
                     input = Window::getKeyPressed();
-                    if (input != 0) {
+                    if (input != 0)
+                    {
                         get.assign(1, input);
                         event->replaceKeyboardEvent((KeyboardKey)player->getTagUp(), (KeyboardKey)GameSystem::getTag(get));
                         player->setUP(get);
                         player->changeUp = 2;
                     }
-                } else if (player->changeLeft == 1) {
+                }
+                else if (player->changeLeft == 1)
+                {
                     input = Window::getKeyPressed();
-                    if (input != 0) {
+                    if (input != 0)
+                    {
                         get.assign(1, input);
                         event->replaceKeyboardEvent((KeyboardKey)player->getTagLeft(), (KeyboardKey)GameSystem::getTag(get));
                         player->setLEFT(get);
                         player->changeLeft = 2;
                     }
-                } else if (player->changeRight == 1) {
+                }
+                else if (player->changeRight == 1)
+                {
                     input = Window::getKeyPressed();
-                    if (input != 0) {
+                    if (input != 0)
+                    {
                         get.assign(1, input);
                         event->replaceKeyboardEvent((KeyboardKey)player->getTagRight(), (KeyboardKey)GameSystem::getTag(get));
                         player->setRIGHT(get);
                         player->changeRight = 2;
                     }
-                } else if (player->changeDown == 1) {
+                }
+                else if (player->changeDown == 1)
+                {
                     input = Window::getKeyPressed();
-                    if (input != 0) {
+                    if (input != 0)
+                    {
                         get.assign(1, input);
                         event->replaceKeyboardEvent((KeyboardKey)player->getTagDown(), (KeyboardKey)GameSystem::getTag(get));
                         player->setDOWN(get);
                         player->changeDown = 2;
                     }
-                } else if (player->changeBomb == true) {
+                }
+                else if (player->changeBomb == true)
+                {
                     input = Window::getKeyPressed();
-                    if (input != 0) {
+                    if (input != 0)
+                    {
                         get.assign(1, input);
                         event->replaceKeyboardEvent((KeyboardKey)player->getTagBomb(), (KeyboardKey)GameSystem::getTag(get));
                         player->setBOMB(get);
@@ -442,12 +488,14 @@ namespace ecs
     void GameSystem::createNumberEvent(std::shared_ptr<Entity> &entity, int _nbr_player)
     {
         MouseCallbacks selector(
-            [entity, _nbr_player, this](SceneManager &sceneManager, Vector2 mousePosition) {
+            [entity, _nbr_player, this](SceneManager &sceneManager, Vector2 mousePosition)
+            {
                 auto comp = (*entity)[IComponent::Type::POSITION];
                 auto pos = Component::castComponent<Position>(comp);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + 50 &&
-                    mousePosition.y > pos->y && mousePosition.y < pos->y + 50) {
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + 50)
+                {
                     auto entity = sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D][3];
                     auto component = (*entity)[IComponent::Type::POSITION];
                     auto pos1 = Component::castComponent<Position>(component);
@@ -481,7 +529,8 @@ namespace ecs
     {
         auto players = sceneManager.getCurrentScene()[IEntity::Tags::PLAYER];
 
-        for (auto &player : players) {
+        for (auto &player : players)
+        {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             auto lastPos = *pos;
             auto vel = Component::castComponent<Velocity>((*player)[IComponent::Type::VELOCITY]);
@@ -492,9 +541,8 @@ namespace ecs
             splitVel.y = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            for (auto &collider : _collideSystem.getColliders(player)) {
-                std::cout << "PERDU !" << std::endl;
-                //sceneManager.setCurrentScene(SceneManager::SceneType::END);
+            for (auto &collider : _collideSystem.getColliders(player))
+            {
             }
 
             splitVel.y = (*vel).y;
@@ -542,7 +590,7 @@ namespace ecs
         std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
 
         backgroundEntity->addComponent(bg)
-                         .addComponent(bgPos);
+            .addComponent(bgPos);
         createMsgEvent(playButtonEntity, READY);
         scene->addEntities({backgroundEntity, playButtonEntity});
         return scene;
@@ -833,9 +881,6 @@ namespace ecs
                     entity->addComponent(sprite);
                     std::shared_ptr<Position> position = std::make_shared<Position>(row * HscaleSpacing, (15 - line) * VscaleSpacing, 0);
                     entity->addComponent(position);
-                    Rectangle rect = {position->x, position->y, 32, 32};
-                    std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
-                    entity->addComponent(hitbox);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
                 }
@@ -855,7 +900,6 @@ namespace ecs
             },
             [](SceneManager &) {},
             [](SceneManager &) {});
-
         return ReadMap();
     }
 
@@ -890,113 +934,131 @@ namespace ecs
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
         ButtonCallbacks moveRightCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER RIGHT PRESSED");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER RIGHT RELEASED");
                 else
                     player->stopRight(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER RIGHT DOWN");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER RIGHT UP");
                 else
                     player->stopRight(manager, playerEntity, 1);
             });
         ButtonCallbacks moveLeftCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER LEFT PRESSED");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER LEFT RELEASED");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER LEFT DOWN");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER LEFT UP");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             });
         ButtonCallbacks moveUpCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER UP PRESSED");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER UP RELEASED");
                 else
                     player->stopUp(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER UP DOWN");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER UP UP");
                 else
                     player->stopUp(manager, playerEntity, 1);
             });
         ButtonCallbacks moveDownCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER DOWN PRESSED");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER DOWN RELEASED");
                 else
                     player->stopDown(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER DOWN DOWN");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg("PLAYER DOWN UP");
                 else
                     player->stopDown(manager, playerEntity, 1);
             });
 
-        std::function<void(SceneManager &, float)> moveHorizontalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value) {
+        std::function<void(SceneManager &, float)> moveHorizontalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value)
+        {
             if (this->isNetworkActivated())
                 emit writeMsg("PLAYER STICK MOVED HORIZONTALLY");
             else
                 player->moveHorizontal(manager, playerEntity, value);
         };
-        std::function<void(SceneManager &, float)> moveVerticalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value) {
+        std::function<void(SceneManager &, float)> moveVerticalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value)
+        {
             if (this->isNetworkActivated())
                 emit writeMsg("PLAYER STICK MOVED VERTICALLY");
             else
@@ -1037,7 +1099,8 @@ namespace ecs
         auto component = (*entity)[IComponent::Type::PLAYER];
         auto player = Component::castComponent<Player>(component);
 
-        switch (button) {
+        switch (button)
+        {
         case 0:
             player->changeUp = 1;
             player->changeDown = 0;

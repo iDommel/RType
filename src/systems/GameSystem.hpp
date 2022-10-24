@@ -19,15 +19,15 @@
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
-#include <QtCore>  // for networked event handling
+#include <QtCore> // for networked event handling
 
 #define GAME_MAP_WIDTH 15
 #define GAME_MAP_HEIGHT 15
 #define GAME_TILE_SIZE 12
-#define GAME_NB_INDESTRUCTIBLE_WALL 0  //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
+#define GAME_NB_INDESTRUCTIBLE_WALL 0 //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
 
-#define SPLASH_TIMEOUT  3000 // value in milliseconds
+#define SPLASH_TIMEOUT 3000      // value in milliseconds
 #define CONNECTION_TIMEOUT 30000 // value in milliseconds
 
 struct Vector3;
@@ -93,10 +93,17 @@ namespace ecs
         /// @return if network is enabled
         bool isNetworkActivated();
 
-    signals:
-        void writeMsg(const std::string &message);
+
+            signals : void writeMsg(const std::string &message);
 
     private:
+        /// @brief Read map file and generate all the game scene entities
+        /// @return Return the scene with all the map entities
+        std::unique_ptr<IScene> ReadMap();
+        /// @brief Choose what sprite choose for the entity
+        /// @return Return the entity with the good sprite
+        std::shared_ptr<Entity> whichEntity(std::string mapAround, int x, int y);
+
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
         static void createMusic(Scene &scene);
@@ -132,9 +139,6 @@ namespace ecs
         void createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg);
 
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
-
-
-        std::unique_ptr<IScene> ReadMap();
 
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
