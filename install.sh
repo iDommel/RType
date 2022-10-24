@@ -43,7 +43,6 @@ function line
 
 function script_header
 {
-
 	color=$2
 	if test "$color" = ""; then
 		color=$C_RED
@@ -58,11 +57,8 @@ function script_header
 
 function get_os_type
 {
-	which zypper &> /dev/null && os="opensuse"
-	which pacman &> /dev/null && os="archlinux"
 	which dnf &> /dev/null && os="fedora"
-	which apt-get &> /dev/null && os="debian"
-	which emerge &> /dev/null && os="gentoo"
+	which apt-get &> /dev/null && os="ubuntu"
 }
 
 function script_init
@@ -88,20 +84,11 @@ function sys_upgrade
 		return
 	fi
 	case "$os" in
-		opensuse)
-			sudo zypper -y update
-			;;
-		archlinux)
-			yay -S
-			;;
 		fedora)
 			sudo dnf -y update
 			;;
-		debian)
+		ubuntu)
 			sudo apt -y update; sudo apt -y upgrade
-			;;
-		gentoo)
-			sudo emerge -u world
 			;;
 	esac
 }
@@ -113,21 +100,13 @@ function sys_install
 	function get_cmd_install
 	{
 		case "$os" in
-			opensuse)
-				echo "zypper -y install"
-				;;
-			archlinux)
-				echo "pacman --noconfirm -S"
-				;;
 			fedora)
 				echo "dnf install -y"
 				;;
-			debian)
+			ubuntu)
 				echo "apt -y install"
 				;;
-			gentoo)
-				echo "emerge"
-				;;
+
 		esac
 	}
 
@@ -154,6 +133,9 @@ function script_install
 }
 
 script_init
+
+script_header "MISE À JOUR DES PAQUETS DU SYSTÈME"
+sys_upgrade
 
 script_header "INSTALLATION DE GCC"
 if (which gcc); then
