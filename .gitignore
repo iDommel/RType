@@ -3,6 +3,12 @@ r-type_client
 build
 .vscode
 *.manifest
+cmake-build-release
+CMakeFiles
+cmake_install.cmake
+CMakeCache.txt
+CMakeUserPresets.json
+Makefile
 
 # Prerequisites
 *.d
