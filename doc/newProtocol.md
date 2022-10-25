@@ -7,7 +7,7 @@
 
 `messageType --`
 
-## *messageType* values {#entityMessage-values}:
+## *messageType* values {#messageType-values}:
 
 1. ### *entityMessage* syntax {#entityMessage-syntax}:
 *entityMessage* = 0 : A message that describes an action by the server on an entity,
@@ -64,8 +64,7 @@ refer to [entityType values](#entityType-values) for the values
 ---
 
 2. ### *graphicEventMessage* syntax {#graphicEventMessage-syntax}:
-*graphicEventMessage* = 1 : A message a graphic (raylib) event received by the client,
-  to be transmitted to the server
+*graphicEventMessage* = 1 : A message a graphic (raylib) event received by the client, to be transmitted to the server
 
 `graphicEventMessage eventType --`
 

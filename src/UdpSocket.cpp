@@ -54,11 +54,27 @@ namespace ecs
 
     void UdpSocket::write(const std::string &msg, const QHostAddress &address, int port)
     {
-        QByteArray buffer(msg.c_str(), msg.size());
+        ecs::Message message(msg);
+        QByteArray buffer;
+        QDataStream stream(&buffer, QIODevice::WriteOnly);
+        stream << message;
         QNetworkDatagram data(buffer, address, port);
         if (_socket->writeDatagram(data) == -1) {
-            throw std::runtime_error("Error sending msg: " + msg);
+            throw std::runtime_error("Error sending msg: " + message.toString());
         }
+        std::cout << "Send msg: " << message.toString() << std::endl;
+    }
+
+    void UdpSocket::write(const Message &msg, const QHostAddress &address, int port)
+    {
+        QByteArray buffer;
+        QDataStream stream(&buffer, QIODevice::WriteOnly);
+        stream << msg;
+        QNetworkDatagram data(buffer, address, port);
+        if (_socket->writeDatagram(data) == -1) {
+            throw std::runtime_error("Error sending msg: " + msg.toString());
+        }
+        std::cout << "Send msg: " << msg.toString() << std::endl;
     }
 
 }

@@ -8,11 +8,12 @@
 #ifndef UDP_SOCKET_HPP
 #define UDP_SOCKET_HPP
 
-#define WAIT_CONNECTION     "WAIT"
-#define CONNECTION_OK       "OK"
-#define DISCONNECTED         "STOP"
-#define READY               "READY"
+#define WAIT_CONNECTION "WAIT"
+#define CONNECTION_OK "OK"
+#define DISCONNECTED "STOP"
+#define READY "READY"
 
+#include "Message.hpp"
 #include <QtNetwork>
 #include <string>
 
@@ -31,8 +32,8 @@ namespace ecs
          * @param port Port to bind to
          * @param mode Bind mode
          */
-        UdpSocket(QObject *parent = nullptr, QHostAddress address = QHostAddress::AnyIPv4, \
-            int port = 0, QAbstractSocket::BindMode mode = QAbstractSocket::DefaultForPlatform);
+        UdpSocket(QObject *parent = nullptr, QHostAddress address = QHostAddress::AnyIPv4,
+                  int port = 0, QAbstractSocket::BindMode mode = QAbstractSocket::DefaultForPlatform);
 
         /// @brief Joins the multicast group on the default interface chosen by the operating system.
         /// @param groupAddress Address of the group to join
@@ -43,6 +44,12 @@ namespace ecs
         /// @param address Address to send message to
         /// @param port Port to send message to
         void write(const std::string &msg, const QHostAddress &address, int port);
+
+        /// @brief Writes message from a data stream
+        /// @param msg Data stream to read from
+        /// @param address Address to send message to
+        /// @param port Port to send message to
+        void write(const Message &msg, const QHostAddress &address, int port);
 
         /// @brief Tells if datagrams are available
         /// @return Returns True if the queue is not empty, false otherwise
@@ -71,7 +78,6 @@ namespace ecs
         QUdpSocket *_socket;
         QHostAddress _lastAddr;
         unsigned short _lastPort = 0;
-
     };
 
 }
