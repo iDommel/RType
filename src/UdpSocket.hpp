@@ -14,6 +14,7 @@
 #define READY               "READY"
 #define CR_PLAYER           "CR_PLAYER"
 #define CR_ME               "CR_ME"
+#define IMALIVE             "IMALIVE"
 
 #include <QtNetwork>
 #include <string>

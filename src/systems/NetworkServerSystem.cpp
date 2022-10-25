@@ -181,6 +181,8 @@ namespace ecs
         QString addr = _socket->getLastAddress().toString();
         unsigned short port = _socket->getLastPort();
 
+        if (_timers.find(std::make_pair(addr, port)) != _timers.end())
+            _timers[std::make_pair(addr, port)].start(PING_TIMEOUT);
         if (!msg.empty())
             _msgQueue[msg] = std::make_pair(addr, port);
     }
@@ -193,8 +195,12 @@ namespace ecs
             if (s.first == addr && s.second == port)
                 return;
         }
-        _senders.push_back(std::make_pair(addr, port));
-        _states[std::make_pair(addr, port)] = ClientState::CONNECTED;
+        auto client = std::make_pair(addr, port);
+        _senders.push_back(client);
+        _states[client] = ClientState::CONNECTED;
+        _timers[client];
+        connect(&_timers[client], &QTimer::timeout, std::bind(&NetworkServerSystem::deconnectClientTimedout, this, client));
+        _timers[client].start(PING_TIMEOUT * PING_TIMEOUT);
         _socket->write(CONNECTION_OK, QHostAddress(addr), port);
     }
 
@@ -205,11 +211,17 @@ namespace ecs
             if (s.first == addr && s.second == port) {
                 _senders.erase(_senders.begin() + i);
                 _states.erase(s);
+                _timers.erase(s);
                 std::cerr << "Removed client" << std::endl;
                 break;
             }
             i++;
         }
+    }
+
+    void NetworkServerSystem::deconnectClientTimedout(std::pair<QString, unsigned short> client)
+    {
+        deconnectClient(client.first, client.second);
     }
 
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)
