@@ -48,9 +48,36 @@
 
 namespace ecs
 {
-    static int SCALE = 64;
 
-    std::shared_ptr<Entity> GameSystem::whichEntity(std::string mapAround, int x, int y)
+    static int SCALE = 64;
+    enum class ENEMYID {
+        REDONE = 1,
+        REDTWO = 2,
+        REDTHREE = 3,
+        REDFOUR = 4,
+        REDFIVE = 5,
+        REDSIX = 6,
+        REDSEVEN = 7,
+        REDHEIGHT = 8,
+        REDNINE = 9,
+        REDTEN = 0,
+    }
+
+    std::shared_ptr<Entity> GameSystem::whichEnemy(int mobId, int x, int y)
+    {
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+        switch (mobId)
+        {
+        case ENEMYID::REDONE :
+            /* code */
+            break;
+        
+        default:
+            return nullptr;
+        }
+    }
+
+    std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
     {
         int lastLine = 15;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
@@ -180,7 +207,7 @@ namespace ecs
                 strCube.push_back(lineOne[firstLine]);
                 strCube.push_back(lineThree[firstLine]);
                 strCube.push_back(lineTwo[firstLine + 1]);
-                scene->addEntity(whichEntity(strCube, row, firstLine));
+                scene->addEntity(whichWall(strCube, row, firstLine));
             }
             if (lineTwo[lastLine] == 'a')
             {
@@ -189,7 +216,7 @@ namespace ecs
                 strCube.push_back(lineOne[lastLine]);
                 strCube.push_back(lineThree[lastLine]);
                 strCube.push_back('a');
-                scene->addEntity(whichEntity(strCube, row, lastLine));
+                scene->addEntity(whichWall(strCube, row, lastLine));
             }
 
             for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++)
@@ -203,7 +230,7 @@ namespace ecs
                     strCube.push_back(lineOne[line]);
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
-                    scene->addEntity(whichEntity(strCube, row, line));
+                    scene->addEntity(whichWall(strCube, row, line));
                 }
                 else if (lineTwo[line] == 'P')
                     createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {row * SCALE, (lastLine - line) * SCALE, 0});
