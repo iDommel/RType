@@ -159,7 +159,7 @@ namespace ecs
 
     void ANetworkSystem::onEntityRemoved(std::shared_ptr<IEntity>) {}
 
-    // void ANetworkSystem::writeMsg(const std::string &msg)
+    // void ANetworkSystem::writeMsg(const Message &msg)
     // {
     //     if (Core::networkRole == NetworkRole::CLIENT) {
     //         _socket->write(msg, _serverAddr, _port);

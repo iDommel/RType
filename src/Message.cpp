@@ -17,6 +17,11 @@ namespace ecs
     {
     }
 
+    Message::Message(const char *str)
+        : _messageType(MessageType::TEXTMESSAGE), _textMessage(QString(str))
+    {
+    }
+
     Message::Message(EventType eventType, KeyState keyState, KeyboardKey key)
         : _messageType(MessageType::GRAPHICEVENTMESSAGE), _eventType(eventType), _keyState(keyState), _keyboardKey(key)
     {

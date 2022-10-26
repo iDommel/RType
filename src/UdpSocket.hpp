@@ -39,13 +39,7 @@ namespace ecs
         /// @param groupAddress Address of the group to join
         void joinMulticastGroup(QHostAddress groupAddress);
 
-        /// @brief Writes a message
-        /// @param msg Message to send
-        /// @param address Address to send message to
-        /// @param port Port to send message to
-        void write(const std::string &msg, const QHostAddress &address, int port);
-
-        /// @brief Writes message from a data stream
+        /// @brief Writes a message using the Message class
         /// @param msg Data stream to read from
         /// @param address Address to send message to
         /// @param port Port to send message to

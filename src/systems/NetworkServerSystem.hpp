@@ -12,24 +12,23 @@
 #include <vector>
 #include <map>
 
-namespace ecs {
+namespace ecs
+{
 
     class NetworkServerSystem : public ANetworkSystem
     {
-
         Q_OBJECT
 
     public:
-
         void init(SceneManager &manager);
         /// @brief Reads all received messages and processes them
         void update(SceneManager &manager, uint64_t deltaTime);
-        void destroy() {};
+        void destroy(){};
 
     public slots:
         /// @brief Sends msg through the UdpSocket to all connected clients
         /// @param msg Message to send
-        void writeMsg(const std::string &msg);
+        void writeMsg(const Message &msg);
 
         /// @brief Sends msg through the UdpSocket to the specified client
         /// @param msg Message to send
@@ -44,7 +43,6 @@ namespace ecs {
         void changeScene(SceneManager::SceneType scene);
 
     private:
-
         void connectClient(QString addr, unsigned short port);
         void deconnectClient(QString addr, unsigned short port);
         void setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client);
@@ -56,7 +54,6 @@ namespace ecs {
         std::map<std::string, std::pair<QString /*addr*/, unsigned short /*port*/>> _msgQueue;
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, ANetworkSystem::ClientState> _states;
-
     };
 
 }

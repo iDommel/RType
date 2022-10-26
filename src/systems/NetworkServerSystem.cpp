@@ -122,7 +122,7 @@ namespace ecs
         }
     }
 
-    void NetworkServerSystem::writeMsg(const std::string &msg)
+    void NetworkServerSystem::writeMsg(const Message &msg)
     {
         for (auto &client : _senders)
             _socket->write(msg, QHostAddress(client.first), client.second);

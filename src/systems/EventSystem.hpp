@@ -8,17 +8,17 @@
 #ifndef EVENT_SYSTEM_HPP
 #define EVENT_SYSTEM_HPP
 
+#include "Message.hpp"
 #include "ISystem.hpp"
 #include "SceneManager.hpp"
 
-#include <QtCore>   // for networked event handling
+#include <QtCore>  // for networked event handling
 
 namespace ecs
 {
     class EventListener;
     class EventSystem : public QObject, public ISystem
     {
-
         Q_OBJECT
 
     public:
@@ -44,7 +44,7 @@ namespace ecs
         void setNetworkedEvents();
 
     signals:
-        void writeMsg(const std::string &message);
+        void writeMsg(const Message &message);
 
     private:
         void handleKeyboard(SceneManager &, std::shared_ptr<EventListener> listener);

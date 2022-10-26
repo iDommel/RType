@@ -357,7 +357,8 @@ namespace ecs
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
-                    emit writeMsg(msg);
+                    // TODO: replace with mouse event message
+                    emit writeMsg(Message(msg));
                 }
             },
             [](SceneManager &, Vector2 /*mousePosition*/) {},
@@ -540,7 +541,7 @@ namespace ecs
         std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
 
         backgroundEntity->addComponent(bg)
-                         .addComponent(bgPos);
+            .addComponent(bgPos);
         createMsgEvent(playButtonEntity, READY);
         scene->addEntities({backgroundEntity, playButtonEntity});
         return scene;
@@ -574,14 +575,11 @@ namespace ecs
         BGentity3->addComponent(BGposition3);
         scene->addEntity(BGentity3);
         std::getline(file, lineContent);
-        for (int row = 0; row < 170 && lineContent != ""; row++)
-        {
-            for (int line = 0; line < 17 && line <= lineContent.size(); line++)
-            {
+        for (int row = 0; row < 170 && lineContent != ""; row++) {
+            for (int line = 0; line < 17 && line <= lineContent.size(); line++) {
                 if (lineContent[line] == '*')
                     ;
-                else if (lineContent[line] == 'a')
-                {
+                else if (lineContent[line] == 'a') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTop.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -589,9 +587,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'b')
-                {
+                } else if (lineContent[line] == 'b') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundBot.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -599,9 +595,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'c')
-                {
+                } else if (lineContent[line] == 'c') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -609,9 +603,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'd')
-                {
+                } else if (lineContent[line] == 'd') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -619,9 +611,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'e')
-                {
+                } else if (lineContent[line] == 'e') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -629,9 +619,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'f')
-                {
+                } else if (lineContent[line] == 'f') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -639,9 +627,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'g')
-                {
+                } else if (lineContent[line] == 'g') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundBotLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -649,9 +635,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'h')
-                {
+                } else if (lineContent[line] == 'h') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundBotRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -659,9 +643,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'i')
-                {
+                } else if (lineContent[line] == 'i') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundCenter.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -669,9 +651,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'j')
-                {
+                } else if (lineContent[line] == 'j') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopBotLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -679,9 +659,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'k')
-                {
+                } else if (lineContent[line] == 'k') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopBotRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -689,9 +667,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'l')
-                {
+                } else if (lineContent[line] == 'l') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopLeftRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -699,9 +675,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'm')
-                {
+                } else if (lineContent[line] == 'm') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundBotLeftRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -709,9 +683,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'n')
-                {
+                } else if (lineContent[line] == 'n') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundInAngleTopLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -719,9 +691,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'o')
-                {
+                } else if (lineContent[line] == 'o') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundInAngleTopRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -729,9 +699,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'p')
-                {
+                } else if (lineContent[line] == 'p') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundInAngleBotLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -739,9 +707,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'q')
-                {
+                } else if (lineContent[line] == 'q') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundInAngleBotRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -749,9 +715,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'r')
-                {
+                } else if (lineContent[line] == 'r') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundOutAngleTopLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -759,9 +723,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 's')
-                {
+                } else if (lineContent[line] == 's') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundOutAngleTopRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -769,9 +731,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 't')
-                {
+                } else if (lineContent[line] == 't') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundOutAngleBotLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -779,9 +739,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'u')
-                {
+                } else if (lineContent[line] == 'u') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundOutAngleBotRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -789,9 +747,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'v')
-                {
+                } else if (lineContent[line] == 'v') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundRightLeft.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -799,9 +755,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'w')
-                {
+                } else if (lineContent[line] == 'w') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopBot.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -809,9 +763,7 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'x')
-                {
+                } else if (lineContent[line] == 'x') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Blue Ground/BlueGroundTopBotLeftRight.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -819,13 +771,9 @@ namespace ecs
                     entity->addComponent(position);
                     // Need to add hitbox but no idea of the size of the grounds in the window
                     scene->addEntity(entity);
-                }
-                else if (lineContent[line] == 'P')
-                {
+                } else if (lineContent[line] == 'P') {
                     createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {row * HscaleSpacing, (15 - line) * VscaleSpacing, 0});
-                }
-                else if (lineContent[line] == '1')
-                {
+                } else if (lineContent[line] == '1') {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
                     entity->addComponent(sprite);
@@ -844,8 +792,7 @@ namespace ecs
     {
         ButtonCallbacks pauseCallbacks(
             [](SceneManager &) {},
-            [](SceneManager &scenemanager)
-            {
+            [](SceneManager &scenemanager) {
                 scenemanager.setCurrentScene(SceneManager::SceneType::PAUSE);
             },
             [](SceneManager &) {},
@@ -887,113 +834,130 @@ namespace ecs
         ButtonCallbacks moveRightCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT PRESSED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_RIGHT));
+                // emit writeMsg("PLAYER RIGHT PRESSED");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT RELEASED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_RIGHT));
+                // emit writeMsg("PLAYER RIGHT RELEASED");
                 else
                     player->stopRight(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT DOWN");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_RIGHT));
+
+                // emit writeMsg("PLAYER RIGHT DOWN");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER RIGHT UP");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_RIGHT));
+                // emit writeMsg("PLAYER RIGHT UP");
                 else
                     player->stopRight(manager, playerEntity, 1);
             });
         ButtonCallbacks moveLeftCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT PRESSED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_LEFT));
+                // emit writeMsg("PLAYER LEFT PRESSED");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT RELEASED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_LEFT));
+                // emit writeMsg("PLAYER LEFT RELEASED");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT DOWN");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_LEFT));
+                // emit writeMsg("PLAYER LEFT DOWN");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER LEFT UP");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_LEFT));
+                // emit writeMsg("PLAYER LEFT UP");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             });
         ButtonCallbacks moveUpCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP PRESSED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_UP));
+                // emit writeMsg("PLAYER UP PRESSED");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP RELEASED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_UP));
+                // emit writeMsg("PLAYER UP RELEASED");
                 else
                     player->stopUp(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP DOWN");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_UP));
+                // emit writeMsg("PLAYER UP DOWN");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER UP UP");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_UP));
+                // emit writeMsg("PLAYER UP UP");
                 else
                     player->stopUp(manager, playerEntity, 1);
             });
         ButtonCallbacks moveDownCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN PRESSED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_DOWN));
+                // emit writeMsg("PLAYER DOWN PRESSED");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN RELEASED");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_DOWN));
+                // emit writeMsg("PLAYER DOWN RELEASED");
                 else
                     player->stopDown(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN DOWN");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_DOWN));
+                // emit writeMsg("PLAYER DOWN DOWN");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
-                    emit writeMsg("PLAYER DOWN UP");
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_DOWN));
+                // emit writeMsg("PLAYER DOWN UP");
                 else
                     player->stopDown(manager, playerEntity, 1);
             });
 
         std::function<void(SceneManager &, float)> moveHorizontalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value) {
             if (this->isNetworkActivated())
-                emit writeMsg("PLAYER STICK MOVED HORIZONTALLY");
+                emit writeMsg(Message("PLAYER STICK MOVED HORIZONTALLY"));
             else
                 player->moveHorizontal(manager, playerEntity, value);
         };
         std::function<void(SceneManager &, float)> moveVerticalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value) {
             if (this->isNetworkActivated())
-                emit writeMsg("PLAYER STICK MOVED VERTICALLY");
+                emit writeMsg(Message("PLAYER STICK MOVED VERTICALLY"));
             else
                 player->moveVertical(manager, playerEntity, value);
         };

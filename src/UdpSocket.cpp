@@ -52,19 +52,6 @@ namespace ecs
         return _socket->waitForReadyRead(ms);
     }
 
-    void UdpSocket::write(const std::string &msg, const QHostAddress &address, int port)
-    {
-        ecs::Message message(msg);
-        QByteArray buffer;
-        QDataStream stream(&buffer, QIODevice::WriteOnly);
-        stream << message;
-        QNetworkDatagram data(buffer, address, port);
-        if (_socket->writeDatagram(data) == -1) {
-            throw std::runtime_error("Error sending msg: " + message.toString());
-        }
-        std::cout << "Send msg: " << message.toString() << std::endl;
-    }
-
     void UdpSocket::write(const Message &msg, const QHostAddress &address, int port)
     {
         QByteArray buffer;

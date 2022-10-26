@@ -10,27 +10,26 @@
 
 #include "ANetworkSystem.hpp"
 
-namespace ecs {
+namespace ecs
+{
 
     class NetworkClientSystem : public ANetworkSystem
     {
-
         Q_OBJECT
 
     public:
-
         void init(SceneManager &manager);
         /** @brief Reads all received messages and processes them
-          * @note If not connected writes to server to connect.
-          * @see NetworkServerSystem::update()
-          */
+         *  @note If not connected writes to server to connect.
+         *  @see NetworkServerSystem::update()
+         */
         void update(SceneManager &manager, uint64_t deltaTime);
         void destroy();
 
     public slots:
         /// @brief Sends msg to server
         /// @param msg Message to send
-        void writeMsg(const std::string &msg);
+        void writeMsg(const Message &msg);
 
         /// @brief Puts received message in the system's queue
         /// @param msg Message received
@@ -40,7 +39,6 @@ namespace ecs {
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t deltaTime);
-
 
         std::vector<std::string> _msgQueue;
         bool _connected = false;

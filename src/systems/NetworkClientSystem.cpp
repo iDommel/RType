@@ -11,7 +11,6 @@
 #include "Player.hpp"
 #include "Position.hpp"
 
-
 namespace ecs
 {
     void NetworkClientSystem::destroy()
@@ -57,7 +56,7 @@ namespace ecs
             _msgQueue.push_back(msg);
     }
 
-    void NetworkClientSystem::writeMsg(const std::string &msg)
+    void NetworkClientSystem::writeMsg(const Message &msg)
     {
         // std::cerr << "write: " << msg << std::endl;
         _socket->write(msg, _serverAddr, _port);

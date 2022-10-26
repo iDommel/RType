@@ -69,6 +69,9 @@ namespace ecs
         /// @brief Constructor for TEXTMESSAGE messages
         /// @param str the string to send
         Message(const std::string &);
+        /// @brief Alternate constructor for TEXTMESSAGE messages
+        /// @param str the string to send
+        Message(const char *);
         /// @brief Constructor for KeyboardEvents messages
         /// @param eventType the type of the event
         /// @param keyState the state of the key pressed
