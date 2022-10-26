@@ -35,6 +35,7 @@ add_library(${LIBRARY_NAME}
     src/Sound.cpp
     src/UdpSocket.cpp
     src/Message.cpp
+    src/MapGeneration.cpp
 
     src/systems/AudioSystem.cpp
     src/systems/GraphicSystem.cpp
