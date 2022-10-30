@@ -34,6 +34,7 @@ add_library(${LIBRARY_NAME}
     src/GamepadStickCallbacks.cpp
     src/Sound.cpp
     src/UdpSocket.cpp
+    src/MapGeneration.cpp
 
     src/systems/AudioSystem.cpp
     src/systems/GraphicSystem.cpp

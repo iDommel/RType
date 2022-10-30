@@ -28,6 +28,7 @@ namespace ecs
         /**
          * @brief Scene constructor
          * @param init Scene init function
+         * @param type Scene type
          */
         Scene(std::function<std::unique_ptr<IScene>()> init, SceneType type);
 

@@ -19,15 +19,15 @@
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
-#include <QtCore>  // for networked event handling
+#include <QtCore> // for networked event handling
 
 #define GAME_MAP_WIDTH 15
 #define GAME_MAP_HEIGHT 15
 #define GAME_TILE_SIZE 12
-#define GAME_NB_INDESTRUCTIBLE_WALL 0  //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
+#define GAME_NB_INDESTRUCTIBLE_WALL 0 //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
 
-#define SPLASH_TIMEOUT  3000 // value in milliseconds
+#define SPLASH_TIMEOUT 3000      // value in milliseconds
 #define CONNECTION_TIMEOUT 30000 // value in milliseconds
 
 struct Vector3;
@@ -55,6 +55,7 @@ namespace ecs
         /**
          * @brief The callback to be called when an entity is added to a scene
          * @param entity The Entity that was added
+         * @param scene Scene to add entity into
          */
         void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene) final;
         /**
@@ -102,6 +103,13 @@ namespace ecs
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
 
     private:
+        /// @brief Read map file and generate all the game scene entities
+        /// @return Return the scene with all the map entities
+        std::unique_ptr<IScene> ReadMap();
+        /// @brief Choose what sprite choose for the entity
+        /// @return Return the entity with the good sprite
+        std::shared_ptr<Entity> whichEntity(std::string mapAround, int x, int y);
+
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
         static void createMusic(Scene &scene);
@@ -135,10 +143,6 @@ namespace ecs
         /// @param entity Entity to add the mouse event to
         /// @param msg Message to send when left mouse button is pressed
         void createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg);
-
-        // void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos);
-
-        std::unique_ptr<IScene> ReadMap();
 
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
