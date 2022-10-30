@@ -182,7 +182,7 @@ namespace ecs
         unsigned short port = _socket->getLastPort();
 
         if (_timers.find(std::make_pair(addr, port)) != _timers.end())
-            _timers[std::make_pair(addr, port)].start(PING_TIMEOUT);
+            _timers[std::make_pair(addr, port)].start(PING_TIMEOUT * PING_TIMEOUT);
         if (!msg.empty())
             _msgQueue[msg] = std::make_pair(addr, port);
     }
