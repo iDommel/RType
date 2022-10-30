@@ -143,7 +143,7 @@ namespace ecs
         int firstLine = 0;
         int lastLine = 15;
 
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this));
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this), SceneType::GAME);
 
         std::shared_ptr<Entity> BGentity1 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite1 = std::make_shared<Sprite>("assets/Background/Background1.png", 0.0f, 3.0f);
@@ -206,7 +206,7 @@ namespace ecs
                     scene->addEntity(whichEntity(strCube, row, line));
                 }
                 else if (lineTwo[line] == 'P')
-                    createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {row * SCALE, (lastLine - line) * SCALE, 0});
+                    _playerSpawns.push_back({row * SCALE, (lastLine - line) * SCALE, 0});
                 else if (lineTwo[line] == '1')
                 {
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
