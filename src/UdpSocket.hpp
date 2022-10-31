@@ -14,6 +14,7 @@
 #define READY               "READY"
 #define CR_PLAYER           "CR_PLAYER"
 #define CR_ME               "CR_ME"
+#define RM_PLAYER           "RM_PLAYER"
 #define IMALIVE             "IMALIVE"
 
 #include <QtNetwork>
@@ -52,6 +53,9 @@ namespace ecs
         bool canRead();
 
         bool waitReadyRead(int ms = 30000);
+
+        /// @brief Returns socket state
+        QAbstractSocket::SocketState state() const { return _socket->state(); };
 
         /// @brief Returns the address of the last sender
         QHostAddress getLastAddress() { return _lastAddr; };
