@@ -32,15 +32,17 @@ namespace ecs
             maybeUninitialized = (*collidable)[IComponent::Type::HITBOX];
             if (maybeUninitialized && !maybeUninitialized->isInitialized()) {
                 pos = Component::castComponent<Position>((*collidable)[IComponent::Type::POSITION]);
+                std::cout << "bonjour" << std::endl;
                 if (collidable->hasComponent(IComponent::Type::RECT)) {
                     rect = Component::castComponent<Rect>((*collidable)[IComponent::Type::RECT]);
-                    Vector2 pos2d = {pos->x, pos->y};
-                    Rectangle toUpdateRect = {rect->left, rect->top, rect->width, rect->height};
-                    maybeUninitialized = std::make_shared<Hitbox>(toUpdateRect, pos2d);
+                    if (!rect->isFirst) {
+                        Vector2 pos2d = {pos->x, pos->y};
+                        Rectangle toUpdateRect = {rect->left, rect->top, rect->width, rect->height};
+                        maybeUninitialized = std::make_shared<Hitbox>(toUpdateRect, pos2d);
+                    }
                 } else if (collidable->hasComponent(IComponent::Type::MODEL)) {
                     Vector3 pos3d = {pos->x, pos->y, pos->z};
                     Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0, 0, 0}, {0, 0, 0}}, pos3d));
-                } else if (collidable->)
                 } else {
                     throw std::runtime_error("Uninitialized collidable entity has no rect or model");
                 }

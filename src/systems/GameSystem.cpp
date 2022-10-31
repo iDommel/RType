@@ -634,6 +634,7 @@ namespace ecs
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>();
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
+        std::shared_ptr<Rect> playerRect = std::make_shared<Rect>(true);
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(false);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyBomb);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
@@ -781,7 +782,7 @@ namespace ecs
         playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_LEFT, moveLeftCallbacks);
         playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_X, moveHorizontalStickCallback);
         playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
-        playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerHitbox, playerListener, destruct});
+        playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerRect, playerHitbox, playerListener, destruct});
         scene.addEntity(playerEntity);
     }
 

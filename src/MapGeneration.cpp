@@ -132,9 +132,9 @@ namespace ecs
         }
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
-        //Rectangle rect = {position->x, position->y, 100, 100};
+        std::shared_ptr<Rect> rect = std::make_shared<Rect>(true);
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(false);
-        entity->addComponent(sprite).addComponent(position).addComponent(hitbox);
+        entity->addComponent(sprite).addComponent(position).addComponent(rect).addComponent(hitbox);
         return entity;
     }
 
@@ -214,9 +214,9 @@ namespace ecs
                     std::shared_ptr<Entity> entity = std::make_shared<Entity>();
                     std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
                     std::shared_ptr<Position> position = std::make_shared<Position>(row * SCALE, (lastLine - line) * SCALE, 0);
-                    //Rectangle rect = {position->x, position->y, 100, 100};
+                    std::shared_ptr<Rect> rect = std::make_shared<Rect>(true);
                     std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(false);
-                    entity->addComponent(sprite).addComponent(position).addComponent(hitbox);
+                    entity->addComponent(sprite).addComponent(position).addComponent(rect).addComponent(hitbox);
                     scene->addEntity(entity);
                 }
             }

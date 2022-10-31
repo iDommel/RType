@@ -35,7 +35,7 @@ namespace ecs
     void GraphicSystem::init(SceneManager &sceneManager)
     {
         std::cerr << "GraphicSystem::init" << std::endl;
-        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "Indie Studio");
+        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "R-Type");
 
         for (auto &scene : sceneManager.getScenes())
         {
@@ -131,6 +131,7 @@ namespace ecs
 
         spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
         spriteRect->height = _textures[sprite->getValue()].first->getHeight();
+        spriteRect->isFirst = false;
     }
 
     void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)

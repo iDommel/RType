@@ -24,10 +24,16 @@ namespace ecs
             _isInitialized = true;
         }
 
+        Rect(bool isFirst): Component(Type::RECT)
+        {
+            _isInitialized = true;
+        }
+
         float left;
         float top;
         float width;
         float height;
+        bool isFirst = true;
     };
 
 }
