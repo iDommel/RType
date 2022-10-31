@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
+#include <regex>
 
 #include "GameSystem.hpp"
 #include "EventSystem.hpp"
@@ -48,9 +49,43 @@
 
 namespace ecs
 {
+
     static int SCALE = 64;
 
-    std::shared_ptr<Entity> GameSystem::whichEntity(std::string mapAround, int x, int y)
+    std::shared_ptr<Entity> GameSystem::whichEnemy(int mobId, int x, int y)
+    {
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+        std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
+        entity->addComponent(position);
+
+        if (mobId == 1)
+        {
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
+        }
+        if (mobId == 2)
+        {
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
+        }
+        if (mobId == 3)
+        {
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
+        }
+        if (mobId == 4)
+        {
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
+        }
+        return nullptr;
+    }
+
+    std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
     {
         int lastLine = 15;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
@@ -138,6 +173,7 @@ namespace ecs
 
     std::unique_ptr<IScene> GameSystem::ReadMap()
     {
+        std::regex enemyRegex("[0-9]");
         int firstRow = 0;
         int lastRow = 169;
         int firstLine = 0;
@@ -180,7 +216,7 @@ namespace ecs
                 strCube.push_back(lineOne[firstLine]);
                 strCube.push_back(lineThree[firstLine]);
                 strCube.push_back(lineTwo[firstLine + 1]);
-                scene->addEntity(whichEntity(strCube, row, firstLine));
+                scene->addEntity(whichWall(strCube, row, firstLine));
             }
             if (lineTwo[lastLine] == 'a')
             {
@@ -189,7 +225,7 @@ namespace ecs
                 strCube.push_back(lineOne[lastLine]);
                 strCube.push_back(lineThree[lastLine]);
                 strCube.push_back('a');
-                scene->addEntity(whichEntity(strCube, row, lastLine));
+                scene->addEntity(whichWall(strCube, row, lastLine));
             }
 
             for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++)
@@ -203,16 +239,13 @@ namespace ecs
                     strCube.push_back(lineOne[line]);
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
-                    scene->addEntity(whichEntity(strCube, row, line));
+                    scene->addEntity(whichWall(strCube, row, line));
                 }
                 else if (lineTwo[line] == 'P')
                     _playerSpawns.push_back({row * SCALE, (lastLine - line) * SCALE, 0});
-                else if (lineTwo[line] == '1')
+                else if (lineTwo[line] >= '0' && lineTwo[line] <= '9')
                 {
-                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
-                    std::shared_ptr<Position> position = std::make_shared<Position>(row * SCALE, (lastLine - line) * SCALE, 0);
-                    entity->addComponent(sprite).addComponent(position);
+                    std::shared_ptr<Entity> entity = whichEnemy(lineTwo[line] - '0', row * SCALE, (lastLine - line) * SCALE);
                     scene->addEntity(entity);
                 }
             }
