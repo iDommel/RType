@@ -252,20 +252,32 @@ namespace ecs
         _states[client] = ClientState::READYTOPLAY;
         // add new player entity
         _playersId[client] = ++_players;
-        emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, _players, GameSystem::_playerSpawns[_players], false);
 
-        for (auto &s : _senders) {
-            if (s == client)
-                writeToClient(std::string(CR_ME) + std::to_string(_players), s);
-            else
-                writeToClient(std::string(CR_PLAYER) + std::to_string(_players), s);
-        }
+        // for (auto &s : _senders) {
+        //     if (s == client)
+        //         writeToClient(std::string(CR_ME) + std::to_string(_players), s);
+        //     else
+        //         writeToClient(std::string(CR_PLAYER) + std::to_string(_players), s);
+        // }
 
         // check if all players are ready
         for (auto s : _states) {
             if (s.second != ClientState::READYTOPLAY)
                 return;
         }
+
+        // Create players inside clients
+        for (auto &client : _senders) {
+            unsigned int id = _playersId[client];
+            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::_playerSpawns[id], false);
+            for (auto &player : _senders) {
+                if (player == client)
+                    writeToClient(std::string(CR_ME) + std::to_string(id), player);
+                else
+                    writeToClient(std::string(CR_PLAYER) + std::to_string(id), player);
+            }
+        }
+
         // notify clients game can start
         writeMsg(READY);
         emit changeScene(SceneType::GAME);
