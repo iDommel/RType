@@ -57,6 +57,56 @@ namespace ecs
     {
     }
 
+    MessageType Message::getMessageType() const
+    {
+        return _messageType;
+    }
+
+    EventType Message::getEventType() const
+    {
+        return _eventType;
+    }
+
+    EntityAction Message::getEntityAction() const
+    {
+        return _entityAction;
+    }
+
+    EntityType Message::getEntityType() const
+    {
+        return _entityType;
+    }
+
+    KeyState Message::getKeyState() const
+    {
+        return _keyState;
+    }
+
+    CustomMouseButton Message::getMouseButton() const
+    {
+        return _mouseButton;
+    }
+
+    KeyboardKey Message::getKeyboardKey() const
+    {
+        return _keyboardKey;
+    }
+
+    uint64_t Message::getEntityId() const
+    {
+        return _id;
+    }
+
+    Vector2 Message::getEntityPosition() const
+    {
+        return _pos;
+    }
+
+    std::string Message::getText() const
+    {
+        return _textMessage.toStdString();
+    }
+
     QDataStream &readGraphicEventMessage(QDataStream &in, Message &toWrite)
     {
         qint8 eventType;
@@ -73,8 +123,8 @@ namespace ecs
             toWrite._keyboardKey = static_cast<KeyboardKey>(key);
             break;
         case EventType::MOUSE:
-            qint32 x;
             qint32 y;
+            qint32 x;
             qint8 mouseButton;
             in >> mouseButton;
             toWrite._mouseButton = static_cast<CustomMouseButton>(mouseButton);

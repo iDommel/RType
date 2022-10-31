@@ -38,6 +38,24 @@ namespace ecs
         _msgQueue.clear();
     }
 
+    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, Message &message, uint64_t dt)
+    {
+        auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
+        EventType msgType = message.getEventType();
+        KeyState keyState = message.getKeyState();
+        KeyboardKey key = message.getKeyboardKey();
+
+        if (key == KEY_RIGHT && keyState == KeyState::DOWN) {
+            for (auto &p : players) {
+                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
+                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
+                playerComp->moveRight(manager, p, dt);
+                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+            }
+        }
+    }
+
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];

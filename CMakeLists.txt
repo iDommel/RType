@@ -83,6 +83,9 @@ target_include_directories(${LIBRARY_NAME}
     src/systems
     src
 )
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
+SET(CMAKE_AUTORCC ON)
 
 if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
