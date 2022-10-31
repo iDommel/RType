@@ -84,6 +84,24 @@ namespace ecs
         /// @param mouseButton the mouse button pressed (our own enum)
         Message(EventType, KeyState, CustomMouseButton);
 
+        /// @brief Constructor for deleting an Entity
+        /// @param action, the action to do, should be DELETE
+        /// @param id the id of the entity to delete
+        Message(EntityAction, uint64_t);
+
+        /// @brief Constructor for creating an Entity
+        /// @param action, the action to do, should be CREATE
+        /// @param id the id of the entity to create
+        /// @param type the type of the entity to create
+        Message(EntityAction, uint64_t, EntityType);
+
+        /// @brief Constructor for updating an Entity
+        /// @param action, the action to do, should be UPDATE
+        /// @param id the id of the entity to update
+        /// @param type the type of the entity to update
+        /// @param pos the new position of the entity
+        Message(EntityAction, uint64_t, EntityType, Vector2);
+
         ~Message();
         friend QDataStream &operator<<(QDataStream &out, const Message &toWrite);
         friend QDataStream &operator>>(QDataStream &in, Message &toWrite);
@@ -105,6 +123,7 @@ namespace ecs
         CustomMouseButton _mouseButton = CustomMouseButton::UNDEFINED;
         KeyState _keyState = KeyState::UNDEFINED;
         Vector2 _mousePosition = {-1, -1};
+        Vector2 _pos = {-1, -1};
         QString _textMessage = "";
     };
 }

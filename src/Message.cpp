@@ -32,6 +32,27 @@ namespace ecs
     {
     }
 
+    Message::Message(EntityAction action, uint64_t id, EntityType type, Vector2 pos)
+        : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id), _pos(pos)
+    {
+        if (action != EntityAction::UPDATE)
+            throw std::runtime_error("Wrong constructor for this action");
+    }
+
+    Message::Message(EntityAction action, uint64_t id, EntityType type)
+        : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id)
+    {
+        if (action != EntityAction::CREATE)
+            throw std::runtime_error("Wrong constructor for this action");
+    }
+
+    Message::Message(EntityAction action, uint64_t id)
+        : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _id(id)
+    {
+        if (action != EntityAction::DELETE)
+            throw std::runtime_error("Wrong constructor for this action");
+    }
+
     Message::~Message()
     {
     }
