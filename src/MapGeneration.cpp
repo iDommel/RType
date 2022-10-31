@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
+#include <regex>
 
 #include "GameSystem.hpp"
 #include "EventSystem.hpp"
@@ -50,31 +51,38 @@ namespace ecs
 {
 
     static int SCALE = 64;
-    enum class ENEMYID {
-        REDONE = 1,
-        REDTWO = 2,
-        REDTHREE = 3,
-        REDFOUR = 4,
-        REDFIVE = 5,
-        REDSIX = 6,
-        REDSEVEN = 7,
-        REDHEIGHT = 8,
-        REDNINE = 9,
-        REDTEN = 0,
-    }
 
     std::shared_ptr<Entity> GameSystem::whichEnemy(int mobId, int x, int y)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        switch (mobId)
+        std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
+        entity->addComponent(position);
+
+        if (mobId == 1)
         {
-        case ENEMYID::REDONE :
-            /* code */
-            break;
-        
-        default:
-            return nullptr;
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
         }
+        if (mobId == 2)
+        {
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
+        }
+        if (mobId == 3)
+        {
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
+        }
+        if (mobId == 4)
+        {
+            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
+            entity->addComponent(sprite);
+            return entity;
+        }
+        return nullptr;
     }
 
     std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
@@ -165,6 +173,7 @@ namespace ecs
 
     std::unique_ptr<IScene> GameSystem::ReadMap()
     {
+        std::regex enemyRegex("[0-9]");
         int firstRow = 0;
         int lastRow = 169;
         int firstLine = 0;
@@ -234,12 +243,9 @@ namespace ecs
                 }
                 else if (lineTwo[line] == 'P')
                     createPlayer(*scene, KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, 1, {row * SCALE, (lastLine - line) * SCALE, 0});
-                else if (lineTwo[line] == '1')
+                else if (lineTwo[line] >= '0' && lineTwo[line] <= '9')
                 {
-                    std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-                    std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
-                    std::shared_ptr<Position> position = std::make_shared<Position>(row * SCALE, (lastLine - line) * SCALE, 0);
-                    entity->addComponent(sprite).addComponent(position);
+                    std::shared_ptr<Entity> entity = whichEnemy(lineTwo[line] - '0', row * SCALE, (lastLine - line) * SCALE);
                     scene->addEntity(entity);
                 }
             }
