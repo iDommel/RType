@@ -10,8 +10,11 @@
 
 #define WAIT_CONNECTION     "WAIT"
 #define CONNECTION_OK       "OK"
-#define DISCONNECTED         "STOP"
+#define DISCONNECTED        "STOP"
 #define READY               "READY"
+#define CR_PLAYER           "CR_PLAYER"
+#define CR_ME               "CR_ME"
+#define IMALIVE             "IMALIVE"
 
 #include <QtNetwork>
 #include <string>

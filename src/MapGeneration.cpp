@@ -179,7 +179,7 @@ namespace ecs
         int firstLine = 0;
         int lastLine = 15;
 
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this));
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this), SceneType::GAME);
 
         std::shared_ptr<Entity> BGentity1 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite1 = std::make_shared<Sprite>("assets/Background/Background1.png", 0.0f, 3.0f);

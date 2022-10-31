@@ -69,7 +69,7 @@ namespace ecs
         std::cerr << "AudioSystem::destroy" << std::endl;
     }
 
-    void AudioSystem::onEntityAdded(std::shared_ptr<IEntity>)
+    void AudioSystem::onEntityAdded(std::shared_ptr<IEntity>, SceneType)
     {
     }
 

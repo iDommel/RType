@@ -17,6 +17,9 @@
 
 namespace ecs
 {
+
+    enum class SceneType;
+
     class IScene
     {
     public:
@@ -45,7 +48,7 @@ namespace ecs
          * @brief Set the callback function to call when an entity is added
          * @param callback Callback function
          */
-        virtual void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback) = 0;
+        virtual void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback) = 0;
 
         /**
          * @brief Set the callback function to call when an entity is removed
@@ -53,7 +56,7 @@ namespace ecs
          */
         virtual void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback) = 0;
 
-        virtual std::function<void(std::shared_ptr<IEntity>)> getAddEntityCallback() = 0;
+        virtual std::function<void(std::shared_ptr<IEntity>, SceneType)> getAddEntityCallback() = 0;
 
         virtual std::function<void(std::shared_ptr<IEntity>)> getRemoveEntityCallback() = 0;
         /**

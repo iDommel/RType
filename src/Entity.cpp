@@ -12,6 +12,7 @@
 
 namespace ecs
 {
+    unsigned long int Entity::_idCounter = 0;
 
     const std::map<Entity::Tags, std::vector<std::vector<IComponent::Type>>> Entity::entityTags = {
         {IEntity::Tags::SPRITE_2D,
@@ -59,6 +60,8 @@ namespace ecs
          {{IComponent::Type::RADAR}}},
         {Entity::Tags::AI,
          {{IComponent::Type::VELOCITY, IComponent::Type::AI, IComponent::Type::POSITION}}}};
+
+    Entity::Entity() : _id(_idCounter++) {}
 
     IEntity &Entity::addComponent(std::shared_ptr<IComponent> component)
     {
@@ -119,6 +122,16 @@ namespace ecs
             res.push_back(_components[c]);
         }
         return res;
+    }
+
+    unsigned long int Entity::getId() const
+    {
+        return _id;
+    }
+
+    unsigned long int Entity::getIdCounter()
+    {
+        return _idCounter;
     }
 
     std::shared_ptr<IComponent> &Entity::operator[](IComponent::Type type)
