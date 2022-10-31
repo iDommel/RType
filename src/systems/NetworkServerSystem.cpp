@@ -253,13 +253,6 @@ namespace ecs
         // add new player entity
         _playersId[client] = ++_players;
 
-        // for (auto &s : _senders) {
-        //     if (s == client)
-        //         writeToClient(std::string(CR_ME) + std::to_string(_players), s);
-        //     else
-        //         writeToClient(std::string(CR_PLAYER) + std::to_string(_players), s);
-        // }
-
         // check if all players are ready
         for (auto s : _states) {
             if (s.second != ClientState::READYTOPLAY)

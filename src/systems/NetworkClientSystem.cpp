@@ -75,7 +75,6 @@ namespace ecs
     void NetworkClientSystem::removePlayer(std::string s, SceneManager &sceneManager)
     {
         unsigned int id = std::stoi(s.erase(0, s.find(" ") + 1));
-        std::cerr << "Player " << id << " is being removed" << std::endl;
 
         for (auto &e : sceneManager.getCurrentScene()[{IEntity::Tags::PLAYER}]) {
             auto player = Component::castComponent<Player>((*e)[IComponent::Type::PLAYER]);
