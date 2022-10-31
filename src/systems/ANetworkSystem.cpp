@@ -21,7 +21,7 @@ namespace ecs
 
     ANetworkSystem::ANetworkSystem() : QObject(nullptr)
     {
-        _serverAddr = QHostAddress(QStringLiteral("10.42.0.1"));
+        _serverAddr = QHostAddress(QStringLiteral("10.15.179.201"));
         _port = 8080;
         if (Core::networkRole == NetworkRole::UNDEFINED)
             throw std::invalid_argument("NetworkRole undefined");
