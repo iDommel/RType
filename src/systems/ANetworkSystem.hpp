@@ -45,8 +45,9 @@ namespace ecs
         /**
          * @brief The callback to be called when an entity is added to a scene
          * @param entity The Entity that was added
+         * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity);
+        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene);
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed

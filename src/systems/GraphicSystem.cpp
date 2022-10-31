@@ -92,7 +92,7 @@ namespace ecs
         std::cerr << "GraphicSystem::destroy" << std::endl;
     }
 
-    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D))
         {
