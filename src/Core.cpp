@@ -50,11 +50,11 @@ namespace ecs
                 break;
             case SystemType::NETWORK:
                 if (role == NetworkRole::CLIENT) {
-                    auto client = new NetworkClientSystem();
+                    auto client = new NetworkClientSystem(av[1], std::stoi(av[2]));
                     _systems[system] = client;
                     connect(this, &QCoreApplication::aboutToQuit, client, &NetworkClientSystem::destroy);
                 } else if (role == NetworkRole::SERVER) {
-                    auto server = new NetworkServerSystem();
+                    auto server = new NetworkServerSystem(av[1], std::stoi(av[2]));
                     _systems[system] = server;
                     connect(server, &NetworkServerSystem::changeScene, this, &Core::onChangeScene);
                 }

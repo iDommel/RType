@@ -20,7 +20,10 @@ namespace ecs {
         Q_OBJECT
 
     public:
-        NetworkClientSystem();
+        /// @brief NetworkClientSystem constructor
+        /// @param serverAddr Server IP address
+        /// @param port Server port number
+        NetworkClientSystem(std::string serverAddr, unsigned short port);
 
         void init(SceneManager &manager);
         /** @brief Reads all received messages and processes them

@@ -16,8 +16,10 @@
 namespace ecs
 {
 
-    NetworkClientSystem::NetworkClientSystem() : _timer(this)
+    NetworkClientSystem::NetworkClientSystem(std::string serverAddr, unsigned short port) : _timer(this)
     {
+        _serverAddr = QHostAddress(QString(serverAddr.c_str()));
+        _port = port;
         connect(&_timer, &QTimer::timeout, this, &NetworkClientSystem::onPingTimeout);
     }
 

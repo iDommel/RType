@@ -15,6 +15,12 @@
 namespace ecs
 {
 
+    NetworkServerSystem::NetworkServerSystem(std::string addr, unsigned short port)
+    {
+        _serverAddr = QHostAddress(QString(addr.c_str()));
+        _port = port;
+    }
+
     void NetworkServerSystem::init(SceneManager &)
     {
         std::cerr << "NetworkServerSystem::init" << std::endl;

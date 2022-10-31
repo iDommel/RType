@@ -53,6 +53,9 @@ namespace ecs
 
         bool waitReadyRead(int ms = 30000);
 
+        /// @brief Returns socket state
+        QAbstractSocket::SocketState state() const { return _socket->state(); };
+
         /// @brief Returns the address of the last sender
         QHostAddress getLastAddress() { return _lastAddr; };
 
