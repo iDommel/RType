@@ -40,6 +40,7 @@ namespace ecs
                 } else if (collidable->hasComponent(IComponent::Type::MODEL)) {
                     Vector3 pos3d = {pos->x, pos->y, pos->z};
                     Component::castComponent<Hitbox>(maybeUninitialized)->setBBox(makeUpdatedBBox({{0, 0, 0}, {0, 0, 0}}, pos3d));
+                } else if (collidable->)
                 } else {
                     throw std::runtime_error("Uninitialized collidable entity has no rect or model");
                 }

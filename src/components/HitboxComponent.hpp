@@ -93,6 +93,7 @@ namespace ecs
         std::unique_ptr<BoundingBox> _box = nullptr;
         bool _is3D = false;
         std::unique_ptr<Rectangle> _rect = nullptr;
+        bool _needInit = true;
     };
 }
 

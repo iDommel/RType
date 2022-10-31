@@ -117,7 +117,7 @@ namespace ecs
         bool _isLeft = false;
         bool _isRight = false;
         static const int _defaultNbBomb = 1;
-        static const int _defaultSpeed = 60;
+        static const int _defaultSpeed = 90;
         static const int _defaultBlastPower = 3;
         std::string UP;
         std::string DOWN;

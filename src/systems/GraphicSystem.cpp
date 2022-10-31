@@ -127,10 +127,10 @@ namespace ecs
         if (sprite->getNbFrame() == 0)
             return;
 
-        // auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
+        auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
 
-        // spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
-        // spriteRect->height = _textures[sprite->getValue()].first->getHeight();
+        spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
+        spriteRect->height = _textures[sprite->getValue()].first->getHeight();
     }
 
     void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
