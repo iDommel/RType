@@ -54,7 +54,7 @@ namespace ecs
                     _systems[system] = client;
                     connect(this, &QCoreApplication::aboutToQuit, client, &NetworkClientSystem::destroy);
                 } else if (role == NetworkRole::SERVER) {
-                    auto server = new NetworkServerSystem(av[1], std::stoi(av[2]));
+                    auto server = new NetworkServerSystem(av[1], std::stoi(av[2]), _sceneManager);
                     _systems[system] = server;
                     connect(server, &NetworkServerSystem::changeScene, this, &Core::onChangeScene);
                 }

@@ -54,6 +54,8 @@ namespace ecs {
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
 
+        void removePlayer(std::string s, SceneManager &manager);
+
 
         std::vector<std::string> _msgQueue;
         bool _connected = false;
