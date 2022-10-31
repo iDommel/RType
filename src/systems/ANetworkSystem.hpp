@@ -12,6 +12,8 @@
 #include "UdpSocket.hpp"
 #include <QtCore>
 
+#define PING_TIMEOUT        5000
+
 class QHostAddress;
 class QThread;
 

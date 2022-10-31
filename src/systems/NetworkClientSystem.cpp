@@ -16,6 +16,11 @@
 namespace ecs
 {
 
+    NetworkClientSystem::NetworkClientSystem() : _timer(this)
+    {
+        connect(&_timer, &QTimer::timeout, this, &NetworkClientSystem::onPingTimeout);
+    }
+
     void NetworkClientSystem::destroy()
     {
         if (_connected)
@@ -44,6 +49,7 @@ namespace ecs
                 manager.setCurrentScene(SceneType::LOBBY);
                 waitCo = false;
                 _connected = true;
+                _timer.start(PING_TIMEOUT);
             } else if (s == READY) {
                 manager.setCurrentScene(SceneType::GAME);
             } else if (s.rfind(CR_PLAYER, 0) == 0) {
@@ -69,6 +75,12 @@ namespace ecs
     void NetworkClientSystem::writeMsg(const std::string &msg)
     {
         _socket->write(msg, _serverAddr, _port);
+        _timer.start(PING_TIMEOUT);
+    }
+
+    void NetworkClientSystem::onPingTimeout()
+    {
+        writeMsg(IMALIVE);
     }
 
     void NetworkClientSystem::handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t dt)
@@ -83,8 +95,6 @@ namespace ecs
         float x = std::stof(msg.substr(0, msg.find(' ')));
         msg.erase(0, msg.find(' ') + 1);
         float y = std::stof(msg);
-        // std::string axis = msg.substr(7, msg.find(' ', 7) - 7);
-        // std::string action = msg.substr(msg.find(' ', 7) + 1, msg.find(' ', msg.find(' ', 7) + 1) - msg.find(' ', 7) - 1);
 
         if (comp == "POS") {
             std::cerr << "POS: " << players.size() << std::endl;
@@ -95,8 +105,6 @@ namespace ecs
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 pos->x = x;
                 pos->y = y;
-                // pos->x = std::stof(action);
-                // pos->y = std::stof(msg.substr(msg.find(' ', msg.find(' ', 7) + 1) + 1));
                 std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 break;
             }

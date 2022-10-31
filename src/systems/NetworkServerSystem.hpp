@@ -27,6 +27,8 @@ namespace ecs {
         void update(SceneManager &manager, uint64_t deltaTime);
         void destroy() {};
 
+        void deconnectClientTimedout(std::pair<QString, unsigned short> client);
+
     public slots:
         /// @brief Sends msg through the UdpSocket to all connected clients
         /// @param msg Message to send
@@ -61,6 +63,7 @@ namespace ecs {
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, ANetworkSystem::ClientState> _states;
         int _players = 0;
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, int> _playersId;
+        std::map<std::pair<QString, unsigned short> /* client */, QTimer> _timers;
 
     };
 

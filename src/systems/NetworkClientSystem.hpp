@@ -20,6 +20,7 @@ namespace ecs {
         Q_OBJECT
 
     public:
+        NetworkClientSystem();
 
         void init(SceneManager &manager);
         /** @brief Reads all received messages and processes them
@@ -41,6 +42,10 @@ namespace ecs {
         /// @param msg Message received
         void putMsgInQueue(std::string msg);
 
+    private slots:
+        /// @brief Notifies the server the client is alive when PING_TIMEOUT ms have passed without sending a message
+        void onPingTimeout();
+
     private:
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
@@ -49,6 +54,7 @@ namespace ecs {
 
         std::vector<std::string> _msgQueue;
         bool _connected = false;
+        QTimer _timer;
     };
 
 }
