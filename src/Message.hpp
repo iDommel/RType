@@ -125,6 +125,7 @@ namespace ecs
         Vector2 _mousePosition = {-1, -1};
         Vector2 _pos = {-1, -1};
         QString _textMessage = "";
+        quint64 _id = 0;
     };
 }
 

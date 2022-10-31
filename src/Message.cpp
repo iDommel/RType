@@ -73,10 +73,16 @@ namespace ecs
             toWrite._keyboardKey = static_cast<KeyboardKey>(key);
             break;
         case EventType::MOUSE:
+            qint32 x;
+            qint32 y;
             qint8 mouseButton;
             in >> mouseButton;
             toWrite._mouseButton = static_cast<CustomMouseButton>(mouseButton);
-            // in >> toWrite._mousePos;
+            in >> toWrite._mousePos;
+            in >> x;
+            in >> y;
+            toWrite._mousePos.x = float(x);
+            toWrite._mousePos.y = float(y);
             break;
         default:
             break;
@@ -88,6 +94,7 @@ namespace ecs
     {
         qint8 entityAction;
         qint8 entityType;
+
         in >> entityAction;
         toWrite._entityAction = static_cast<EntityAction>(entityAction);
 
@@ -97,8 +104,14 @@ namespace ecs
             toWrite._entityType = static_cast<EntityType>(entityType);
             break;
         case EntityAction::UPDATE:
+            qint32 x;
+            qint32 y;
             in >> entityType;
+            in >> x;
+            in >> y;
             toWrite._entityType = static_cast<EntityType>(entityType);
+            toWrite._pos.x = float(x);
+            toWrite._pos.y = float(y);
             break;
         case EntityAction::DELETE:
             break;
@@ -144,7 +157,8 @@ namespace ecs
             break;
         case EventType::MOUSE:
             out << to_integral(toWrite._mouseButton);
-            // out << toWrite._mousePos;
+            out << qint32(toWrite._mousePos.x);
+            out << qint32(toWrite._mousePos.y);
             break;
         default:
             break;
@@ -157,10 +171,14 @@ namespace ecs
         out << to_integral(toWrite._entityAction);
         switch (toWrite._entityAction) {
         case EntityAction::CREATE:
+            out << quint64(toWrite._id);
             out << to_integral(toWrite._entityType);
             break;
         case EntityAction::UPDATE:
+            out << quint64(toWrite._id);
             out << to_integral(toWrite._entityType);
+            out << qint32(toWrite._pos.x);
+            out << qint32(toWrite._pos.y);
             break;
         case EntityAction::DELETE:
             break;
@@ -210,7 +228,7 @@ namespace ecs
                 break;
             case EventType::MOUSE:
                 ss << "Mouse button: " << std::to_string(to_integral(_mouseButton)) << std::endl;
-                // ss << "Mouse pos: " << _mousePos << std::endl;
+                ss << "Mouse pos: " << _mousePosition.x << ", " << _mousePosition.y << std::endl;
                 break;
             default:
                 break;
@@ -221,11 +239,15 @@ namespace ecs
             switch (_entityAction) {
             case EntityAction::CREATE:
                 ss << "Entity type: " << std::to_string(to_integral(_entityType)) << std::endl;
+                ss << "Entity Id: " << std::to_string(_id) << std::endl;
                 break;
             case EntityAction::UPDATE:
                 ss << "Entity type: " << std::to_string(to_integral(_entityType)) << std::endl;
+                ss << "Entity Id: " << std::to_string(_id) << std::endl;
+                ss << "Entity pos: " << _pos.x << ", " << _pos.y << std::endl;
                 break;
             case EntityAction::DELETE:
+                ss << "Entity Id: " << std::to_string(_id) << std::endl;
                 break;
             default:
                 break;

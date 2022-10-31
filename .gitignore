@@ -8,6 +8,9 @@ debug
 .vscode
 *.json
 *.manifest
+*_autogen
+*.cmake
+Makefile
 
 # Prerequisites
 *.d
