@@ -59,8 +59,9 @@ namespace ecs
         /**
          * @brief Call each onEntityAdded system function, set as addEntity callback
          * @param entity Entity to load
+         * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity);
+        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene);
 
         /**
          * @brief Call each onEntityRemoved system function, set as removeEntity callback
@@ -73,7 +74,7 @@ namespace ecs
 
     private slots:
         void loop();
-        void onChangeScene(SceneManager::SceneType scene);
+        void onChangeScene(SceneType scene);
 
     signals:
         void doLoop();

@@ -14,7 +14,8 @@ namespace ecs
     UdpSocket::UdpSocket(QObject *parent, QHostAddress address, int port, QAbstractSocket::BindMode mode) : QObject(parent)
     {
         _socket = new QUdpSocket(this);
-        _socket->bind(address, port, mode);
+        if (!_socket->bind(address, port, mode))
+            throw std::runtime_error("UDP socket; bind failed");
         if (!connect(_socket, &QUdpSocket::readyRead, this, &UdpSocket::readDatagrams))
             throw std::runtime_error("UDP socket: Couldn't connect");
     }

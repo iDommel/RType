@@ -253,7 +253,7 @@ namespace ecs
     {
     }
 
-    void AISystem::onEntityAdded(std::shared_ptr<IEntity>)
+    void AISystem::onEntityAdded(std::shared_ptr<IEntity>, SceneType)
     {
     }
 
