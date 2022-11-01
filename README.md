@@ -15,6 +15,11 @@ The Server has to be launched BEFORE the clients for the connection to work.
     ./r-type_server SERVER_IP_ADDRESS SERVER_PORT
     ./r-type_client SERVER_IP_ADDRESS SERVER_PORT
 
+Example to launch game on Localhost:8080
+
+    ./r-type_server "127.0.0.1" 8080
+    ./r-type_client "127.0.0.1" 8080
+
 # Language:
 Use english EVERYWHERE !
 
