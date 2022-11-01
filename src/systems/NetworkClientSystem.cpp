@@ -14,7 +14,6 @@
 
 #include <regex>
 
-
 namespace ecs
 {
 
@@ -28,7 +27,7 @@ namespace ecs
     void NetworkClientSystem::destroy()
     {
         if (_connected)
-            writeMsg(Message(DISCONNECTED));
+            writeMsg(Message(NetworkMessageType::DISCONNECTED));
     }
 
     void NetworkClientSystem::init(SceneManager &)
@@ -43,32 +42,37 @@ namespace ecs
         static bool waitCo = false;
 
         if (manager.getCurrentSceneType() == SceneType::CONNECTION && !_connected && !waitCo) {
-            writeMsg(Message(WAIT_CONNECTION));
+            writeMsg(Message(NetworkMessageType::WAIT_CONNECTION));
             waitCo = true;
         }
 
-        for (auto &s : _msgQueue) {
-            if (s.getMessageType() != MessageType::TEXTMESSAGE)
-                continue;
-            std::cerr << s.getText() << std::endl;
-            if (waitCo && !_connected &&  s.getText() == CONNECTION_OK) {
-                manager.setCurrentScene(SceneType::LOBBY);
-                waitCo = false;
-                _connected = true;
-                _timer.start(PING_TIMEOUT);
-            } else if (s.getText() == READY) {
-                manager.setCurrentScene(SceneType::GAME);
-            } else if (s.getText().rfind(CR_PLAYER, 0) == 0) {
-                int idPlayer = std::stoi(s.getText().substr(std::string(CR_PLAYER).size()));
-                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], false);
-            } else if (s.getText().rfind(CR_ME, 0) == 0) {
-                int idPlayer = std::stoi(s.getText().substr(std::string(CR_ME).size()));
-                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], true);
-            } else if (std::regex_match(s.getText(), std::regex(std::string(RM_PLAYER) + " [1-4]"))) {
-                removePlayer(s.getText(), manager);
+        for (auto &mess : _msgQueue) {
+            if (mess.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+                if (waitCo && !_connected && mess.getNetworkMessageType() == NetworkMessageType::CONNECTION_OK) {
+                    manager.setCurrentScene(SceneType::LOBBY);
+                    waitCo = false;
+                    _connected = true;
+                    _timer.start(PING_TIMEOUT);
+                } else if (mess.getNetworkMessageType() == NetworkMessageType::READY) {
+                    manager.setCurrentScene(SceneType::GAME);
+                }
             }
-            if (s.getText().rfind("PLAYER ", 0) == 0) {
-                handlePlayerEvent(manager, s.getText(), dt);
+            if (mess.getMessageType() == MessageType::TEXTMESSAGE) {
+                std::cerr << "Text message received: " << mess.getText() << std::endl;
+                if (mess.getText().rfind("CR_PLAYER", 0) == 0) {
+                    int idPlayer = std::stoi(mess.getText().substr(std::string("CR_PLAYER").size()));
+                    emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], false);
+                } else if (mess.getText().rfind("CR_ME", 0) == 0) {
+                    int idPlayer = std::stoi(mess.getText().substr(std::string("CR_ME").size()));
+                    emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], true);
+                } else if (std::regex_match(mess.getText(), std::regex(std::string("RM_PLAYER") + " [1-4]"))) {
+                    removePlayer(mess.getText(), manager);
+                }
+            } else if (mess.getMessageType() == MessageType::ENTITYMESSAGE) {
+                std::cerr << "Entity message received" << std::endl;
+                if (mess.getEntityType() == EntityType::PLAYER) {
+                    handlePlayerEvent(manager, mess, dt);
+                }
             }
         }
         _msgQueue.clear();
@@ -100,7 +104,23 @@ namespace ecs
 
     void NetworkClientSystem::onPingTimeout()
     {
-        writeMsg(Message(IMALIVE));
+        writeMsg(Message(NetworkMessageType::IMALIVE));
+    }
+
+    void NetworkClientSystem::handlePlayerEvent(SceneManager &manager, const Message &msg, uint64_t dt)
+    {
+        auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
+
+        for (auto &player : players) {
+            auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
+            if (player->getId() != msg.getEntityId())
+                continue;
+            auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
+            pos->x = msg.getEntityPosition().x;
+            pos->y = msg.getEntityPosition().y;
+            std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+            break;
+        }
     }
 
     void NetworkClientSystem::handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t dt)

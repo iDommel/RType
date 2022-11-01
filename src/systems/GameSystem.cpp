@@ -359,7 +359,29 @@ namespace ecs
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
-                    // TODO: replace with mouse event message
+                    emit writeMsg(Message(msg));
+                }
+            },
+            [](SceneManager &, Vector2 /*mousePosition*/) {},
+            [](SceneManager &, Vector2 /*mousePosition*/) {},
+            [](SceneManager &, Vector2 /*mousePosition*/) {});
+
+        eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
+        entity->addComponent(eventListener);
+    }
+
+    void GameSystem::createMsgEvent(std::shared_ptr<Entity> &entity, const NetworkMessageType &msg)
+    {
+        std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
+        MouseCallbacks mouseCallbacks(
+            [entity, this, msg](SceneManager &sceneManager, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
+                auto pos = Component::castComponent<Position>(comp[1]);
+                auto sprite = Component::castComponent<Sprite>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[2]);
+
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
                     emit writeMsg(Message(msg));
                 }
             },
@@ -544,7 +566,7 @@ namespace ecs
 
         backgroundEntity->addComponent(bg)
             .addComponent(bgPos);
-        createMsgEvent(playButtonEntity, READY);
+        createMsgEvent(playButtonEntity, NetworkMessageType::READY);
         scene->addEntities({backgroundEntity, playButtonEntity});
         return scene;
     }
@@ -553,8 +575,7 @@ namespace ecs
     {
         ButtonCallbacks pauseCallbacks(
             [](SceneManager &) {},
-            [](SceneManager &scenemanager)
-            {
+            [](SceneManager &scenemanager) {
                 scenemanager.setCurrentScene(SceneType::PAUSE);
             },
             [](SceneManager &) {},

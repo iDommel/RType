@@ -16,12 +16,16 @@ namespace ecs
     Message::Message(const std::string &text)
         : _messageType(MessageType::TEXTMESSAGE), _textMessage(QString::fromStdString(text))
     {
-
         std::cout << _textMessage.toStdString() << std::endl;
     }
 
     Message::Message(const char *str)
         : _messageType(MessageType::TEXTMESSAGE), _textMessage(QString(str))
+    {
+    }
+
+    Message::Message(NetworkMessageType type)
+        : _messageType(MessageType::NETWORKEVENTMESSAGE), _networkEventType(type)
     {
     }
 
@@ -73,6 +77,11 @@ namespace ecs
     EntityAction Message::getEntityAction() const
     {
         return _entityAction;
+    }
+
+    NetworkMessageType Message::getNetworkMessageType() const
+    {
+        return _networkEventType;
     }
 
     EntityType Message::getEntityType() const
@@ -189,6 +198,9 @@ namespace ecs
                 readEntityMessage(in, toWrite);
                 break;
             case MessageType::NETWORKEVENTMESSAGE:
+                qint8 networkEventType;
+                in >> networkEventType;
+                toWrite._networkEventType = static_cast<NetworkMessageType>(networkEventType);
                 break;
             case MessageType::TEXTMESSAGE:
                 in >> toWrite._textMessage;
@@ -252,6 +264,7 @@ namespace ecs
             writeEntityMessage(out, toWrite);
             break;
         case MessageType::NETWORKEVENTMESSAGE:
+            out << to_integral(toWrite._networkEventType);
             break;
         case MessageType::TEXTMESSAGE:
             out << toWrite._textMessage;
@@ -307,6 +320,7 @@ namespace ecs
             }
             break;
         case MessageType::NETWORKEVENTMESSAGE:
+            ss << "Network event type: " << std::to_string(to_integral(_networkEventType)) << std::endl;
             break;
         case MessageType::TEXTMESSAGE:
             ss << "Text: " << _textMessage.toStdString() << std::endl;
