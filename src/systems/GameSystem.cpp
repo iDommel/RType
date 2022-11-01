@@ -45,6 +45,7 @@
 #include "ParticleCloud.hpp"
 #include "ModelAnim.hpp"
 #include "Window.hpp"
+#include "Trajectory.hpp"
 
 namespace ecs
 {
@@ -222,6 +223,12 @@ namespace ecs
             }
         }
         updatePlayers(sceneManager, dt);
+        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY])
+        {
+            auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
+            auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            trajectory->update(position);
+        }
         // _aiSystem.update(sceneManager, dt);
         // _collideSystem.update(sceneManager, dt);
 
