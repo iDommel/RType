@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** collideSystem
 */
@@ -25,6 +25,7 @@ namespace ecs
         std::shared_ptr<Position> pos = nullptr;
         std::shared_ptr<IComponent> maybeUninitialized = nullptr;
 
+        std::cout << "nb collidables = " << collidables.size() << std::endl;
         for (auto &collidable : collidables) {
             if (!collidable->hasComponent(IComponent::Type::POSITION) || !collidable->hasComponent(IComponent::Type::HITBOX))
                 continue;
