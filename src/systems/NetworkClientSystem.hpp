@@ -43,7 +43,7 @@ namespace ecs
 
         /// @brief Puts received message in the system's queue
         /// @param msg Message received
-        void putMsgInQueue(std::string msg);
+        void putMsgInQueue(Message msg);
 
     private slots:
         /// @brief Notifies the server the client is alive when PING_TIMEOUT ms have passed without sending a message
@@ -56,8 +56,7 @@ namespace ecs
 
         void removePlayer(std::string s, SceneManager &manager);
 
-
-        std::vector<std::string> _msgQueue;
+        std::vector<Message> _msgQueue;
         bool _connected = false;
         QTimer _timer;
     };

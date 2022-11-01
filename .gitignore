@@ -11,6 +11,7 @@ settings.json
 *_autogen
 *.cmake
 Makefile
+log*
 
 # Prerequisites
 *.d
