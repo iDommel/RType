@@ -38,7 +38,7 @@ namespace ecs
         _msgQueue.clear();
     }
 
-    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, Message &message, uint64_t dt)
+    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
         EventType msgType = message.getEventType();

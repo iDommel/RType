@@ -108,6 +108,17 @@ namespace ecs
         void print() const;
         std::string toString() const;
 
+        MessageType getMessageType() const;
+        EventType getEventType() const;
+        EntityAction getEntityAction() const;
+        EntityType getEntityType() const;
+        KeyState getKeyState() const;
+        CustomMouseButton getMouseButton() const;
+        KeyboardKey getKeyboardKey() const;
+        uint64_t getEntityId() const;
+        Vector2 getEntityPosition() const;
+        std::string getText() const;
+
     protected:
     private:
         friend QDataStream &readGraphicEventMessage(QDataStream &in, Message &toWrite);

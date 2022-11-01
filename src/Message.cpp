@@ -128,11 +128,10 @@ namespace ecs
             qint8 mouseButton;
             in >> mouseButton;
             toWrite._mouseButton = static_cast<CustomMouseButton>(mouseButton);
-            in >> toWrite._mousePos;
             in >> x;
             in >> y;
-            toWrite._mousePos.x = float(x);
-            toWrite._mousePos.y = float(y);
+            toWrite._mousePosition.x = float(x);
+            toWrite._mousePosition.y = float(y);
             break;
         default:
             break;
@@ -207,8 +206,8 @@ namespace ecs
             break;
         case EventType::MOUSE:
             out << to_integral(toWrite._mouseButton);
-            out << qint32(toWrite._mousePos.x);
-            out << qint32(toWrite._mousePos.y);
+            out << qint32(toWrite._mousePosition.x);
+            out << qint32(toWrite._mousePosition.y);
             break;
         default:
             break;

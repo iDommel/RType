@@ -50,6 +50,7 @@ namespace ecs
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t deltaTime);
+        void handlePlayerEvent(SceneManager &manager, const Message &msg, uint64_t deltaTime);
 
         std::map<std::string, std::pair<QString /*addr*/, unsigned short /*port*/>> _msgQueue;
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
