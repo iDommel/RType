@@ -11,10 +11,13 @@
 #include <sstream>
 namespace ecs
 {
+    Message::Message() {}
 
     Message::Message(const std::string &text)
         : _messageType(MessageType::TEXTMESSAGE), _textMessage(QString::fromStdString(text))
     {
+
+        std::cout << _textMessage.toStdString() << std::endl;
     }
 
     Message::Message(const char *str)
@@ -104,6 +107,7 @@ namespace ecs
 
     std::string Message::getText() const
     {
+        // return _textMessage;
         return _textMessage.toStdString();
     }
 

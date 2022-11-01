@@ -38,9 +38,13 @@ namespace ecs
         if (!_socket->hasPendingDatagrams())
             return;
         QNetworkDatagram data = _socket->receiveDatagram();
+        QDataStream ds(data.data());
+        Message msg;
+        ds >> msg;
+
         _lastPort = data.senderPort();
         _lastAddr = data.senderAddress();
-        emit transferMsgToSystem(data.data().toStdString());
+        emit transferMsgToSystem(msg);
     }
 
     bool UdpSocket::canRead()

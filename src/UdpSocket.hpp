@@ -73,7 +73,7 @@ namespace ecs
     signals:
         /// @brief Transferts the received message to the ANetworkSystem
         /// @param msg Massage to be transfered
-        void transferMsgToSystem(std::string msg);
+        void transferMsgToSystem(Message msg);
 
     private:
         QUdpSocket *_socket;

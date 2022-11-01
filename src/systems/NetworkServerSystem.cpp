@@ -31,38 +31,69 @@ namespace ecs
     void NetworkServerSystem::update(SceneManager &manager, uint64_t dt)
     {
         for (auto &s : _msgQueue) {
-            std::cerr << s.first << std::endl;
-            if (s.first == DISCONNECTED)
-                deconnectClient(s.second.first, s.second.second);
-            else if (s.first == WAIT_CONNECTION && manager.getCurrentSceneType() == SceneType::LOBBY)
-                connectClient(s.second.first, s.second.second);
-            else if (s.first == READY)
-                setClientReady(s.second, manager);
-            if (s.first.rfind("PLAYER ", 0) == 0) {
-                handlePlayerEvent(manager, s.first, dt);
+            if (s.getMessageType() == MessageType::TEXTMESSAGE)
+                std::cout << s.getText() << std::endl;
+            if (s.getMessageType() == MessageType::TEXTMESSAGE && s.getText() == DISCONNECTED)
+                deconnectClient(s.getSender());
+            else if (s.getMessageType() == MessageType::TEXTMESSAGE && s.getText() == WAIT_CONNECTION && manager.getCurrentSceneType() == SceneType::LOBBY)
+                connectClient(s.getSender());
+            else if (s.getMessageType() == MessageType::TEXTMESSAGE && s.getText() == READY)
+                setClientReady(s.getSender(), manager);
+            else if (s.getEventType() == EventType::KEYBOARD) {
+                handlePlayerEvent(manager, s, _playersId[s.getSender()], dt);
             }
         }
         _msgQueue.clear();
     }
 
-    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, uint64_t dt)
+    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, int id, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
         EventType msgType = message.getEventType();
         KeyState keyState = message.getKeyState();
         KeyboardKey key = message.getKeyboardKey();
+        std::shared_ptr<IEntity> entity = nullptr;
+        std::shared_ptr<Player> playerComp = nullptr;
 
-        if (key == KEY_RIGHT && keyState == KeyState::DOWN) {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->moveRight(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
+        for (auto &player : players) {
+            playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
+            if (playerComp->getId() == id) {
+                entity = player;
+                break;
             }
         }
-    }
 
+        auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+
+        switch (key) {
+        case KEY_RIGHT:
+            if (keyState == KeyState::DOWN)
+                playerComp->moveRight(manager, entity, dt);
+            else
+                playerComp->stopRight(manager, entity, dt);
+            break;
+        case KEY_LEFT:
+            if (keyState == KeyState::DOWN)
+                playerComp->moveLeft(manager, entity, dt);
+            else
+                playerComp->stopLeft(manager, entity, dt);
+            break;
+        case KEY_UP:
+            if (keyState == KeyState::DOWN)
+                playerComp->moveUp(manager, entity, dt);
+            else
+                playerComp->stopUp(manager, entity, dt);
+            break;
+        case KEY_DOWN:
+            if (keyState == KeyState::DOWN)
+                playerComp->moveDown(manager, entity, dt);
+            else
+                playerComp->stopDown(manager, entity, dt);
+            break;
+        }
+        writeMsg(Message("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y)));
+    }
+/*
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
@@ -179,7 +210,7 @@ namespace ecs
             }
         }
     }
-
+*/
     void NetworkServerSystem::writeMsg(const Message &msg)
     {
         for (auto &client : _senders)
@@ -196,39 +227,42 @@ namespace ecs
         _socket->write(msg, QHostAddress(client.first), client.second);
     }
 
-    void NetworkServerSystem::putMsgInQueue(std::string msg)
+    void NetworkServerSystem::putMsgInQueue(Message msg)
     {
         QString addr = _socket->getLastAddress().toString();
         unsigned short port = _socket->getLastPort();
+        std::pair<QString, unsigned short> client = std::make_pair(addr, port);
 
-        if (_timers.find(std::make_pair(addr, port)) != _timers.end())
-            _timers[std::make_pair(addr, port)].start(PING_TIMEOUT * PING_TIMEOUT);
-        if (!msg.empty())
-            _msgQueue[msg] = std::make_pair(addr, port);
+        if (_timers.find(client) != _timers.end())
+            _timers[client].start(PING_TIMEOUT * 2);
+
+        msg.setSender(client);
+        _msgQueue.push_back(msg);
     }
 
-    void NetworkServerSystem::connectClient(QString addr, unsigned short port)
+    void NetworkServerSystem::connectClient(std::pair<QString, unsigned short> client)
     {
+        std::cerr << "coucou"<< std::endl;
         if (_senders.size() >= NB_CLIENTS_MAX)
             return;
         for (auto &s : _senders) {
-            if (s.first == addr && s.second == port)
+            if (s == client)
                 return;
         }
-        auto client = std::make_pair(addr, port);
         _senders.push_back(client);
         _states[client] = ClientState::CONNECTED;
         _timers[client];
         connect(&_timers[client], &QTimer::timeout, std::bind(&NetworkServerSystem::deconnectClientTimedout, this, client));
-        _timers[client].start(PING_TIMEOUT * PING_TIMEOUT);
-        _socket->write(CONNECTION_OK, QHostAddress(addr), port);
+        _timers[client].start(PING_TIMEOUT * 2);
+        _socket->write(CONNECTION_OK, QHostAddress(client.first), client.second);
     }
 
-    void NetworkServerSystem::deconnectClient(QString addr, unsigned short port)
+    void NetworkServerSystem::deconnectClient(std::pair<QString, unsigned short> client)
     {
         unsigned i = 0;
+
         for (auto s : _senders) {
-            if (s.first == addr && s.second == port) {
+            if (s == client) {
                 _senders.erase(_senders.begin() + i);
                 _states.erase(s);
                 _timers.erase(s);
@@ -243,7 +277,7 @@ namespace ecs
 
     void NetworkServerSystem::deconnectClientTimedout(std::pair<QString, unsigned short> client)
     {
-        deconnectClient(client.first, client.second);
+        deconnectClient(client);
     }
 
     void NetworkServerSystem::removePlayer(int id)
@@ -256,7 +290,7 @@ namespace ecs
             }
         }
         for (auto &s : _senders)
-            writeMsg(std::string(RM_PLAYER) + " " + std::to_string(id));
+            writeMsg(Message(std::string(RM_PLAYER) + " " + std::to_string(id)));
     }
 
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)
@@ -286,7 +320,7 @@ namespace ecs
         }
 
         // notify clients game can start
-        writeMsg(READY);
+        writeMsg(Message(READY));
         emit changeScene(SceneType::GAME);
     }
 

@@ -118,6 +118,9 @@ namespace ecs
         uint64_t getEntityId() const;
         Vector2 getEntityPosition() const;
         std::string getText() const;
+        std::pair<QString, unsigned short> getSender() const { return _sender; };
+
+        void setSender(std::pair<QString, unsigned short> sender) { _sender = sender; };
 
     protected:
     private:
@@ -137,6 +140,7 @@ namespace ecs
         Vector2 _pos = {-1, -1};
         QString _textMessage = "";
         quint64 _id = 0;
+        std::pair<QString, unsigned short> _sender;
     };
 }
 
