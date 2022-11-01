@@ -8,6 +8,8 @@ files="./.files"
 dir_tmp="/tmp/install"
 
 login=$1
+defaultBuild="Release"
+user_build_type="${@:2}" # get all arguments after the first one
 
 ## fake install ?
 
@@ -216,7 +218,7 @@ script_header "LANCE CONAN"
 export CONAN_SYSREQUIRES_MODE=enabled
 sudo conan install . --install-folder cmake-build-release --build=missing -c tools.system.package_manager:mode=install
 script_header "CMAKE Build"
-sudo cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+sudo cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE="${user_build_type:-$defaultBuild}"
 sudo cmake --build build
 
 script_header "VOTRE INSTALLATION EST FINI" $C_BWHITE
