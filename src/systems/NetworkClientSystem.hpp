@@ -9,6 +9,8 @@
 #define _NETWORK_CLIENT_SYSTEM_HPP
 
 #include "ANetworkSystem.hpp"
+#include "IScene.hpp"
+#include "Position.hpp"
 
 namespace ecs
 {
@@ -18,6 +20,8 @@ namespace ecs
         Q_OBJECT
 
     public:
+        NetworkClientSystem();
+
         void init(SceneManager &manager);
         /** @brief Reads all received messages and processes them
          *  @note If not connected writes to server to connect.
@@ -25,6 +29,9 @@ namespace ecs
          */
         void update(SceneManager &manager, uint64_t deltaTime);
         void destroy();
+
+    signals:
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
 
     public slots:
         /// @brief Sends msg to server
@@ -35,13 +42,18 @@ namespace ecs
         /// @param msg Message received
         void putMsgInQueue(std::string msg);
 
+    private slots:
+        /// @brief Notifies the server the client is alive when PING_TIMEOUT ms have passed without sending a message
+        void onPingTimeout();
+
     private:
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
-        void handlePlayerEvent(SceneManager &manager, const std::string &msg, uint64_t deltaTime);
+        void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
 
         std::vector<std::string> _msgQueue;
         bool _connected = false;
+        QTimer _timer;
     };
 
 }
