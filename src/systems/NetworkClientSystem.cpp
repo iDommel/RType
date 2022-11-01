@@ -12,11 +12,16 @@
 #include "Position.hpp"
 #include "GameSystem.hpp"
 
+#include <regex>
+
+
 namespace ecs
 {
 
-    NetworkClientSystem::NetworkClientSystem() : _timer(this)
+    NetworkClientSystem::NetworkClientSystem(std::string serverAddr, unsigned short port) : _timer(this)
     {
+        _serverAddr = QHostAddress(QString(serverAddr.c_str()));
+        _port = port;
         connect(&_timer, &QTimer::timeout, this, &NetworkClientSystem::onPingTimeout);
     }
 
@@ -57,12 +62,27 @@ namespace ecs
             } else if (s.rfind(CR_ME, 0) == 0) {
                 int idPlayer = std::stoi(s.substr(std::string(CR_ME).size()));
                 emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], true);
+            } else if (std::regex_match(s, std::regex(std::string(RM_PLAYER) + " [1-4]"))) {
+                removePlayer(s, manager);
             }
             if (s.rfind("PLAYER ", 0) == 0) {
                 handlePlayerEvent(manager, s, dt);
             }
         }
         _msgQueue.clear();
+    }
+
+    void NetworkClientSystem::removePlayer(std::string s, SceneManager &sceneManager)
+    {
+        unsigned int id = std::stoi(s.erase(0, s.find(" ") + 1));
+
+        for (auto &e : sceneManager.getCurrentScene()[{IEntity::Tags::PLAYER}]) {
+            auto player = Component::castComponent<Player>((*e)[IComponent::Type::PLAYER]);
+            if (player->getId() == id) {
+                sceneManager.getCurrentScene().removeEntity(e);
+                break;
+            }
+        }
     }
 
     void NetworkClientSystem::putMsgInQueue(std::string msg)
