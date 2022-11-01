@@ -43,8 +43,8 @@ namespace ecs
             UI,
             AI,
             RADAR,
-            TYPE_NB,
-            TRAJECTORY
+            TRAJECTORY,
+            TYPE_NB
         };
         virtual const Type &getType() const = 0;
         virtual bool isInitialized() const = 0;

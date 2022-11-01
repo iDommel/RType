@@ -238,11 +238,11 @@ namespace ecs
             }
         }
         updatePlayers(sceneManager, dt);
-        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags]::TRAJECTORY)
+        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY])
         {
-            auto trajectory = Component::castComponent<Trajectory>((entity*)[IComponent::Type::TRAJECTORY])
-            auto position = Component::castComponent<Position>((entity*)[IComponent::Type::POSITION])
-            trajectory.Update(Position);
+            auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
+            auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            trajectory->update(position);
         }
         // _aiSystem.update(sceneManager, dt);
         // _collideSystem.update(sceneManager, dt);

@@ -5,21 +5,22 @@
 ** Trajectory
 */
 
+#include <iostream>
 #include "Trajectory.hpp"
 
 namespace ecs
 {
-    Trajectory::Trajectory(std::function<int(int)> trajFunction, Position pos) : Component(Type::TRAJECTORY), _trajFunction(trajFunction), _origin(pos)
+    Trajectory::Trajectory(std::function<float(float)> trajFuncX, std::function<float(float)> trajFuncY, std::shared_ptr<Position> origin) : Component(Type::TRAJECTORY), _trajFuncX(trajFuncX), _trajFuncY(trajFuncY), _origin(origin)
     {
         _isInitialized = true;
         _timer = 0;
     }
 
     // need to add speed of the entity
-    void Trajectory::Update(std::shared_ptr<Position> actualPos)
+    void Trajectory::update(std::shared_ptr<Position> actualPos)
     {
         _timer++;
-        actualPos->y = _origin.y + _trajFunction(_timer);
-        actualPos->x = _origin.x + _timer / 60;
+        actualPos->y = _origin->y + _trajFuncY(_timer / 40);
+        actualPos->x = _origin->x + _trajFuncX(_timer / 120);
     }
 }
