@@ -17,6 +17,7 @@
 #define RM_PLAYER           "RM_PLAYER"
 #define IMALIVE             "IMALIVE"
 
+#include "Message.hpp"
 #include <QtNetwork>
 #include <string>
 
@@ -35,18 +36,18 @@ namespace ecs
          * @param port Port to bind to
          * @param mode Bind mode
          */
-        UdpSocket(QObject *parent = nullptr, QHostAddress address = QHostAddress::AnyIPv4, \
-            int port = 0, QAbstractSocket::BindMode mode = QAbstractSocket::DefaultForPlatform);
+        UdpSocket(QObject *parent = nullptr, QHostAddress address = QHostAddress::AnyIPv4,
+                  int port = 0, QAbstractSocket::BindMode mode = QAbstractSocket::DefaultForPlatform);
 
         /// @brief Joins the multicast group on the default interface chosen by the operating system.
         /// @param groupAddress Address of the group to join
         void joinMulticastGroup(QHostAddress groupAddress);
 
-        /// @brief Writes a message
-        /// @param msg Message to send
+        /// @brief Writes a message using the Message class
+        /// @param msg Data stream to read from
         /// @param address Address to send message to
         /// @param port Port to send message to
-        void write(const std::string &msg, const QHostAddress &address, int port);
+        void write(const Message &msg, const QHostAddress &address, int port);
 
         /// @brief Tells if datagrams are available
         /// @return Returns True if the queue is not empty, false otherwise
@@ -72,13 +73,12 @@ namespace ecs
     signals:
         /// @brief Transferts the received message to the ANetworkSystem
         /// @param msg Massage to be transfered
-        void transferMsgToSystem(std::string msg);
+        void transferMsgToSystem(Message msg);
 
     private:
         QUdpSocket *_socket;
         QHostAddress _lastAddr;
         unsigned short _lastPort = 0;
-
     };
 
 }

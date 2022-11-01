@@ -10,6 +10,7 @@
 
 #include <chrono>
 
+#include "Message.hpp"
 #include "ISystem.hpp"
 #include "SceneManager.hpp"
 #include "Scene.hpp"
@@ -19,16 +20,16 @@
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
-#include <QtCore> // for networked event handling
+#include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
 #define GAME_MAP_HEIGHT 15
 #define GAME_TILE_SIZE 12
-#define GAME_NB_INDESTRUCTIBLE_WALL 0 //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
+#define GAME_NB_INDESTRUCTIBLE_WALL 0  //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
 
-#define SPLASH_TIMEOUT 3000      // value in milliseconds
-#define CONNECTION_TIMEOUT 30000 // value in milliseconds
+#define SPLASH_TIMEOUT 3000       // value in milliseconds
+#define CONNECTION_TIMEOUT 30000  // value in milliseconds
 
 struct Vector3;
 
@@ -97,7 +98,7 @@ namespace ecs
         static std::vector<Position> _playerSpawns;
 
     signals:
-        void writeMsg(const std::string &message);
+        void writeMsg(const Message &message);
 
     public slots:
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
