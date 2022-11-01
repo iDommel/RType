@@ -15,6 +15,12 @@
 namespace ecs
 {
 
+    NetworkServerSystem::NetworkServerSystem(std::string addr, unsigned short port, SceneManager &sceneManager) : _sceneManager(sceneManager)
+    {
+        _serverAddr = QHostAddress(QString(addr.c_str()));
+        _port = port;
+    }
+
     void NetworkServerSystem::init(SceneManager &)
     {
         std::cerr << "NetworkServerSystem::init" << std::endl;
@@ -64,7 +70,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->moveRight(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -76,7 +82,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->stopRight(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -88,7 +94,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->moveLeft(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -101,7 +107,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->stopLeft(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -114,7 +120,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->moveUp(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -127,7 +133,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->stopUp(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -140,7 +146,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->moveDown(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -153,7 +159,7 @@ namespace ecs
                     continue;
                 auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
                 playerComp->stopDown(manager, p, dt);
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
+                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
                 writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
                 break;
             }
@@ -212,6 +218,8 @@ namespace ecs
                 _senders.erase(_senders.begin() + i);
                 _states.erase(s);
                 _timers.erase(s);
+                if (_sceneManager.getCurrentSceneType() == SceneType::GAME)
+                    removePlayer(_playersId[s]);
                 std::cerr << "Removed client" << std::endl;
                 break;
             }
@@ -224,6 +232,19 @@ namespace ecs
         deconnectClient(client.first, client.second);
     }
 
+    void NetworkServerSystem::removePlayer(int id)
+    {
+        for (auto entity : _sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
+            auto player = Component::castComponent<Player>((*entity)[IComponent::Type::PLAYER]);
+            if (player->getId() == id) {
+                _sceneManager.getCurrentScene().removeEntity(entity);
+                break;
+            }
+        }
+        for (auto &s : _senders)
+            writeMsg(std::string(RM_PLAYER) + " " + std::to_string(id));
+    }
+
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)
     {
         if (_states[client] != ClientState::CONNECTED)
@@ -231,21 +252,25 @@ namespace ecs
         _states[client] = ClientState::READYTOPLAY;
         // add new player entity
         _playersId[client] = ++_players;
-        emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, _players, GameSystem::_playerSpawns[_players], false);
-        // writeMsg(std::string(CR_PLAYER) + std::to_string(_players));
-
-        for (auto &s : _senders) {
-            if (s == client)
-                writeToClient(std::string(CR_ME) + std::to_string(_players), s);
-            else
-                writeToClient(std::string(CR_PLAYER) + std::to_string(_players), s);
-        }
 
         // check if all players are ready
         for (auto s : _states) {
             if (s.second != ClientState::READYTOPLAY)
                 return;
         }
+
+        // Create players inside clients
+        for (auto &client : _senders) {
+            unsigned int id = _playersId[client];
+            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::_playerSpawns[id], false);
+            for (auto &player : _senders) {
+                if (player == client)
+                    writeToClient(std::string(CR_ME) + std::to_string(id), player);
+                else
+                    writeToClient(std::string(CR_PLAYER) + std::to_string(id), player);
+            }
+        }
+
         // notify clients game can start
         writeMsg(READY);
         emit changeScene(SceneType::GAME);

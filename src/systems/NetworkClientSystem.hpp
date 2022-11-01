@@ -20,7 +20,10 @@ namespace ecs {
         Q_OBJECT
 
     public:
-        NetworkClientSystem();
+        /// @brief NetworkClientSystem constructor
+        /// @param serverAddr Server IP address
+        /// @param port Server port number
+        NetworkClientSystem(std::string serverAddr, unsigned short port);
 
         void init(SceneManager &manager);
         /** @brief Reads all received messages and processes them
@@ -50,6 +53,8 @@ namespace ecs {
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
+
+        void removePlayer(std::string s, SceneManager &manager);
 
 
         std::vector<std::string> _msgQueue;

@@ -56,18 +56,6 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
-    // public slots:
-    //     /// @brief Sends msg through the UdpSocket
-    //     /// @param msg Message to send
-    //     /// @note Depending on the network role; sends to server or all clients
-    //     void writeMsg(const std::string &msg);
-    //     /// @brief Puts received message in the system's queue
-    //     /// @param msg Message received
-    //     void putMsgInQueue(std::string msg);
-
-    // signals:
-    //     void clientConnection();
-
     protected:
 
         QHostAddress _serverAddr;
