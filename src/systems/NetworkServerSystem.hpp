@@ -21,6 +21,12 @@ namespace ecs
         Q_OBJECT
 
     public:
+
+        /// @brief NetworkServerSystem constructor
+        /// @param addr Server IP address
+        /// @param port Server port number
+        NetworkServerSystem(std::string addr, unsigned short port, SceneManager &sceneManager);
+
         void init(SceneManager &manager);
         /// @brief Reads all received messages and processes them
         void update(SceneManager &manager, uint64_t deltaTime);
@@ -51,6 +57,7 @@ namespace ecs
         void connectClient(QString addr, unsigned short port);
         void deconnectClient(QString addr, unsigned short port);
         void setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &sceneManager);
+        void removePlayer(int id);
 
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
@@ -63,6 +70,8 @@ namespace ecs
         int _players = 0;
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, int> _playersId;
         std::map<std::pair<QString, unsigned short> /* client */, QTimer> _timers;
+
+        SceneManager &_sceneManager;
 
     };
 
