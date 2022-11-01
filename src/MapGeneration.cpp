@@ -56,6 +56,8 @@ namespace ecs
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
+        Rectangle rect(position.x, position.y, 60, 60);
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
         entity->addComponent(position);
 
         if (mobId == 1)
@@ -167,7 +169,9 @@ namespace ecs
         }
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
-        entity->addComponent(sprite).addComponent(position);
+        Rectangle rect(position.x, position.y, 150, 150);
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
+        entity->addComponent(sprite).addComponent(position).addComponent(hitbox);
         return entity;
     }
 

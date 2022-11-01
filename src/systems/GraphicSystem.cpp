@@ -76,8 +76,8 @@ namespace ecs
                 displayCube(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::AESTHETIC])
                 displayParticles(e);
-            /* for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-                displayCollidable(e); */
+            for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                displayCollidable(e);
             cam->getCamera().endDrawScope();
         }
         for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
