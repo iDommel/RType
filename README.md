@@ -9,7 +9,8 @@ Repository for the R-Type project
     cmake -DCMAKE_BUILD_TYPE=Debug build
 
 # Usage
-The Server has to be launched BEFORE the clients for the connection to work.\n
+    The Server has to be launched BEFORE the clients for the connection to work.
+
     ./r-type_server SERVER_IP_ADDRESS SERVER_PORT
     ./r-type_client SERVER_IP_ADDRESS SERVER_PORT
 
