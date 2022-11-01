@@ -65,12 +65,29 @@ namespace ecs
             throw std::runtime_error("3d setter used on none 3d Hitbox");
     }
 
+    void Hitbox::setRect(Rectangle rect, Vector2 pos)
+    {
+        if (!_is3D) {
+            _rect = std::make_unique<Rectangle>(rect);
+            _rect->x = pos.x;
+            _rect->y = pos.y;
+            _isInitialized = true;
+        }
+        else
+            throw std::runtime_error("2d setter used on none 2d Hitbox");
+    }
+
     Rectangle Hitbox::getRect(void) const
     {
-        if (!_is3D)
+        if (!_is3D && _rect != nullptr)
             return *_rect;
         else
             throw std::runtime_error("2d getter used on none 2d Hitbox");
+    }
+
+    bool Hitbox::isInitialized(void) const
+    {
+        return _isInitialized;
     }
 
     Hitbox &Hitbox::operator+=(const AVector shift)

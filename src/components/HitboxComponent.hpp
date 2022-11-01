@@ -87,6 +87,8 @@ namespace ecs
         /// @brief Get the 2D Rectangle (WARNING-> use 2d funtions on 2d hitbox only)
         Rectangle getRect(void) const;
         void setBBox(BoundingBox box);
+        void setRect(Rectangle rect, Vector2 pos);
+        bool isInitialized(void) const;
 
     protected:
     private:

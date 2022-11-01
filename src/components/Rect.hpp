@@ -24,9 +24,9 @@ namespace ecs
             _isInitialized = true;
         }
 
-        Rect(bool isFirst): Component(Type::RECT)
+        Rect(bool isF): Component(Type::RECT), isFirst(isF)
         {
-            _isInitialized = true;
+            _isInitialized = false;
         }
 
         float left;

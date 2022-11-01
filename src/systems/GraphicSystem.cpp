@@ -124,8 +124,15 @@ namespace ecs
             _textures[sprite->getValue()].second++;
         else
             _textures[sprite->getValue()] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
-        if (sprite->getNbFrame() == 0)
+        if (sprite->getNbFrame() == 0) {
+            if (entity->hasComponent(IComponent::Type::RECT)) {
+                auto rect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
+                rect->height = _textures[sprite->getValue()].first->getHeight();
+                rect->width = _textures[sprite->getValue()].first->getWidth();
+                rect->isFirst = false;
+            }
             return;
+        }
 
         auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
 

@@ -32,7 +32,7 @@ namespace ecs
             maybeUninitialized = (*collidable)[IComponent::Type::HITBOX];
             if (maybeUninitialized && !maybeUninitialized->isInitialized()) {
                 pos = Component::castComponent<Position>((*collidable)[IComponent::Type::POSITION]);
-                std::cout << "bonjour" << std::endl;
+                // std::cout << "bonjour" << std::endl;
                 if (collidable->hasComponent(IComponent::Type::RECT)) {
                     rect = Component::castComponent<Rect>((*collidable)[IComponent::Type::RECT]);
                     if (!rect->isFirst) {
@@ -66,8 +66,11 @@ namespace ecs
                 hitbox = Component::castComponent<Hitbox>((*collidable)[IComponent::Type::HITBOX]);
                 if (hitbox->is3D())
                     _collidables3D.push_back(std::make_pair(collidable, hitbox));
-                else
+                else {
                     _collidables2D.push_back(std::make_pair(collidable, hitbox));
+                    // std::cerr << "2d collidable" << hitbox->getRect().height << std::endl;
+                    // _collidables2D.push_back(std::make_pair(collidable, hitbox));
+                }
             }
         }
     }
@@ -119,10 +122,25 @@ namespace ecs
         //     if (collidable.first != entity)
         //         if (check3DCollision(collidable.second, hitbox))
         //             colliders.push_back(collidable.first);
-        for (auto &collidable : _collidables2D)
-            if (collidable.first != entity)
+        for (auto &collidable : _collidables2D) {
+            if (collidable.first != entity) {
+                // init uninitialized rect component
+                if (!collidable.second->isInitialized()) {
+                    std::cerr << "WARNING: uninitialized rect component" << std::endl;
+                    auto pos = Component::castComponent<Position>((*collidable.first)[IComponent::Type::POSITION]);
+                    auto rect = Component::castComponent<Rect>((*collidable.first)[IComponent::Type::RECT]);
+                    if (!rect->isFirst) {
+                        std::cerr << "rect not initialized" << std::endl;
+                        continue;
+                    }
+                    Vector2 pos2d = {pos->x, pos->y};
+                    Rectangle toUpdateRect = {rect->left, rect->top, rect->width, rect->height};
+                    collidable.second->setRect(toUpdateRect, pos2d);
+                }
                 if (check2DCollision(collidable.second, hitbox))
                     colliders.push_back(collidable.first);
+            }
+        }
         return colliders;
     }
 
@@ -205,6 +223,7 @@ namespace ecs
 
     bool CollideSystem::check2DCollision(std::shared_ptr<Hitbox> box1, std::shared_ptr<Hitbox> box2) const
     {
+        std::cerr << "Checking collision" << std::endl;
         return (check2DCollision(box1->getRect(), box2->getRect()));
     }
 
