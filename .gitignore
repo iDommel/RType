@@ -6,6 +6,7 @@ CMakeFiles
 CMakeCache.txt
 debug
 CMakeUserPresets.json
+settings.json
 *.manifest
 *_autogen
 *.cmake
