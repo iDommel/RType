@@ -33,4 +33,4 @@ line "-"
 echo "##> Rebuild - Cmake"
 line "-"
 echo -ne $C_RST
-sudo cmake --build build
+cmake --build build
