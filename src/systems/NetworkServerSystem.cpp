@@ -91,7 +91,7 @@ namespace ecs
                 playerComp->stopDown(manager, entity, dt);
             break;
         }
-        writeMsg(Message("PLAYER POS " + std::to_string(pos->x) + " " + std::to_string(pos->y)));
+        writeMsg(Message("PLAYER " + std::to_string(id) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y)));
     }
 /*
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t dt)
