@@ -5,7 +5,7 @@ Repository for the R-Type project
     sh install.sh [Optional build type arg=(Release/Debug/ect)]
 
 # Recompilation (Debug or anything else)
-    sh reBuild.sh
+    sh reBuild.sh [Optional rm of tmp files=Re] [Optional build type arg=(Release/Debug/ect)]
 
 # Alternative way:
     chmod +x install.sh reBuild.sh
