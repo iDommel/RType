@@ -38,9 +38,13 @@ namespace ecs
         if (!_socket->hasPendingDatagrams())
             return;
         QNetworkDatagram data = _socket->receiveDatagram();
+        QDataStream ds(data.data());
+        Message msg;
+        ds >> msg;
+
         _lastPort = data.senderPort();
         _lastAddr = data.senderAddress();
-        emit transferMsgToSystem(data.data().toStdString());
+        emit transferMsgToSystem(msg);
     }
 
     bool UdpSocket::canRead()
@@ -53,13 +57,16 @@ namespace ecs
         return _socket->waitForReadyRead(ms);
     }
 
-    void UdpSocket::write(const std::string &msg, const QHostAddress &address, int port)
+    void UdpSocket::write(const Message &msg, const QHostAddress &address, int port)
     {
-        QByteArray buffer(msg.c_str(), msg.size());
+        QByteArray buffer;
+        QDataStream stream(&buffer, QIODevice::WriteOnly);
+        stream << msg;
         QNetworkDatagram data(buffer, address, port);
         if (_socket->writeDatagram(data) == -1) {
-            throw std::runtime_error("Error sending msg: " + msg);
+            throw std::runtime_error("Error sending msg: " + msg.toString());
         }
+        std::cout << "Send msg: " << msg.toString() << std::endl;
     }
 
 }

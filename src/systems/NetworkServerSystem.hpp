@@ -10,14 +10,14 @@
 
 #include "ANetworkSystem.hpp"
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include "Position.hpp"
 
-namespace ecs {
+namespace ecs
+{
 
     class NetworkServerSystem : public ANetworkSystem
     {
-
         Q_OBJECT
 
     public:
@@ -30,14 +30,14 @@ namespace ecs {
         void init(SceneManager &manager);
         /// @brief Reads all received messages and processes them
         void update(SceneManager &manager, uint64_t deltaTime);
-        void destroy() {};
+        void destroy(){};
 
         void deconnectClientTimedout(std::pair<QString, unsigned short> client);
 
     public slots:
         /// @brief Sends msg through the UdpSocket to all connected clients
         /// @param msg Message to send
-        void writeMsg(const std::string &msg);
+        void writeMsg(const Message &msg);
 
         /// @brief Sends msg through the UdpSocket to the specified client
         /// @param msg Message to send
@@ -47,24 +47,26 @@ namespace ecs {
 
         /// @brief Puts received message in the system's queue
         /// @param msg Message received
-        void putMsgInQueue(std::string msg);
+        void putMsgInQueue(Message msg);
 
     signals:
         void changeScene(SceneType scene);
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
 
     private:
-
-        void connectClient(QString addr, unsigned short port);
-        void deconnectClient(QString addr, unsigned short port);
+        void connectClient(std::pair<QString, unsigned short> client);
+        void deconnectClient(std::pair<QString, unsigned short> client);
         void setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &sceneManager);
         void removePlayer(int id);
 
         /// @brief Gets a player event message and moves entities accordingly
+        /// @param manager SceneManager reference
         /// @param msg The received message
-        void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
+        /// @param id Player ID
+        /// @param deltaTime Time in milliseconds since last update
+        void handlePlayerEvent(SceneManager &manager, const Message &msg, int id, uint64_t deltaTime);
 
-        std::map<std::string, std::pair<QString /*addr*/, unsigned short /*port*/>> _msgQueue;
+        std::vector<Message> _msgQueue;
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, ANetworkSystem::ClientState> _states;
         int _players = 0;
