@@ -5,8 +5,8 @@ cmake-build-release
 CMakeFiles
 CMakeCache.txt
 debug
-.vscode
-*.json
+CMakeUserPresets.json
+settings.json
 *.manifest
 *_autogen
 *.cmake

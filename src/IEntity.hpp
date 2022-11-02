@@ -41,7 +41,8 @@ namespace ecs
             AI,
             RADAR,
             MUSIC,
-            SOUND
+            SOUND,
+            TRAJECTORY
         };
 
         virtual ~IEntity() = default;

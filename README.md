@@ -2,11 +2,14 @@
 Repository for the R-Type project
 
 # Compilation:
-    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-    cmake --build build
+    sh install.sh [Optional build type arg=(Release/Debug/ect)]
 
-    For debugging:
-    cmake -DCMAKE_BUILD_TYPE=Debug build
+# Recompilation (Debug or anything else)
+    sh reBuild.sh [Optional rm of tmp files=Re] [Optional build type arg=(Release/Debug/ect)]
+
+# Alternative way:
+    chmod +x install.sh reBuild.sh
+    "now use [./] instead of [sh ] for above commands"
 
 # Usage
 The Server has to be launched BEFORE the clients for the connection to work.

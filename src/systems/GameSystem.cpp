@@ -45,6 +45,7 @@
 #include "ParticleCloud.hpp"
 #include "ModelAnim.hpp"
 #include "Window.hpp"
+#include "Trajectory.hpp"
 
 namespace ecs
 {
@@ -213,7 +214,30 @@ namespace ecs
         }
         if (Core::networkRole == NetworkRole::SERVER) {
             updatePlayers(sceneManager, dt);
+            for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
+                auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
+                auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+                trajectory->update(position);
+            }
         }
+        // _aiSystem.update(sceneManager, dt);
+        // _collideSystem.update(sceneManager, dt);
+
+        // auto renderables = sceneManager.getCurrentScene()[IEntity::Tags::RENDERABLE_3D];
+
+        // for (auto &renderable : renderables) {
+        //     if (renderable->hasComponent(IComponent::Type::ANIMATION)) {
+        //         auto component = Component::castComponent<ModelAnim>((*renderable)[IComponent::Type::ANIMATION]);
+        //         if (component->getNbFrames() == -1)
+        //             continue;
+        //         component->triggerPlay(renderable);
+        //         if (!component->shouldPlay())
+        //             continue;
+        //         component->getCurrentFrame()++;
+        //         if (component->getCurrentFrame() >= component->getNbFrames())
+        //             component->getCurrentFrame() = 0;
+        //     }
+        // }
     }
 
     std::unique_ptr<IScene> GameSystem::createConnectionScene()

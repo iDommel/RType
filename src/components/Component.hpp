@@ -15,7 +15,7 @@
 
 namespace ecs
 {
-
+    /// @brief Add a Type in IComponent.hpp, then add a Tag in Ientity.hpp, and specify coponents types needed in entities to have this tag
     class Component : public IComponent
     {
     public:
