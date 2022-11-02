@@ -181,7 +181,7 @@ namespace ecs
             return;
         _states[client] = ClientState::READYTOPLAY;
         // add new player entity
-        _playersId[client] = ++_players;
+        // _playersId[client] = ++_players;
 
         // check if all players are ready
         for (auto s : _states) {
@@ -191,8 +191,10 @@ namespace ecs
 
         // Create players inside clients
         for (auto &client : _senders) {
-            unsigned int id = _playersId[client];
-            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::_playerSpawns[id], false);
+            _playersId[client] = Entity::idCounter++;
+            unsigned long int id = _playersId[client];
+            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::playerSpawns.front(), false);
+            GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
             for (auto &player : _senders) {
                 Message msg(EntityAction::CREATE, id, EntityType::PLAYER, (client == player));
                 writeToClient(msg, player);

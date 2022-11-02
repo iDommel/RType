@@ -34,7 +34,7 @@ namespace ecs
         void destroy();
 
     signals:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
 
     public slots:
         /// @brief Sends msg to server

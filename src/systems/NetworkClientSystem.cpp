@@ -60,12 +60,12 @@ namespace ecs
                 _timer.start(PING_TIMEOUT);
             } else if (s.getText() == READY) {
                 manager.setCurrentScene(SceneType::GAME);
-            } else if (s.getText().rfind(CR_PLAYER, 0) == 0) {
-                int idPlayer = std::stoi(s.getText().substr(std::string(CR_PLAYER).size()));
-                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], false);
-            } else if (s.getText().rfind(CR_ME, 0) == 0) {
-                int idPlayer = std::stoi(s.getText().substr(std::string(CR_ME).size()));
-                emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], true);
+            // } else if (s.getText().rfind(CR_PLAYER, 0) == 0) {
+            //     int idPlayer = std::stoi(s.getText().substr(std::string(CR_PLAYER).size()));
+            //     emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::playerSpawns[idPlayer], false);
+            // } else if (s.getText().rfind(CR_ME, 0) == 0) {
+            //     int idPlayer = std::stoi(s.getText().substr(std::string(CR_ME).size()));
+            //     emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::playerSpawns[idPlayer], true);
             } else if (std::regex_match(s.getText(), std::regex(std::string(RM_PLAYER) + " [1-4]"))) {
                 removePlayer(s.getText(), manager);
             }
@@ -96,7 +96,8 @@ namespace ecs
             long unsigned int id = message.getEntityId();
             if (message.getEntityType() == EntityType::PLAYER) {
                 emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
-                id, GameSystem::_playerSpawns[id], message.getIsMe());
+                id, GameSystem::playerSpawns.front(), message.getIsMe());
+                GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
             }
             break;
         }

@@ -51,7 +51,7 @@ namespace ecs
 
     signals:
         void changeScene(SceneType scene);
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
 
     private:
         void connectClient(std::pair<QString, unsigned short> client);
@@ -70,7 +70,7 @@ namespace ecs
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, ANetworkSystem::ClientState> _states;
         int _players = 0;
-        std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, int> _playersId;
+        std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, unsigned long int> _playersId;
         std::map<std::pair<QString, unsigned short> /* client */, QTimer> _timers;
 
         SceneManager &_sceneManager;

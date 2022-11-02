@@ -48,7 +48,7 @@
 
 namespace ecs
 {
-    std::vector<Position> GameSystem::_playerSpawns;
+    std::vector<Position> GameSystem::playerSpawns;
 
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -581,9 +581,9 @@ namespace ecs
         return _networkActivated;
     }
 
-    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe)
+    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe)
     {
-        std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>();
+        std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>(id);
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
         BoundingBox towerBoundingBox = {{pos.x - 4.2f, pos.y + 0.0f, pos.z - 4.0f}, {pos.x + 4.2f, pos.y + 23.0f, pos.z + 4.0f}};

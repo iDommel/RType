@@ -242,7 +242,7 @@ namespace ecs
                     scene->addEntity(whichWall(strCube, row, line));
                 }
                 else if (lineTwo[line] == 'P')
-                    _playerSpawns.push_back({row * SCALE, (lastLine - line) * SCALE, 0});
+                    playerSpawns.push_back({row * SCALE, (lastLine - line) * SCALE, 0});
                 else if (lineTwo[line] >= '0' && lineTwo[line] <= '9')
                 {
                     std::shared_ptr<Entity> entity = whichEnemy(lineTwo[line] - '0', row * SCALE, (lastLine - line) * SCALE);
