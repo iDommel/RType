@@ -26,6 +26,7 @@
 #define GAME_TILE_SIZE 12
 #define GAME_NB_INDESTRUCTIBLE_WALL 0 //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
+#define SCALE 64 // Global scale
 
 #define SPLASH_TIMEOUT 3000      // value in milliseconds
 #define CONNECTION_TIMEOUT 30000 // value in milliseconds
@@ -95,7 +96,6 @@ namespace ecs
         bool isNetworkActivated();
 
         static std::vector<Position> _playerSpawns;
-        const int scale = 64;
 
     signals:
         void writeMsg(const std::string &message);

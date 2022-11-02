@@ -54,7 +54,7 @@ namespace ecs
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
-        Rectangle rect = {position->x, position->y, scale, scale};
+        Rectangle rect = {position->x + SCALE / 2, position->y + SCALE / 2, SCALE, SCALE};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
         entity->addComponent(position).addComponent(hitbox);
 
