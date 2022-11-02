@@ -195,16 +195,6 @@ namespace ecs
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
-        // int firstText = 9;
-
-        // if (SceneManager::getCurrentSceneType() == SceneType::CONTROLLER) {
-        //     for (auto &e : sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
-        //         auto players = Component::castComponent<Player>((*e)[IComponent::Type::PLAYER]);
-        //         updateTextBindings(sceneManager, players, firstText);
-        //         replaceTextBindings(sceneManager, players, firstText);
-        //         firstText += 5;
-        //     }
-        // }
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
             timeElasped += dt;
             if (timeElasped > SPLASH_TIMEOUT) {
@@ -221,25 +211,9 @@ namespace ecs
                 sceneManager.setShouldClose(true);
             }
         }
-        updatePlayers(sceneManager, dt);
-        // _aiSystem.update(sceneManager, dt);
-        // _collideSystem.update(sceneManager, dt);
-
-        // auto renderables = sceneManager.getCurrentScene()[IEntity::Tags::RENDERABLE_3D];
-
-        // for (auto &renderable : renderables) {
-        //     if (renderable->hasComponent(IComponent::Type::ANIMATION)) {
-        //         auto component = Component::castComponent<ModelAnim>((*renderable)[IComponent::Type::ANIMATION]);
-        //         if (component->getNbFrames() == -1)
-        //             continue;
-        //         component->triggerPlay(renderable);
-        //         if (!component->shouldPlay())
-        //             continue;
-        //         component->getCurrentFrame()++;
-        //         if (component->getCurrentFrame() >= component->getNbFrames())
-        //             component->getCurrentFrame() = 0;
-        //     }
-        // }
+        if (Core::networkRole == NetworkRole::SERVER) {
+            updatePlayers(sceneManager, dt);
+        }
     }
 
     std::unique_ptr<IScene> GameSystem::createConnectionScene()

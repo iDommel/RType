@@ -16,7 +16,6 @@ namespace ecs
     Message::Message(const std::string &text)
         : _messageType(MessageType::TEXTMESSAGE), _textMessage(QString::fromStdString(text))
     {
-        std::cout << _textMessage.toStdString() << std::endl;
     }
 
     Message::Message(const char *str)
@@ -156,7 +155,6 @@ namespace ecs
     {
         qint8 entityAction;
         qint8 entityType;
-        quint64 id;
 
         in >> entityAction;
         in >> toWrite._id;
