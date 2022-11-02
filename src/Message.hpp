@@ -19,6 +19,18 @@ namespace ecs
         return static_cast<typename std::underlying_type<E>::type>(e);
     }
 
+    enum class NetworkMessageType : qint8 {
+        WAIT_CONNECTION,
+        CONNECTION_OK,
+        DISCONNECTED,
+        READY,
+        CR_PLAYER,
+        CR_ME,
+        RM_PLAYER,
+        IMALIVE,
+        UNDEFINED
+    };
+
     enum class MessageType : qint8 {
         UNDEFINED = -1,
         ENTITYMESSAGE,
@@ -72,6 +84,10 @@ namespace ecs
         /// @brief Alternate constructor for TEXTMESSAGE messages
         /// @param str the string to send
         Message(const char *);
+
+        /// @brief Constructor for a NetworkEventMessage
+        /// @param the type of the event
+        Message(NetworkMessageType);
         /// @brief Constructor for KeyboardEvents messages
         /// @param eventType the type of the event
         /// @param keyState the state of the key pressed
@@ -113,6 +129,7 @@ namespace ecs
         EntityAction getEntityAction() const;
         EntityType getEntityType() const;
         KeyState getKeyState() const;
+        NetworkMessageType getNetworkMessageType() const;
         CustomMouseButton getMouseButton() const;
         KeyboardKey getKeyboardKey() const;
         uint64_t getEntityId() const;
@@ -133,6 +150,7 @@ namespace ecs
         EventType _eventType = EventType::UNDEFINED;
         EntityAction _entityAction = EntityAction::UNDEFINED;
         EntityType _entityType = EntityType::UNDEFINED;
+        NetworkMessageType _networkEventType = NetworkMessageType::UNDEFINED;
         KeyboardKey _keyboardKey = KeyboardKey::KEY_NULL;
         CustomMouseButton _mouseButton = CustomMouseButton::UNDEFINED;
         KeyState _keyState = KeyState::UNDEFINED;

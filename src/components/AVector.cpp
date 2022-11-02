@@ -29,6 +29,11 @@ namespace ecs
         z = other.z;
     }
 
+    Vector2 AVector::getVector2() const
+    {
+        return {x, y};
+    }
+
     std::tuple<float, float, float> AVector::getVector() const
     {
         return std::make_tuple(x, y, z);

@@ -9,7 +9,7 @@
 #define AVECTOR_HPP_
 
 #include <tuple>
-
+#include "raylib.h"
 #include "Component.hpp"
 
 namespace ecs
@@ -26,6 +26,7 @@ namespace ecs
         virtual AVector operator+(const AVector &other) const;
         virtual AVector operator-(const AVector &other) const;
         virtual AVector operator*(float scalar) const;
+        virtual Vector2 getVector2() const;
         float x;
         float y;
         float z;
