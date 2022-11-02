@@ -42,8 +42,8 @@ namespace ecs
         /// @brief Sends msg through the UdpSocket to the specified client
         /// @param msg Message to send
         /// @param clientId Client ID to send msg to
-        void writeToClient(const std::string &msg, int clientId);
-        void writeToClient(const std::string &msg, std::pair<QString /*addr*/, unsigned short /*port*/> client);
+        void writeToClient(Message msg, int clientId);
+        void writeToClient(Message msg, std::pair<QString /*addr*/, unsigned short /*port*/> client);
 
         /// @brief Puts received message in the system's queue
         /// @param msg Message received

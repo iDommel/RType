@@ -55,6 +55,7 @@ namespace ecs
         void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
 
         void removePlayer(std::string s, SceneManager &manager);
+        void processEntityMessage(Message &msg, SceneManager &sceneManager);
 
         std::vector<Message> _msgQueue;
         bool _connected = false;

@@ -48,6 +48,8 @@ namespace ecs
         }
 
         for (auto &s : _msgQueue) {
+            if (s.getMessageType() == MessageType::ENTITYMESSAGE)
+                processEntityMessage(s, manager);
             if (s.getMessageType() != MessageType::TEXTMESSAGE)
                 continue;
             std::cerr << s.getText() << std::endl;
@@ -84,6 +86,19 @@ namespace ecs
                 sceneManager.getCurrentScene().removeEntity(e);
                 break;
             }
+        }
+    }
+
+    void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager)
+    {
+        switch (message.getEntityAction()) {
+        case EntityAction::CREATE:
+            long unsigned int id = message.getEntityId();
+            if (message.getEntityType() == EntityType::PLAYER) {
+                emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
+                id, GameSystem::_playerSpawns[id], message.getIsMe());
+            }
+            break;
         }
     }
 

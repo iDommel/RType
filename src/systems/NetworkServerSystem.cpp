@@ -93,136 +93,19 @@ namespace ecs
         }
         writeMsg(Message("PLAYER " + std::to_string(id) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y)));
     }
-/*
-    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t dt)
-    {
-        auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
 
-        msg.erase(0, 7);
-        std::cerr << msg << std::endl;
-        int playerId = std::stoi(msg.substr(0, msg.find(' ')));
-        msg.erase(0, msg.find(' ') + 1);
-        std::cerr << msg << std::endl;
-        std::string axis = msg.substr(0, msg.find(' '));
-        msg.erase(0, msg.find(' ') + 1);
-        std::cerr << msg << std::endl;
-        std::string action = msg;
-
-        if (axis == "RIGHT" && action == "DOWN") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->moveRight(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-        if (axis == "RIGHT" && action == "RELEASED") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->stopRight(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-        if (axis == "LEFT" && action == "DOWN") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->moveLeft(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-
-        if (axis == "LEFT" && action == "RELEASED") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->stopLeft(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-
-        if (axis == "UP" && action == "DOWN") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->moveUp(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-
-        if (axis == "UP" && action == "RELEASED") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->stopUp(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-
-        if (axis == "DOWN" && action == "DOWN") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->moveDown(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-
-        if (axis == "DOWN" && action == "RELEASED") {
-            for (auto &p : players) {
-                auto playerComp = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (playerComp->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                playerComp->stopDown(manager, p, dt);
-                // std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                writeMsg("PLAYER "+ std::to_string(playerId) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y));
-                break;
-            }
-        }
-    }
-*/
     void NetworkServerSystem::writeMsg(const Message &msg)
     {
         for (auto &client : _senders)
             _socket->write(msg, QHostAddress(client.first), client.second);
     }
 
-    void NetworkServerSystem::writeToClient(const std::string &msg, int clientId)
+    void NetworkServerSystem::writeToClient(Message msg, int clientId)
     {
         _socket->write(msg, QHostAddress(_senders[clientId].first), _senders[clientId].second);
     }
 
-    void NetworkServerSystem::writeToClient(const std::string &msg, std::pair<QString /*addr*/, unsigned short /*port*/> client)
+    void NetworkServerSystem::writeToClient(Message msg, std::pair<QString /*addr*/, unsigned short /*port*/> client)
     {
         _socket->write(msg, QHostAddress(client.first), client.second);
     }
@@ -242,7 +125,6 @@ namespace ecs
 
     void NetworkServerSystem::connectClient(std::pair<QString, unsigned short> client)
     {
-        std::cerr << "coucou"<< std::endl;
         if (_senders.size() >= NB_CLIENTS_MAX)
             return;
         for (auto &s : _senders) {
@@ -312,10 +194,8 @@ namespace ecs
             unsigned int id = _playersId[client];
             emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::_playerSpawns[id], false);
             for (auto &player : _senders) {
-                if (player == client)
-                    writeToClient(std::string(CR_ME) + std::to_string(id), player);
-                else
-                    writeToClient(std::string(CR_PLAYER) + std::to_string(id), player);
+                Message msg(EntityAction::CREATE, id, EntityType::PLAYER, (client == player));
+                writeToClient(msg, player);
             }
         }
 
