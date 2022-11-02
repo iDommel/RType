@@ -26,6 +26,7 @@
 
 namespace ecs
 {
+    const int Player::_defaultSpeed = 140;
 
     Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb) : Component(Type::PLAYER), _id(id)
     {

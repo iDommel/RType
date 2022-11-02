@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2021
 ** Untitled (Workspace)
 ** File description:
-** CameraComponent.hpp
+** Camera3DComponent.hpp
 */
 
 #ifndef CAMERA_COMPONENT_HPP_
@@ -13,7 +13,7 @@
 
 namespace ecs
 {
-    class CameraComponent : public Component
+    class Camera3DComponent : public Component
     {
     public:
         /**
@@ -21,7 +21,7 @@ namespace ecs
          * @param target Vector the camera point to
          * @param position Vector where the camera is
          */
-        CameraComponent(Vector3 target, Vector3 position);
+        Camera3DComponent(Vector3 target, Vector3 position);
 
         /**
          * @brief Get camera object

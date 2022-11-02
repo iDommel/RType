@@ -152,6 +152,7 @@ namespace ecs
         /// @param msg Message to send when left mouse button is pressed
         void createMsgEvent(std::shared_ptr<Entity> &entity, const NetworkMessageType &msg);
 
+        std::shared_ptr<IEntity> create2DCamera(int x, int y);
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();
