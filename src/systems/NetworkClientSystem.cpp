@@ -46,32 +46,33 @@ namespace ecs
             waitCo = true;
         }
 
-        for (auto &mess : _msgQueue) {
-            if (mess.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
-                if (waitCo && !_connected && mess.getNetworkMessageType() == NetworkMessageType::CONNECTION_OK) {
+        for (auto &msg : _msgQueue) {
+            if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+                if (waitCo && !_connected && msg.getNetworkMessageType() == NetworkMessageType::CONNECTION_OK) {
                     manager.setCurrentScene(SceneType::LOBBY);
                     waitCo = false;
                     _connected = true;
                     _timer.start(PING_TIMEOUT);
-                } else if (mess.getNetworkMessageType() == NetworkMessageType::READY) {
+                } else if (msg.getNetworkMessageType() == NetworkMessageType::READY) {
                     manager.setCurrentScene(SceneType::GAME);
                 }
             }
-            if (mess.getMessageType() == MessageType::TEXTMESSAGE) {
-                std::cerr << "Text message received: " << mess.getText() << std::endl;
-                if (mess.getText().rfind("CR_PLAYER", 0) == 0) {
-                    int idPlayer = std::stoi(mess.getText().substr(std::string("CR_PLAYER").size()));
+            if (msg.getMessageType() == MessageType::TEXTMESSAGE) {
+                std::cerr << "Text message received: " << msg.getText() << std::endl;
+                if (msg.getText().rfind("CR_PLAYER", 0) == 0) {
+                    int idPlayer = std::stoi(msg.getText().substr(std::string("CR_PLAYER").size()));
                     emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], false);
-                } else if (mess.getText().rfind("CR_ME", 0) == 0) {
-                    int idPlayer = std::stoi(mess.getText().substr(std::string("CR_ME").size()));
+                } else if (msg.getText().rfind("CR_ME", 0) == 0) {
+                    int idPlayer = std::stoi(msg.getText().substr(std::string("CR_ME").size()));
                     emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], true);
-                } else if (std::regex_match(mess.getText(), std::regex(std::string("RM_PLAYER") + " [1-4]"))) {
-                    removePlayer(mess.getText(), manager);
+                } else if (std::regex_match(msg.getText(), std::regex(std::string("RM_PLAYER") + " [1-4]"))) {
+                    removePlayer(msg.getText(), manager);
                 }
-            } else if (mess.getMessageType() == MessageType::ENTITYMESSAGE) {
-                std::cerr << "Entity message received" << std::endl;
-                if (mess.getEntityType() == EntityType::PLAYER) {
-                    handlePlayerEvent(manager, mess, dt);
+            } else if (msg.getMessageType() == MessageType::ENTITYMESSAGE) {
+                std::cerr << "Entity message received:" << std::endl;
+                std::cerr << msg.toString() << std::endl;
+                if (msg.getEntityType() == EntityType::PLAYER) {
+                    handlePlayerEvent(manager, msg, dt);
                 }
             }
         }
@@ -113,12 +114,11 @@ namespace ecs
 
         for (auto &player : players) {
             auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
-            if (player->getId() != msg.getEntityId())
+            if (playerComp->getId() != msg.getEntityId())
                 continue;
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             pos->x = msg.getEntityPosition().x;
             pos->y = msg.getEntityPosition().y;
-            std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
             break;
         }
     }

@@ -156,10 +156,11 @@ namespace ecs
     {
         qint8 entityAction;
         qint8 entityType;
+        quint64 id;
 
         in >> entityAction;
+        in >> toWrite._id;
         toWrite._entityAction = static_cast<EntityAction>(entityAction);
-
         switch (toWrite._entityAction) {
         case EntityAction::CREATE:
             in >> entityType;
@@ -246,6 +247,7 @@ namespace ecs
             out << qint32(toWrite._pos.y);
             break;
         case EntityAction::DELETE:
+            out << quint64(toWrite._id);
             break;
         default:
             break;
