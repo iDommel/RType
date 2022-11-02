@@ -46,6 +46,7 @@
 #include "ParticleCloud.hpp"
 #include "ModelAnim.hpp"
 #include "Window.hpp"
+#include "Trajectory.hpp"
 
 namespace ecs
 {
@@ -57,11 +58,16 @@ namespace ecs
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
         entity->addComponent(position);
-
         if (mobId == 1)
         {
             std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
             entity->addComponent(sprite);
+            std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
+                                                                                                          { return -a; }),
+                                                                                  std::function<float(float)>([](float a)
+                                                                                                          { return std::sin(a) * 2; }),
+                                                                                  position);
+            entity->addComponent(trajectory);
             return entity;
         }
         if (mobId == 2)

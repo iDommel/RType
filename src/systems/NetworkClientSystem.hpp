@@ -54,8 +54,12 @@ namespace ecs
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
 
+        /// @brief Gets a player event message and moves entities accordingly
+        /// @param msg The received message
+        void handlePlayerEvent(SceneManager &manager, const Message &msg, uint64_t deltaTime);
+
         void removePlayer(std::string s, SceneManager &manager);
-        void processEntityMessage(Message &msg, SceneManager &sceneManager);
+        void processEntityMessage(Message &msg, SceneManager &sceneManager, uint64_t deltaTime);
 
         std::vector<Message> _msgQueue;
         bool _connected = false;

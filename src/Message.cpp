@@ -16,12 +16,15 @@ namespace ecs
     Message::Message(const std::string &text)
         : _messageType(MessageType::TEXTMESSAGE), _textMessage(QString::fromStdString(text))
     {
-
-        std::cout << _textMessage.toStdString() << std::endl;
     }
 
     Message::Message(const char *str)
         : _messageType(MessageType::TEXTMESSAGE), _textMessage(QString(str))
+    {
+    }
+
+    Message::Message(NetworkMessageType type)
+        : _messageType(MessageType::NETWORKEVENTMESSAGE), _networkEventType(type)
     {
     }
 
@@ -82,6 +85,11 @@ namespace ecs
         return _entityAction;
     }
 
+    NetworkMessageType Message::getNetworkMessageType() const
+    {
+        return _networkEventType;
+    }
+
     EntityType Message::getEntityType() const
     {
         return _entityType;
@@ -114,7 +122,6 @@ namespace ecs
 
     std::string Message::getText() const
     {
-        // return _textMessage;
         return _textMessage.toStdString();
     }
 
@@ -154,14 +161,13 @@ namespace ecs
     {
         qint8 entityAction;
         qint8 entityType;
-        quint8 isMe;
+        bool isMe;
 
         in >> entityAction;
+        in >> toWrite._id;
         toWrite._entityAction = static_cast<EntityAction>(entityAction);
-
         switch (toWrite._entityAction) {
         case EntityAction::CREATE:
-            in >> toWrite._id;
             in >> entityType;
             in >> isMe;
             toWrite._entityType = static_cast<EntityType>(entityType);
@@ -200,6 +206,9 @@ namespace ecs
                 readEntityMessage(in, toWrite);
                 break;
             case MessageType::NETWORKEVENTMESSAGE:
+                qint8 networkEventType;
+                in >> networkEventType;
+                toWrite._networkEventType = static_cast<NetworkMessageType>(networkEventType);
                 break;
             case MessageType::TEXTMESSAGE:
                 in >> toWrite._textMessage;
@@ -237,7 +246,7 @@ namespace ecs
         case EntityAction::CREATE:
             out << toWrite._id;
             out << to_integral(toWrite._entityType);
-            out << quint8(toWrite._isMe);
+            out << toWrite._isMe;
             break;
         case EntityAction::UPDATE:
             out << quint64(toWrite._id);
@@ -246,6 +255,7 @@ namespace ecs
             out << qint32(toWrite._pos.y);
             break;
         case EntityAction::DELETE:
+            out << quint64(toWrite._id);
             break;
         default:
             break;
@@ -264,6 +274,7 @@ namespace ecs
             writeEntityMessage(out, toWrite);
             break;
         case MessageType::NETWORKEVENTMESSAGE:
+            out << to_integral(toWrite._networkEventType);
             break;
         case MessageType::TEXTMESSAGE:
             out << toWrite._textMessage;
@@ -319,6 +330,7 @@ namespace ecs
             }
             break;
         case MessageType::NETWORKEVENTMESSAGE:
+            ss << "Network event type: " << std::to_string(to_integral(_networkEventType)) << std::endl;
             break;
         case MessageType::TEXTMESSAGE:
             ss << "Text: " << _textMessage.toStdString() << std::endl;

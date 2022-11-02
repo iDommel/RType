@@ -33,13 +33,15 @@ namespace ecs
         for (auto &s : _msgQueue) {
             if (s.getMessageType() == MessageType::TEXTMESSAGE)
                 std::cout << s.getText() << std::endl;
-            if (s.getMessageType() == MessageType::TEXTMESSAGE && s.getText() == DISCONNECTED)
-                deconnectClient(s.getSender());
-            else if (s.getMessageType() == MessageType::TEXTMESSAGE && s.getText() == WAIT_CONNECTION && manager.getCurrentSceneType() == SceneType::LOBBY)
-                connectClient(s.getSender());
-            else if (s.getMessageType() == MessageType::TEXTMESSAGE && s.getText() == READY)
-                setClientReady(s.getSender(), manager);
-            else if (s.getEventType() == EventType::KEYBOARD) {
+            if (s.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+                if (s.getNetworkMessageType() == NetworkMessageType::DISCONNECTED)
+                    deconnectClient(s.getSender());
+                else if (s.getNetworkMessageType() == NetworkMessageType::WAIT_CONNECTION && manager.getCurrentSceneType() == SceneType::LOBBY) {
+                    connectClient(s.getSender());
+                } else if (s.getNetworkMessageType() == NetworkMessageType::READY)
+                    setClientReady(s.getSender(), manager);
+            }
+            if (s.getEventType() == EventType::KEYBOARD) {
                 handlePlayerEvent(manager, s, _playersId[s.getSender()], dt);
             }
         }
@@ -67,31 +69,33 @@ namespace ecs
 
         switch (key) {
         case KEY_RIGHT:
-            if (keyState == KeyState::DOWN)
+            if (keyState == KeyState::DOWN || keyState == KeyState::PRESSED)
                 playerComp->moveRight(manager, entity, dt);
             else
                 playerComp->stopRight(manager, entity, dt);
             break;
         case KEY_LEFT:
-            if (keyState == KeyState::DOWN)
+            if (keyState == KeyState::DOWN || keyState == KeyState::PRESSED)
                 playerComp->moveLeft(manager, entity, dt);
             else
                 playerComp->stopLeft(manager, entity, dt);
             break;
         case KEY_UP:
-            if (keyState == KeyState::DOWN)
+            if (keyState == KeyState::DOWN || keyState == KeyState::PRESSED)
                 playerComp->moveUp(manager, entity, dt);
             else
                 playerComp->stopUp(manager, entity, dt);
             break;
         case KEY_DOWN:
-            if (keyState == KeyState::DOWN)
+            if (keyState == KeyState::DOWN || keyState == KeyState::PRESSED)
                 playerComp->moveDown(manager, entity, dt);
             else
                 playerComp->stopDown(manager, entity, dt);
             break;
         }
-        writeMsg(Message("PLAYER " + std::to_string(id) +" POS " + std::to_string(pos->x) + " " + std::to_string(pos->y)));
+        Message response(EntityAction::UPDATE, (uint64_t)id, EntityType::PLAYER, pos->getVector2());
+        std::cout << "Sending response to client" << std::endl;
+        writeMsg(response);
     }
 
     void NetworkServerSystem::writeMsg(const Message &msg)
@@ -136,7 +140,7 @@ namespace ecs
         _timers[client];
         connect(&_timers[client], &QTimer::timeout, std::bind(&NetworkServerSystem::deconnectClientTimedout, this, client));
         _timers[client].start(PING_TIMEOUT * 2);
-        _socket->write(CONNECTION_OK, QHostAddress(client.first), client.second);
+        _socket->write(Message(NetworkMessageType::CONNECTION_OK), QHostAddress(client.first), client.second);
     }
 
     void NetworkServerSystem::deconnectClient(std::pair<QString, unsigned short> client)
@@ -172,7 +176,7 @@ namespace ecs
             }
         }
         for (auto &s : _senders)
-            writeMsg(Message(std::string(RM_PLAYER) + " " + std::to_string(id)));
+            writeMsg(Message(EntityAction::DELETE, (uint64_t)id));
     }
 
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)
@@ -197,12 +201,13 @@ namespace ecs
             GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
             for (auto &player : _senders) {
                 Message msg(EntityAction::CREATE, id, EntityType::PLAYER, (client == player));
+                std::cout << msg.getIsMe() << std::endl;
                 writeToClient(msg, player);
             }
         }
 
         // notify clients game can start
-        writeMsg(Message(READY));
+        writeMsg(Message(NetworkMessageType::READY));
         emit changeScene(SceneType::GAME);
     }
 
