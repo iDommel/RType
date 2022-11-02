@@ -73,6 +73,13 @@ namespace ecs
         DrawTexture(*_texture, posX, posY, WHITE);
     }
 
+    void Texture::drawEx(Vector2 pos, float rotation, float scale, Color tint = WHITE)
+    {
+        if (!_isLoaded)
+            throw TextureError("Texture draw: Texture not loaded");
+        DrawTextureEx(*_texture, pos, rotation, scale, tint);
+    }
+
     void Texture::setRect(float x, float y, float width, float height)
     {
         if (!_isLoaded)

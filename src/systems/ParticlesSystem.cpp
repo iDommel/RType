@@ -44,7 +44,7 @@ namespace ecs
     {
     }
 
-    void ParticlesSystem::onEntityAdded(std::shared_ptr<IEntity>)
+    void ParticlesSystem::onEntityAdded(std::shared_ptr<IEntity>, SceneType)
     {
     }
 

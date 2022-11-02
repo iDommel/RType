@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://conan.io/
+HostUrl=https://objects.githubusercontent.com/github-production-release-asset-2e65be/47190624/c8da4803-f7a0-4d64-95d1-985db0759d45?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20221024%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221024T085707Z&X-Amz-Expires=300&X-Amz-Signature=3c06974634b1df8bd268b9c538b183a25754fc279c8231ab52b22bd975868add&X-Amz-SignedHeaders=host&actor_id=71822600&key_id=0&repo_id=47190624&response-content-disposition=attachment%3B%20filename%3Dconan-win-64.exe&response-content-type=application%2Foctet-stream

@@ -75,7 +75,7 @@ namespace ecs
         _collidables2D.clear();
     }
 
-    void CollideSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
+    void CollideSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType)
     {
         std::shared_ptr<ecs::Hitbox> hitbox = nullptr;
         std::shared_ptr<ecs::IComponent> maybeCollider = nullptr;
