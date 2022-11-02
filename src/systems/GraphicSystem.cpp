@@ -76,14 +76,14 @@ namespace ecs
                 displayCube(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::AESTHETIC])
                 displayParticles(e);
-            for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-                displayCollidable(e);
             cam->getCamera().endDrawScope();
         }
         for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
             displaySprite(e);
         for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
             displayText(e);
+        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+            displayCollidable(e);
         _window->endDraw();
     }
 
@@ -207,6 +207,11 @@ namespace ecs
 
         if (hitbox->is3D())
             ::DrawBoundingBox(hitbox->getBBox(), RED);
+        else if (!hitbox->is3D()) {
+            std::cout << "x = " << hitbox->getRect().x << std::endl;
+            std::cout << "y = " << hitbox->getRect().y << std::endl;
+            ::DrawRectangleLines(hitbox->getRect().x, hitbox->getRect().y, hitbox->getRect().width, hitbox->getRect().height, RED);
+        }
     }
 
     void GraphicSystem::loadModel(std::shared_ptr<IEntity> &entity)

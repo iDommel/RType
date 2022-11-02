@@ -25,7 +25,6 @@ namespace ecs
         std::shared_ptr<Position> pos = nullptr;
         std::shared_ptr<IComponent> maybeUninitialized = nullptr;
 
-        std::cout << "nb collidables = " << collidables.size() << std::endl;
         for (auto &collidable : collidables) {
             if (!collidable->hasComponent(IComponent::Type::POSITION) || !collidable->hasComponent(IComponent::Type::HITBOX))
                 continue;
@@ -112,9 +111,9 @@ namespace ecs
         if (!entity)
             return colliders;
         hitbox = Component::castComponent<Hitbox>((*entity)[IComponent::Type::HITBOX]);
-        for (auto &collidable : _collidables3D)
+        for (auto &collidable : _collidables2D)
             if (collidable.first != entity)
-                if (check3DCollision(collidable.second, hitbox))
+                if (check2DCollision(collidable.second, hitbox))
                     colliders.push_back(collidable.first);
         return colliders;
     }

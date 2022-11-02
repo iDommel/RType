@@ -95,6 +95,7 @@ namespace ecs
         bool isNetworkActivated();
 
         static std::vector<Position> _playerSpawns;
+        const int scale = 64;
 
     signals:
         void writeMsg(const std::string &message);
