@@ -12,7 +12,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
 
-# set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(${LIBRARY_NAME}
@@ -85,6 +84,7 @@ target_include_directories(${LIBRARY_NAME}
     src/systems
     src
 )
+
 SET(CMAKE_AUTOMOC ON)
 SET(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
@@ -95,7 +95,6 @@ endif()
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
-# find_package(raylib CONFIG REQUIRED)
 find_package(raylib REQUIRED)
 find_package(Qt5 COMPONENTS Core Network CONFIG REQUIRED)
 
