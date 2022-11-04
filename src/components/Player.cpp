@@ -190,21 +190,39 @@ namespace ecs
 
     void Player::shootMissile(SceneManager &manager, std::shared_ptr<IEntity> player, unsigned long int id)
     {
+        if (_shootTimer.isNull())
+            throw std::runtime_error("Can't shoot a missile without starting timer");
         auto playerPos = Component::castComponent<Position>((*player)[Component::Type::POSITION]);
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
-        std::shared_ptr<Missile> missile = std::make_shared<Missile>(MISSILE_DAMAGE);
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png");
+        std::shared_ptr<Missile> missile = nullptr;
+        std::shared_ptr<Sprite> sprite = nullptr;
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos->x + 64, playerPos->y + 32);
         std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
             [](float dt) { return dt; },
             [](float) { return 0; }, std::make_shared<Position>(*pos)
         );
+        if (_shootTimer.msecsTo(QTime::currentTime()) < 1000) {
+            missile = std::make_shared<Missile>(MISSILE_DAMAGE);
+            sprite = std::make_shared<Sprite>("assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png");
+        } else
+            return;
 
         entity->addComponent(missile)
             .addComponent(sprite)
             .addComponent(pos)
             .addComponent(trajectory);
         manager.getCurrentScene().addEntity(entity);
+    }
+
+    void Player::startClock()
+    {
+        std::cerr << "Player start clock" << std::endl;
+        _shootTimer = QTime::currentTime();
+    }
+
+    QTime &Player::getShootTimer()
+    {
+        return _shootTimer;
     }
 
     void Player::updateBombsVec()

@@ -761,7 +761,7 @@ namespace ecs
         scene.addEntity(playerEntity);
     }
 
-    void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos)
+    void GameSystem::createSimpleMissile(IScene &scene, long unsigned int id, Position playerPos)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(MISSILE_DAMAGE);

@@ -93,8 +93,12 @@ namespace ecs
                 playerComp->stopDown(manager, entity, dt);
             break;
         case KEY_RIGHT_CONTROL:
-            if (keyState == KeyState::UP || keyState == KeyState::RELEASED) {
+            if (keyState == KeyState::PRESSED)
+                playerComp->startClock();
+            else if (keyState == KeyState::RELEASED) {
                 playerComp->shootMissile(manager, entity, dt);
+                if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000)
+                    return;
                 Vector2 missilePos = {pos->x + 64, pos->y + 32};
                 Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos);
                 writeMsg(msg);
@@ -104,7 +108,6 @@ namespace ecs
             return;
         }
         Message response(EntityAction::UPDATE, (uint64_t)id, EntityType::PLAYER, pos->getVector2());
-        // std::cout << "Sending response to client" << std::endl;
         writeMsg(response);
     }
 

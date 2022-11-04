@@ -11,6 +11,7 @@
 #include "Component.hpp"
 #include "EventListener.hpp"
 #include "SceneManager.hpp"
+#include <QtCore>
 
 namespace ecs
 {
@@ -80,6 +81,10 @@ namespace ecs
         void moveHorizontal(SceneManager &manager, std::shared_ptr<IEntity> entity, float value);
         /// @brief verticcal movement for gamepad sticks
         void moveVertical(SceneManager &manager, std::shared_ptr<IEntity> entity, float value);
+        /// @brief Set internal clock to now
+        void startClock();
+        /// @return Returns a reference to the internal clock, if not previously started clock will be null
+        QTime &getShootTimer();
 
         void kill();
         bool isDead() const;
@@ -113,6 +118,7 @@ namespace ecs
         int _blastPower;
         int _speed;
         int _id;
+        QTime _shootTimer;
         bool _isDead = false;
         bool _isUp = false;
         bool _isDown = false;
