@@ -23,6 +23,9 @@
 #include "Sphere.hpp"
 #include "GameSystem.hpp"
 #include "Model3D.hpp"
+#include "Missile.hpp"
+#include "Sprite.hpp"
+#include "Trajectory.hpp"
 
 namespace ecs
 {
@@ -183,6 +186,25 @@ namespace ecs
         _bombs.push_back(bomb);
         timerSound->addComponent(std::make_shared<SoundComponent>("sound_det"));
         manager.getCurrentScene().addEntity(bomb).addEntity(timerSound);
+    }
+
+    void Player::shootMissile(SceneManager &manager, std::shared_ptr<IEntity> player, unsigned long int id)
+    {
+        auto playerPos = Component::castComponent<Position>((*player)[Component::Type::POSITION]);
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
+        std::shared_ptr<Missile> missile = std::make_shared<Missile>(MISSILE_DAMAGE);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png");
+        std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos->x + 64, playerPos->y + 32);
+        std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
+            [](float dt) { return dt; },
+            [](float) { return 0; }, std::make_shared<Position>(*pos)
+        );
+
+        entity->addComponent(missile)
+            .addComponent(sprite)
+            .addComponent(pos)
+            .addComponent(trajectory);
+        manager.getCurrentScene().addEntity(entity);
     }
 
     void Player::updateBombsVec()

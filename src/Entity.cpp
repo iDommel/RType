@@ -60,6 +60,8 @@ namespace ecs
          {{IComponent::Type::RADAR}}},
         {Entity::Tags::TRAJECTORY,
          {{IComponent::Type::TRAJECTORY, IComponent::Type::POSITION}}},
+        {Entity::Tags::MISSILE,
+         {{IComponent::Type::MISSILE, IComponent::Type::POSITION, IComponent::Type::SPRITE, IComponent::Type::TRAJECTORY}}},
         {Entity::Tags::AI,
          {{IComponent::Type::VELOCITY, IComponent::Type::AI, IComponent::Type::POSITION}}}};
 

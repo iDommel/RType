@@ -92,9 +92,19 @@ namespace ecs
             else
                 playerComp->stopDown(manager, entity, dt);
             break;
+        case KEY_RIGHT_CONTROL:
+            if (keyState == KeyState::UP || keyState == KeyState::RELEASED) {
+                playerComp->shootMissile(manager, entity, dt);
+                Vector2 missilePos = {pos->x + 64, pos->y + 32};
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos);
+                writeMsg(msg);
+            }
+            return;
+        default:
+            return;
         }
         Message response(EntityAction::UPDATE, (uint64_t)id, EntityType::PLAYER, pos->getVector2());
-        std::cout << "Sending response to client" << std::endl;
+        // std::cout << "Sending response to client" << std::endl;
         writeMsg(response);
     }
 
@@ -184,8 +194,6 @@ namespace ecs
         if (_states[client] != ClientState::CONNECTED)
             return;
         _states[client] = ClientState::READYTOPLAY;
-        // add new player entity
-        // _playersId[client] = ++_players;
 
         // check if all players are ready
         for (auto s : _states) {

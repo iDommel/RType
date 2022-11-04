@@ -102,6 +102,7 @@ namespace ecs
 
     public slots:
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
+        void createMissile(IScene &scene, long unsigned int id, Position pos);
 
     private:
         /// @brief Read map file and generate all the game scene entities

@@ -44,6 +44,7 @@ namespace ecs
             AI,
             RADAR,
             TRAJECTORY,
+            MISSILE,
             TYPE_NB
         };
         virtual const Type &getType() const = 0;

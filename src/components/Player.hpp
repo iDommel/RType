@@ -44,6 +44,8 @@ namespace ecs
         void generateBomb(SceneManager &manager, std::shared_ptr<IEntity> entity);
         void updateBombsVec();
 
+        void shootMissile(SceneManager &manager, std::shared_ptr<IEntity> entity, unsigned long int entityId);
+
         ///@brief gets the player ID
         int getId() const;
 
