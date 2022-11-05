@@ -13,7 +13,7 @@ r-type_library.dir
 x64*
 *vcxproj*
 *.sln
-
+*.dir
 # Prerequisites
 *.d
 
