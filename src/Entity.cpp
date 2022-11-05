@@ -12,6 +12,7 @@
 
 namespace ecs
 {
+    unsigned long int Entity::_idCounter = 0;
 
     const std::map<Entity::Tags, std::vector<std::vector<IComponent::Type>>> Entity::entityTags = {
         {IEntity::Tags::SPRITE_2D,
@@ -57,8 +58,12 @@ namespace ecs
          {{IComponent::Type::UI}}},
         {Entity::Tags::RADAR,
          {{IComponent::Type::RADAR}}},
+        {Entity::Tags::TRAJECTORY,
+         {{IComponent::Type::TRAJECTORY, IComponent::Type::POSITION}}},
         {Entity::Tags::AI,
          {{IComponent::Type::VELOCITY, IComponent::Type::AI, IComponent::Type::POSITION}}}};
+
+    Entity::Entity() : _id(_idCounter++) {}
 
     IEntity &Entity::addComponent(std::shared_ptr<IComponent> component)
     {
@@ -67,13 +72,17 @@ namespace ecs
         IComponent::Type type = component->getType();
         _componentsType.push_back(type);
         _components[type] = component;
-        for (auto &tag : entityTags) {
+        for (auto &tag : entityTags)
+        {
             if (this->hasTag(tag.first))
                 continue;
-            for (auto &vec : tag.second) {
+            for (auto &vec : tag.second)
+            {
                 notFound = false;
-                for (auto &ctag : vec) {
-                    if (std::find(_componentsType.begin(), _componentsType.end(), ctag) == _componentsType.end()) {
+                for (auto &ctag : vec)
+                {
+                    if (std::find(_componentsType.begin(), _componentsType.end(), ctag) == _componentsType.end())
+                    {
                         notFound = true;
                         break;
                     }
@@ -113,12 +122,23 @@ namespace ecs
     {
         std::vector<std::shared_ptr<IComponent>> res;
 
-        for (auto &c : components) {
+        for (auto &c : components)
+        {
             if (_components.find(c) == _components.end())
                 throw std::invalid_argument("Entity: Component type not found");
             res.push_back(_components[c]);
         }
         return res;
+    }
+
+    unsigned long int Entity::getId() const
+    {
+        return _id;
+    }
+
+    unsigned long int Entity::getIdCounter()
+    {
+        return _idCounter;
     }
 
     std::shared_ptr<IComponent> &Entity::operator[](IComponent::Type type)

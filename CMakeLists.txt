@@ -10,6 +10,10 @@ set(LIBRARY_NAME "r-type_library")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_AUTOMOC ON)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_library(${LIBRARY_NAME}
     src/ModelAnimation.cpp
     src/Music.cpp
@@ -29,6 +33,9 @@ add_library(${LIBRARY_NAME}
     src/MouseCallbacks.cpp
     src/GamepadStickCallbacks.cpp
     src/Sound.cpp
+    src/UdpSocket.cpp
+    src/Message.cpp
+    src/MapGeneration.cpp
 
     src/systems/AudioSystem.cpp
     src/systems/GraphicSystem.cpp
@@ -37,6 +44,9 @@ add_library(${LIBRARY_NAME}
     src/systems/CollideSystem.cpp
     src/systems/ParticlesSystem.cpp
     src/systems/AISystem.cpp
+    src/systems/ANetworkSystem.cpp
+    src/systems/NetworkServerSystem.cpp
+    src/systems/NetworkClientSystem.cpp
 
     src/components/Component.cpp
     src/components/EventListener.cpp
@@ -54,6 +64,7 @@ add_library(${LIBRARY_NAME}
     src/components/Bomb.cpp
     src/components/UIComponent.cpp
     src/components/AIPlayer.cpp
+    src/components/Trajectory.cpp
 
     test_functions/TestAnimations2D.cpp
     test_functions/TestCamera2D.cpp
@@ -66,7 +77,6 @@ add_library(${LIBRARY_NAME}
     test_functions/TestSound.cpp
     test_functions/TestModelAnimation.cpp
 )
-
 target_include_directories(${LIBRARY_NAME}
     PUBLIC
     src/components
@@ -75,13 +85,17 @@ target_include_directories(${LIBRARY_NAME}
     src
 )
 
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
+SET(CMAKE_AUTORCC ON)
+
 if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
 endif()
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
-find_package(raylib CONFIG REQUIRED)
+find_package(raylib REQUIRED)
 find_package(Qt5 COMPONENTS Core Network CONFIG REQUIRED)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${raylib_INCLUDE_DIRS})
@@ -111,3 +125,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         -Wextra
     )
 endif(CMAKE_COMPILER_IS_GNUCXX)
+
+set_target_properties(
+    ${CLIENT_NAME} ${SERVER_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "../"
+)

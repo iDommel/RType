@@ -1,0 +1,16 @@
+DEMANDE :
+TimeStamp (Hour:Minute:Sec:MilliSec)
+Event/Entity/SceneChangement (0/1/2)
+EventDescription : Key (2byte) (if mouse button let it be M1/M2 ect, else it is the key presssed like A/?/@/ect) (event modifier Ctrl/Shift/ect should be send only when another one is made), pressed (true / released = false), mousePos (4 byte)
+EntityDescription : Entity ID, composant type, composant values ([val of the first field].[val of the second field].[val of the third field].[ect]) (traduction differ for each composant type)
+SceneChangementDescription : Scene ID (2byte)
+
+exemple mouse fst bouton pressed at 306:505 (TimeStamp 11H23Min75Ms) (ID client 2) : 21123750M110306:0305
+exemple A key released at 1500:10 (TimeStamp 11H50Min45Ms) (ID client 1) : 11150450_A01500:0010
+exemple EntityPlayer1 PositionComposantMoved at 100:100 (TimeStamp 11H34Min7Ms) (ID serveur 0) : 01134071P1:Vec:100:100
+exemple SceneChangement at 11H34Min9Ms (scene target 4) (ID serveur 0) : 011340924
+
+CONFIRMATION :
+TimeStamp (Hour:Min:Sec:MilliSec)
+TimeStamp of the confirmed msg (Hour:Min:Sec:MilliSec)
+Approuved (true/false)

@@ -9,20 +9,25 @@
 #include <iostream>
 
 #include "Core.hpp"
+#include "ANetworkSystem.hpp"
 
 #include "TestHeaders.hpp"
 
-int main(void)
+int main(int ac, char **av)
 {
-    ecs::Core core(
+    ecs::Core core(ac, av,
         {ecs::Core::SystemType::GAME,
+         ecs::Core::SystemType::NETWORK,
          ecs::Core::SystemType::EVENT,
          ecs::Core::SystemType::AUDIO,
          ecs::Core::SystemType::GRAPHIC,
-         ecs::Core::SystemType::PARTICLE});
+         ecs::Core::SystemType::PARTICLE},
+        ecs::NetworkRole::CLIENT);
 
     try {
-        core.mainLoop();
+        core.setEventNetwork();
+        core.run();
+        return core.exec();
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;

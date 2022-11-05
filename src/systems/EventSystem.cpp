@@ -18,8 +18,11 @@ namespace ecs
 {
     std::map<int, std::vector<std::shared_ptr<EventListener>>> EventSystem::_listeners;
 
+    EventSystem::EventSystem() : QObject(nullptr) {}
+
     void EventSystem::init(SceneManager &sceneManager)
     {
+        std::cerr << "EventSystem::init" << std::endl;
         for (auto &index : sceneManager.getSceneTypeList()) {
             for (auto &entity : sceneManager.getScene(index)[IEntity::Tags::CALLABLE]) {
                 auto listener = Component::castComponent<EventListener>((*entity)[IComponent::Type::EVT_LISTENER]);
@@ -124,11 +127,13 @@ namespace ecs
         std::cerr << "EventSystem destroy" << std::endl;
     }
 
-    void EventSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
+    void EventSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene)
     {
+        std::cerr << "EventSystem onEntityAdded" << std::endl;
         if (entity->hasTag(IEntity::Tags::CALLABLE)) {
+            std::cerr << "Entity added" << (int)scene << std::endl;
             std::shared_ptr<EventListener> listener = Component::castComponent<EventListener>((*entity)[Component::Type::EVT_LISTENER]);
-            _listeners[(int)SceneManager::getCurrentSceneType()].push_back(listener);
+            _listeners[(int)scene].push_back(listener);
         }
     }
 
@@ -144,7 +149,7 @@ namespace ecs
         }
     }
 
-    void EventSystem::reloadScene(SceneManager &manager, SceneManager::SceneType sceneType)
+    void EventSystem::reloadScene(SceneManager &manager, SceneType sceneType)
     {
         auto newEntities = manager.getScene(sceneType)[IEntity::Tags::CALLABLE];
         std::vector<std::shared_ptr<EventListener>> newListeners;
@@ -157,4 +162,10 @@ namespace ecs
 
         _listeners[(int)sceneType] = newListeners;
     }
+
+    void EventSystem::setNetworkedEvents()
+    {
+        _netEvt = true;
+    }
+
 }

@@ -10,22 +10,31 @@
 
 #include <map>
 #include <iostream>
+#include <QtCore>
+#include <chrono>
 
 #include "systems/ISystem.hpp"
 #include "SceneManager.hpp"
+#include "ANetworkSystem.hpp"
 
-#define UPDATE_DELTA 17
+#define UPDATE_DELTA        17
+#define NB_CLIENTS_MAX      4
 
 namespace ecs
 {
-    class Core
+
+    class Core : public QCoreApplication
     {
+
+        Q_OBJECT
+
     public:
         /**
          * @brief Types of systems: systems init and destroy calls are effectued by ascending order
          */
         enum class SystemType {
             GAME,
+            NETWORK,
             EVENT,
             AUDIO,
             GRAPHIC,
@@ -38,16 +47,22 @@ namespace ecs
 
         /// @brief Construct a core with enabled systems
         /// @param ActiveSystems systems to enable
-        Core(std::vector<SystemType> ActiveSystems);
+        Core(int ac, char **av, std::vector<SystemType> ActiveSystems, NetworkRole role = NetworkRole::UNDEFINED);
+        ~Core();
 
-        /// @brief Game loop
-        void mainLoop();
+        /// @brief Connect EventSystem & ANetworkSystem for networked events
+        /// @throw Needs to be called before run() & both systems needs to be active
+        void setEventNetwork();
+
+        /// @brief init systems & launch game loop
+        void run();
 
         /**
          * @brief Call each onEntityAdded system function, set as addEntity callback
          * @param entity Entity to load
+         * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity);
+        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene);
 
         /**
          * @brief Call each onEntityRemoved system function, set as removeEntity callback
@@ -55,11 +70,26 @@ namespace ecs
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
+        /// @brief Network role: Client or Server
+        static NetworkRole networkRole;
+
+    private slots:
+        void loop();
+        void onChangeScene(SceneType scene);
+
+    signals:
+        void doLoop();
+        void exitApp();
+
     private:
         void systemUpdate(SystemType, SceneManager &, int64_t);
-        std::map<SystemType, std::unique_ptr<ISystem>> _systems;
+        std::map<SystemType, ISystem *> _systems;
         SceneManager _sceneManager;
         bool _end = false;
+        std::chrono::high_resolution_clock::time_point _clock;
+
+
+        bool _running = false;
     };
 }
 
