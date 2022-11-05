@@ -12,11 +12,11 @@
 #include "IScene.hpp"
 #include "Position.hpp"
 
-namespace ecs {
+namespace ecs
+{
 
     class NetworkClientSystem : public ANetworkSystem
     {
-
         Q_OBJECT
 
     public:
@@ -27,9 +27,9 @@ namespace ecs {
 
         void init(SceneManager &manager);
         /** @brief Reads all received messages and processes them
-          * @note If not connected writes to server to connect.
-          * @see NetworkServerSystem::update()
-          */
+         *  @note If not connected writes to server to connect.
+         *  @see NetworkServerSystem::update()
+         */
         void update(SceneManager &manager, uint64_t deltaTime);
         void destroy();
 
@@ -39,11 +39,11 @@ namespace ecs {
     public slots:
         /// @brief Sends msg to server
         /// @param msg Message to send
-        void writeMsg(const std::string &msg);
+        void writeMsg(const Message &msg);
 
         /// @brief Puts received message in the system's queue
         /// @param msg Message received
-        void putMsgInQueue(std::string msg);
+        void putMsgInQueue(Message msg);
 
     private slots:
         /// @brief Notifies the server the client is alive when PING_TIMEOUT ms have passed without sending a message
@@ -54,10 +54,13 @@ namespace ecs {
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
 
+        /// @brief Gets a player event message and moves entities accordingly
+        /// @param msg The received message
+        void handlePlayerEvent(SceneManager &manager, const Message &msg, uint64_t deltaTime);
+
         void removePlayer(std::string s, SceneManager &manager);
 
-
-        std::vector<std::string> _msgQueue;
+        std::vector<Message> _msgQueue;
         bool _connected = false;
         QTimer _timer;
     };

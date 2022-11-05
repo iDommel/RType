@@ -1,9 +1,17 @@
 r-type_server
 r-type_client
 build
+cmake-build-release
+CMakeFiles
+CMakeCache.txt
 debug
-.vscode
+CMakeUserPresets.json
+settings.json
 *.manifest
+*_autogen
+*.cmake
+Makefile
+log*
 
 # Prerequisites
 *.d

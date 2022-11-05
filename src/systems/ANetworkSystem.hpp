@@ -30,7 +30,6 @@ namespace ecs
         Q_OBJECT
 
     public:
-
         enum class ClientState {
             UNDEFINED = -1,
             CONNECTED,
@@ -57,7 +56,6 @@ namespace ecs
         void onEntityRemoved(std::shared_ptr<IEntity> entity);
 
     protected:
-
         QHostAddress _serverAddr;
         unsigned short _port;
 
