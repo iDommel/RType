@@ -207,11 +207,8 @@ namespace ecs
 
         if (hitbox->is3D())
             ::DrawBoundingBox(hitbox->getBBox(), RED);
-        else if (!hitbox->is3D()) {
-            std::cout << "x = " << hitbox->getRect().x << std::endl;
-            std::cout << "y = " << hitbox->getRect().y << std::endl;
-            ::DrawRectangleLines(hitbox->getRect().x, hitbox->getRect().y, hitbox->getRect().width, hitbox->getRect().height, RED);
-        }
+        else
+            ::DrawRectangleLinesEx(hitbox->getRect(), 1, RED);
     }
 
     void GraphicSystem::loadModel(std::shared_ptr<IEntity> &entity)
