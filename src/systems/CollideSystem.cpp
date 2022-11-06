@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** collideSystem
 */
@@ -111,9 +111,9 @@ namespace ecs
         if (!entity)
             return colliders;
         hitbox = Component::castComponent<Hitbox>((*entity)[IComponent::Type::HITBOX]);
-        for (auto &collidable : _collidables3D)
+        for (auto &collidable : _collidables2D)
             if (collidable.first != entity)
-                if (check3DCollision(collidable.second, hitbox))
+                if (check2DCollision(collidable.second, hitbox))
                     colliders.push_back(collidable.first);
         return colliders;
     }

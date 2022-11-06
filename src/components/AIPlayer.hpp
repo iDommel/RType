@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** Indie
+** R-Type
 ** File description:
 ** player
 */

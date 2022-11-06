@@ -14,7 +14,6 @@ Repository for the R-Type project
 # Usage
 The Server has to be launched BEFORE the clients for the connection to work.
 
-
     ./r-type_server SERVER_IP_ADDRESS SERVER_PORT
     ./r-type_client SERVER_IP_ADDRESS SERVER_PORT
 
