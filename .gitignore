@@ -14,6 +14,7 @@ x64*
 *vcxproj*
 *.sln
 *.dir
+executable
 # Prerequisites
 *.d
 
