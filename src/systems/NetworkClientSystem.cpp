@@ -120,7 +120,7 @@ namespace ecs
 
         for (auto &player : players) {
             auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
-            if (playerComp->getId() != msg.getEntityId())
+            if (player->getId() != msg.getEntityId())
                 continue;
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             pos->x = msg.getEntityPosition().x;

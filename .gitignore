@@ -12,6 +12,8 @@ settings.json
 *.cmake
 Makefile
 log*
+cmake
+x64
 
 # Prerequisites
 *.d

@@ -46,6 +46,19 @@ namespace ecs
             }
         }
         _msgQueue.clear();
+        sendServerUpdates(manager, dt);
+    }
+
+    void NetworkServerSystem::sendServerUpdates(SceneManager &manager, uint64_t dt)
+    {
+        auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
+        for (auto &player : players) {
+            auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
+            auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
+            Message update(EntityAction::UPDATE, (uint64_t)player->getId(), EntityType::PLAYER, pos->getVector2());
+            writeMsg(update);
+            std::cout << "Sending update to clients" << std::endl;
+        }
     }
 
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, int id, uint64_t dt)
@@ -93,9 +106,6 @@ namespace ecs
                 playerComp->stopDown(manager, entity, dt);
             break;
         }
-        Message response(EntityAction::UPDATE, (uint64_t)id, EntityType::PLAYER, pos->getVector2());
-        std::cout << "Sending response to client" << std::endl;
-        writeMsg(response);
     }
 
     void NetworkServerSystem::writeMsg(const Message &msg)

@@ -21,7 +21,6 @@ namespace ecs
         Q_OBJECT
 
     public:
-
         /// @brief NetworkServerSystem constructor
         /// @param addr Server IP address
         /// @param port Server port number
@@ -66,6 +65,7 @@ namespace ecs
         /// @param deltaTime Time in milliseconds since last update
         void handlePlayerEvent(SceneManager &manager, const Message &msg, int id, uint64_t deltaTime);
 
+        void sendServerUpdates(SceneManager &manager, uint64_t deltaTime);
         std::vector<Message> _msgQueue;
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, ANetworkSystem::ClientState> _states;
@@ -74,7 +74,6 @@ namespace ecs
         std::map<std::pair<QString, unsigned short> /* client */, QTimer> _timers;
 
         SceneManager &_sceneManager;
-
     };
 
 }

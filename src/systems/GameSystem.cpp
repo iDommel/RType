@@ -18,6 +18,7 @@
 #include "CollideSystem.hpp"
 #include "UIComponent.hpp"
 #include "Camera3DComponent.hpp"
+#include "Camera2DComponent.hpp"
 #include "GamepadStickCallbacks.hpp"
 #include "Core.hpp"
 #include "Entity.hpp"
@@ -219,6 +220,13 @@ namespace ecs
                 auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
                 trajectory->update(position);
             }
+        }
+        for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
+            auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
+            auto pos = Component::castComponent<Position>((*camera)[IComponent::Type::POSITION]);
+            auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
+            *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
+            cameraComp->getCamera().update();
         }
         // _aiSystem.update(sceneManager, dt);
         // _collideSystem.update(sceneManager, dt);
@@ -494,7 +502,7 @@ namespace ecs
     std::shared_ptr<IEntity> GameSystem::create3DCamera(Vector3 camPos, Vector3 camTarget)
     {
         std::shared_ptr<Entity> cam = std::make_shared<Entity>();
-        std::shared_ptr<CameraComponent> camera = std::make_shared<CameraComponent>(camTarget, camPos);
+        std::shared_ptr<Camera3DComponent> camera = std::make_shared<Camera3DComponent>(camTarget, camPos);
 
         cam->addComponent(camera);
         return cam;
@@ -515,9 +523,8 @@ namespace ecs
             splitVel.y = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            for (auto &collider : _collideSystem.getColliders(player))
-            {
-                //TODO: The collision should probably lead to player's death
+            for (auto &collider : _collideSystem.getColliders(player)) {
+                // TODO: The collision should probably lead to player's death
                 std::cout << "Hitboxes collide !" << std::endl;
             }
 
@@ -574,14 +581,22 @@ namespace ecs
 
     std::unique_ptr<IScene> GameSystem::createGameScene()
     {
-        ButtonCallbacks pauseCallbacks(
-            [](SceneManager &) {},
-            [](SceneManager &scenemanager) {
-                scenemanager.setCurrentScene(SceneType::PAUSE);
-            },
-            [](SceneManager &) {},
-            [](SceneManager &) {});
-        return ReadMap();
+        auto scene = ReadMap();
+        scene->addEntity(create2DCamera(0, 0));
+        return scene;
+    }
+
+    std::shared_ptr<IEntity> GameSystem::create2DCamera(int x, int y)
+    {
+        std::shared_ptr<Entity> cam = std::make_shared<Entity>();
+        std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
+        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
+        std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
+
+        cam->addComponent(camera)
+            .addComponent(pos)
+            .addComponent(vel);
+        return cam;
     }
 
     void GameSystem::createMusic(Scene &scene)
