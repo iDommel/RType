@@ -7,12 +7,11 @@ set(SERVER_NAME "r-type_server")
 set(LIBRARY_NAME "r-type_library")
 
 # Call the cmake that checks and pulls the raylib
-# set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
 
-# set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(${LIBRARY_NAME}
@@ -85,6 +84,7 @@ target_include_directories(${LIBRARY_NAME}
     src/systems
     src
 )
+
 SET(CMAKE_AUTOMOC ON)
 SET(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
@@ -95,8 +95,7 @@ endif()
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
-find_package(raylib CONFIG REQUIRED)
-# find_package(raylib REQUIRED)
+find_package(raylib REQUIRED)
 find_package(Qt5 COMPONENTS Core Network CONFIG REQUIRED)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${raylib_INCLUDE_DIRS})
@@ -106,6 +105,10 @@ target_link_libraries(${LIBRARY_NAME} raylib; Qt5::Core; Qt5::Network)
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(${LIBRARY_NAME} -lstdc++fs)
 endif(CMAKE_COMPILER_IS_GNUCXX)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(${CLIENT_NAME} src/main_client.cpp)
 target_link_libraries(${CLIENT_NAME} ${LIBRARY_NAME})

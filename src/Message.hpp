@@ -24,6 +24,9 @@ namespace ecs
         CONNECTION_OK,
         DISCONNECTED,
         READY,
+        CR_PLAYER,
+        CR_ME,
+        RM_PLAYER,
         IMALIVE,
         UNDEFINED
     };
@@ -108,13 +111,6 @@ namespace ecs
         /// @param type the type of the entity to create
         Message(EntityAction, uint64_t, EntityType);
 
-        /// @brief Constructor for creating an Entity
-        /// @param action, the action to do, should be CREATE
-        /// @param id the id of the entity to create
-        /// @param type the type of the entity to create
-        /// @param isMe boolean indicating whether the player belongs to the client
-        Message(EntityAction action, uint64_t id, EntityType type, bool isMe);
-
         /// @brief Constructor for updating an Entity
         /// @param action, the action to do, should be UPDATE
         /// @param id the id of the entity to update
@@ -140,7 +136,6 @@ namespace ecs
         Vector2 getEntityPosition() const;
         std::string getText() const;
         std::pair<QString, unsigned short> getSender() const { return _sender; };
-        bool getIsMe() const { return _isMe; };
 
         void setSender(std::pair<QString, unsigned short> sender) { _sender = sender; };
 
@@ -163,7 +158,6 @@ namespace ecs
         Vector2 _pos = {-1, -1};
         QString _textMessage = "";
         quint64 _id = 0;
-        bool _isMe = false;
         std::pair<QString, unsigned short> _sender;
     };
 }

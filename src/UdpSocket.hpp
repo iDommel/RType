@@ -12,8 +12,6 @@
 #include <QtNetwork>
 #include <string>
 
-#define RM_PLAYER "RM_PLAYER"
-
 namespace ecs
 {
 

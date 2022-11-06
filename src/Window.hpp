@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** R-Type [WSL : Ubuntu]
+** indieStudio [WSL : Ubuntu]
 ** File description:
 ** window
 */
@@ -22,9 +22,9 @@ namespace ecs
     {
     public:
         /// @brief Construct a new window:: window object with the size of the screen
-        Window(int screenWidth, int screenHeight, const std::string& name = "R-Type");
+        Window(int screenWidth, int screenHeight, const std::string& name = "Indie Studio");
         /// @brief Construct a new window:: window object with the size of the screen, pass configuration flags as parameter
-        Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name = "R-Type");
+        Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name = "Indie Studio");
         /// @brief Destruct the window:: close the windows
         ~Window();
         /**

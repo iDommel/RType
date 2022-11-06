@@ -11,6 +11,7 @@
 #include <map>
 #include <iostream>
 #include <QtCore>
+#include <chrono>
 
 #include "systems/ISystem.hpp"
 #include "SceneManager.hpp"
@@ -85,7 +86,9 @@ namespace ecs
         std::map<SystemType, ISystem *> _systems;
         SceneManager _sceneManager;
         bool _end = false;
-        std::chrono::_V2::system_clock::time_point _clock;
+        std::chrono::high_resolution_clock::time_point _clock;
+
+
         bool _running = false;
     };
 }

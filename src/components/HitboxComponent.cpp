@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** R-Type
+** indieStudio
 ** File description:
 ** Hitbox
 */
@@ -54,7 +54,7 @@ namespace ecs
         if (_is3D)
             return *_box;
         else
-            throw std::runtime_error("3d getter used on non-3d Hitbox");
+            throw std::runtime_error("3d getter used on none 3d Hitbox");
     }
 
     void Hitbox::setBBox(BoundingBox box)
@@ -62,7 +62,7 @@ namespace ecs
         if (_is3D)
             _box = std::make_unique<BoundingBox>(box);
         else
-            throw std::runtime_error("3d setter used on non-3d Hitbox");
+            throw std::runtime_error("3d setter used on none 3d Hitbox");
     }
 
     Rectangle Hitbox::getRect(void) const
@@ -70,7 +70,7 @@ namespace ecs
         if (!_is3D)
             return *_rect;
         else
-            throw std::runtime_error("2d getter used on non-2d Hitbox");
+            throw std::runtime_error("2d getter used on none 2d Hitbox");
     }
 
     Hitbox &Hitbox::operator+=(const AVector shift)

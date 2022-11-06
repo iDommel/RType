@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** R-Type [WSL : Ubuntu]
+** indieStudio [WSL : Ubuntu]
 ** File description:
 ** window
 */

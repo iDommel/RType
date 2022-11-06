@@ -49,7 +49,7 @@
 
 namespace ecs
 {
-    std::vector<Position> GameSystem::playerSpawns;
+    std::vector<Position> GameSystem::_playerSpawns;
 
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -109,11 +109,11 @@ namespace ecs
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
-        sceneManager.addScene(createSplashScreenScene(), SceneType::SPLASH);
-        // sceneManager.addScene(createMainMenuScene(), SceneType::MAIN_MENU);
-        sceneManager.addScene(createConnectionScene(), SceneType::CONNECTION);
-        sceneManager.addScene(createLobbyScene(), SceneType::LOBBY);
         sceneManager.addScene(createGameScene(), SceneType::GAME);
+        sceneManager.addScene(createSplashScreenScene(), SceneType::SPLASH);
+        sceneManager.addScene(createLobbyScene(), SceneType::LOBBY);
+        sceneManager.addScene(createSoundMenu(), SceneType::SOUND);
+        sceneManager.addScene(createConnectionScene(), SceneType::CONNECTION);
         if (Core::networkRole == NetworkRole::CLIENT)
             sceneManager.setCurrentScene(SceneType::SPLASH);
         else if (Core::networkRole == NetworkRole::SERVER)
@@ -153,7 +153,8 @@ namespace ecs
                 auto value = Component::castComponent<String>(text);
                 value->getValue() = players->getDown();
                 players->changeDown = 0;
-            }
+            }        //sceneManager.addScene(createEndMenu(), SceneType::END);
+
             if (players->changeBomb == 2 || players->changeBomb == 0) {
                 auto components = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][firstText + 4];
                 auto text = (*components)[IComponent::Type::TEXT];
@@ -515,10 +516,7 @@ namespace ecs
             splitVel.y = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            for (auto &collider : _collideSystem.getColliders(player))
-            {
-                //TODO: The collision should probably lead to player's death
-                std::cout << "Hitboxes collide !" << std::endl;
+            for (auto &collider : _collideSystem.getColliders(player)) {
             }
 
             splitVel.y = (*vel).y;
@@ -536,39 +534,66 @@ namespace ecs
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
         std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
         std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(250, 100), 30);
-        std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nLéo Maman\nCyril Dehaese\nRoxanne Baert", Position(10, 450), 15);
+        std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nCyril Dehaese\nRoxane Baert", Position(10, 450), 15);
 
         scene->addEntities({entity, entity2, entity3, entity4});
         return scene;
     }
 
-    std::unique_ptr<ecs::IScene> GameSystem::createMainMenuScene()
+    /*std::unique_ptr<ecs::IScene> GameSystem::createMainMenuScene()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenuScene, this), SceneType::MAIN_MENU);
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
         std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/Background/Background1.png");
+        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/MainMenu/menu.png");
         std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
+        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/controller.png", Position(0, 600 - 80), 80, 80);
+        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/quit_unpressed.png", Position(800 / 2 - 60, 700 / 2 - 18), 120, 28);
 
         backgroundEntity->addComponent(component2)
             .addComponent(component);
         createSceneEvent(playButtonEntity, SceneType::GAME);
-        scene->addEntities({backgroundEntity, playButtonEntity});
+        createSceneEvent(optionButtonEntity, SceneType::CONTROLLER);
+        createSceneEvent(quitButtonEntity, SceneType::NONE);
+        scene->addEntities({backgroundEntity, playButtonEntity, optionButtonEntity, quitButtonEntity});
         return scene;
-    }
+    }*/
 
     std::unique_ptr<IScene> GameSystem::createLobbyScene()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background1.png");
+        std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
         std::shared_ptr<Position> bgPos = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
         std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
+        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/option.png", Position(800 - 80, 600 - 80), 80, 80);
+        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/quit_unpressed.png", Position(800 / 2 - 60, 700 / 2 - 18), 120, 28);
 
-        backgroundEntity->addComponent(bg)
-            .addComponent(bgPos);
+        backgroundEntity->addComponent(bgPos)
+            .addComponent(bg);
         createMsgEvent(playButtonEntity, NetworkMessageType::READY);
-        scene->addEntities({backgroundEntity, playButtonEntity});
+        createSceneEvent(optionButtonEntity, SceneType::SOUND);
+        createMsgEvent(quitButtonEntity, NetworkMessageType::DISCONNECTED);
+        createSceneEvent(quitButtonEntity, SceneType::NONE);
+        scene->addEntities({backgroundEntity, playButtonEntity, optionButtonEntity, quitButtonEntity});
+        return scene;
+    }
+
+    std::unique_ptr<IScene> GameSystem::createSoundMenu()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSoundMenu, this), SceneType::OPTION);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), 800, 600);
+        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/fleche.png", Position(0, 0), 80, 80);
+        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/minus.png", Position(220, 250), 80, 80);
+        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/plus.png", Position(500, 250), 80, 80);
+        std::shared_ptr<Entity> entity5 = createText("Option Menu", Position(250, 50), 50);
+        std::shared_ptr<Entity> entity6 = createText("Master Volume", Position(300, 200), 25);
+        std::shared_ptr<Entity> entity7 = createText("50", Position(370, 250), 80);
+
+        createSceneEvent(entity2, SceneType::PREVIOUS);
+        createSoundEvent(entity3, "-");
+        createSoundEvent(entity4, "+");
+        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7});
         return scene;
     }
 
@@ -603,13 +628,13 @@ namespace ecs
         return _networkActivated;
     }
 
-    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe)
+    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe)
     {
-        std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>(id);
+        std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>();
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
-        Rectangle rect = {playerPos->x + SCALE / 4, playerPos->y + SCALE / 4, SCALE, SCALE};
-        std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
+        BoundingBox towerBoundingBox = {{pos.x - 4.2f, pos.y + 0.0f, pos.z - 4.0f}, {pos.x + 4.2f, pos.y + 23.0f, pos.z + 4.0f}};
+        std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(towerBoundingBox);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyBomb);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
@@ -811,4 +836,22 @@ namespace ecs
             player->changeBomb = 1;
         }
     }
+
+    /*std::unique_ptr<IScene> GameSystem::createSettingScene()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSoundMenu, this));
+        std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/other_menu.png", Position(0, 0), 800, 600);
+        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/fleche.png", Position(0, 0), 80, 80);
+        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/minus.png", Position(220, 250), 80, 80);
+        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/plus.png", Position(500, 250), 80, 80);
+        std::shared_ptr<Entity> entity5 = createText("Sound Menu", Position(250, 50), 50);
+        std::shared_ptr<Entity> entity6 = createText("Master Volume", Position(300, 200), 25);
+        std::shared_ptr<Entity> entity7 = createText("50", Position(370, 250), 80);
+
+        createSceneEvent(entity2, SceneManager::SceneType::PREVIOUS);
+        createSoundEvent(entity3, "-");
+        createSoundEvent(entity4, "+");
+        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7});
+        return scene;
+    }*/
 }

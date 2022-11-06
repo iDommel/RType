@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** R-Type
+** indieStudio
 ** File description:
 ** MouseCallbacks
 */

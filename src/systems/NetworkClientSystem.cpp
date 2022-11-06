@@ -47,11 +47,7 @@ namespace ecs
         }
 
         for (auto &msg : _msgQueue) {
-            if (msg.getMessageType() == MessageType::ENTITYMESSAGE)
-                processEntityMessage(msg, manager, dt);
-            else if (msg.getMessageType() == MessageType::TEXTMESSAGE && std::regex_match(msg.getText(), std::regex(std::string(RM_PLAYER) + " [1-4]"))) {
-                removePlayer(msg.getText(), manager);
-            } else if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+            if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
                 if (waitCo && !_connected && msg.getNetworkMessageType() == NetworkMessageType::CONNECTION_OK) {
                     manager.setCurrentScene(SceneType::LOBBY);
                     waitCo = false;
@@ -59,6 +55,24 @@ namespace ecs
                     _timer.start(PING_TIMEOUT);
                 } else if (msg.getNetworkMessageType() == NetworkMessageType::READY) {
                     manager.setCurrentScene(SceneType::GAME);
+                }
+            }
+            if (msg.getMessageType() == MessageType::TEXTMESSAGE) {
+                std::cerr << "Text message received: " << msg.getText() << std::endl;
+                if (msg.getText().rfind("CR_PLAYER", 0) == 0) {
+                    int idPlayer = std::stoi(msg.getText().substr(std::string("CR_PLAYER").size()));
+                    emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], false);
+                } else if (msg.getText().rfind("CR_ME", 0) == 0) {
+                    int idPlayer = std::stoi(msg.getText().substr(std::string("CR_ME").size()));
+                    emit createPlayer(manager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, idPlayer, GameSystem::_playerSpawns[idPlayer], true);
+                } else if (std::regex_match(msg.getText(), std::regex(std::string("RM_PLAYER") + " [1-4]"))) {
+                    removePlayer(msg.getText(), manager);
+                }
+            } else if (msg.getMessageType() == MessageType::ENTITYMESSAGE) {
+                std::cerr << "Entity message received:" << std::endl;
+                std::cerr << msg.toString() << std::endl;
+                if (msg.getEntityType() == EntityType::PLAYER) {
+                    handlePlayerEvent(manager, msg, dt);
                 }
             }
         }
@@ -75,26 +89,6 @@ namespace ecs
                 sceneManager.getCurrentScene().removeEntity(e);
                 break;
             }
-        }
-    }
-
-    void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager, uint64_t dt)
-    {
-        long unsigned int id = message.getEntityId();
-        switch (message.getEntityAction()) {
-            case EntityAction::CREATE:
-                if (message.getEntityType() == EntityType::PLAYER) {
-                    emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
-                    id, GameSystem::playerSpawns.front(), message.getIsMe());
-                    GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
-                }
-                break;
-            case EntityAction::UPDATE:
-                if (message.getEntityType() == EntityType::PLAYER)
-                    handlePlayerEvent(sceneManager, message, dt);
-                break;
-            default:
-                break;
         }
     }
 

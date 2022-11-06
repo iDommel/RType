@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://cmake.org/
+HostUrl=https://objects.githubusercontent.com/github-production-release-asset-2e65be/537699/307177f4-17e3-4162-8d37-fae1614fe5d7?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20221024%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221024T155858Z&X-Amz-Expires=300&X-Amz-Signature=8537f10342ca58323e5cf25a6c56a83494126f62a222ccf3f440412fae8b95f9&X-Amz-SignedHeaders=host&actor_id=71822600&key_id=0&repo_id=537699&response-content-disposition=attachment%3B%20filename%3Dcmake-3.25.0-rc2-windows-x86_64.msi&response-content-type=application%2Foctet-stream

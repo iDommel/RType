@@ -27,7 +27,6 @@
 #define GAME_TILE_SIZE 12
 #define GAME_NB_INDESTRUCTIBLE_WALL 0  //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
-#define SCALE 64 // Global scale
 
 #define SPLASH_TIMEOUT 3000       // value in milliseconds
 #define CONNECTION_TIMEOUT 30000  // value in milliseconds
@@ -96,13 +95,13 @@ namespace ecs
         /// @return if network is enabled
         bool isNetworkActivated();
 
-        static std::vector<Position> playerSpawns;
+        static std::vector<Position> _playerSpawns;
 
     signals:
         void writeMsg(const Message &message);
 
     public slots:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int id, Position pos, bool isMe);
 
     private:
         /// @brief Read map file and generate all the game scene entities
@@ -156,8 +155,9 @@ namespace ecs
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();
-        std::unique_ptr<IScene> createMainMenuScene();
+        //std::unique_ptr<IScene> createMainMenuScene();
         std::unique_ptr<IScene> createLobbyScene();
+        std::unique_ptr<IScene> createSoundMenu();
 
         void changeBindings(SceneManager &SceneManager, int id_player, int button);
         void replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
