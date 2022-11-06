@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** Indie
+** R-Type
 ** File description:
 ** player
 */
@@ -102,6 +102,7 @@ namespace ecs
         int changeLeft;
         int changeRight;
         int changeBomb;
+        static const int _defaultSpeed;
 
     protected:
     private:
@@ -117,7 +118,6 @@ namespace ecs
         bool _isLeft = false;
         bool _isRight = false;
         static const int _defaultNbBomb = 1;
-        static const int _defaultSpeed = 60;
         static const int _defaultBlastPower = 3;
         std::string UP;
         std::string DOWN;

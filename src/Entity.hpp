@@ -27,6 +27,10 @@ namespace ecs
         /// @brief Entity Constructor
         Entity();
 
+        /// @brief Entity Constructor
+        /// @param id ID of the new entity
+        Entity(unsigned long int id);
+
         ///@brief Add component to entity and update entity's tags accordingly, mustn't be called after moving entity to scene
         IEntity &addComponent(std::shared_ptr<IComponent> component);
         ///@brief Add component to entity and update entity's tags accordingly
@@ -67,9 +71,6 @@ namespace ecs
         /// @brief Gets the entity identifier
         unsigned long int getId() const;
 
-        /// @brief Gets the entity identifier counter
-        static unsigned long int getIdCounter();
-
         /**
          * @brief Allows the access to an entity's component via a Tag. Throws a std::runtime_error if the component is not found.
          *
@@ -78,9 +79,10 @@ namespace ecs
          */
         std::shared_ptr<IComponent> &operator[](IComponent::Type type);
 
+        static unsigned long int idCounter;
+
     private:
-        static unsigned long int _idCounter;
-        unsigned long int _id;
+        unsigned long int _id = 0;
 
         std::vector<Tags> _tags;
         std::map<IComponent::Type, std::shared_ptr<IComponent>> _components;
