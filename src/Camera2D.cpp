@@ -69,7 +69,6 @@ namespace ecs
         if (_snapMode) {
             Vector2 pos = {_targetSnap->x, _targetSnap->y};
             _camera->target = pos;
-            std::cout << "new camera pos :" << _camera->target.x << " " << _camera->target.y << std::endl;
         }
     }
 

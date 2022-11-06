@@ -53,11 +53,16 @@ namespace ecs
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
         for (auto &player : players) {
-            auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             Message update(EntityAction::UPDATE, (uint64_t)player->getId(), EntityType::PLAYER, pos->getVector2());
             writeMsg(update);
-            std::cout << "Sending update to clients" << std::endl;
+        }
+
+        auto missiles = manager.getCurrentScene()[IEntity::Tags::MISSILE];
+        for (auto &missile : missiles) {
+            auto pos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
+            Message msg(EntityAction::UPDATE, (uint64_t)missile->getId(), EntityType::MISSILE, pos->getVector2());
+            writeMsg(msg);
         }
     }
 

@@ -786,7 +786,7 @@ namespace ecs
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png");
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
         std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
-            [](float dt) { return dt; },
+            [](float dt) { return dt * 10; },
             [](float) { return 0; }, std::make_shared<Position>(*pos)
         );
 

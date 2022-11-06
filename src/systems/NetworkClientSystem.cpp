@@ -93,6 +93,8 @@ namespace ecs
             case EntityAction::UPDATE:
                 if (message.getEntityType() == EntityType::PLAYER)
                     handlePlayerEvent(sceneManager, message, dt);
+                else if (message.getEntityType() == EntityType::MISSILE)
+                    handleMissileUpdate(sceneManager, message, dt);
                 break;
             default:
                 break;
@@ -120,10 +122,23 @@ namespace ecs
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
 
         for (auto &player : players) {
-            auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
             if (player->getId() != msg.getEntityId())
                 continue;
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
+            pos->x = msg.getEntityPosition().x;
+            pos->y = msg.getEntityPosition().y;
+            break;
+        }
+    }
+
+    void NetworkClientSystem::handleMissileUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt)
+    {
+        auto missiles = sceneManager.getCurrentScene()[IEntity::Tags::MISSILE];
+
+        for (auto &missile : missiles) {
+            if (missile->getId() != msg.getEntityId())
+                continue;
+            auto pos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
             pos->x = msg.getEntityPosition().x;
             pos->y = msg.getEntityPosition().y;
             break;
