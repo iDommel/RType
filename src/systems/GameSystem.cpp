@@ -108,13 +108,15 @@ namespace ecs
     unsigned int GameSystem::nbr_ai;
 
     std::map<Missile::MissileType, std::string> GameSystem::_missilesSprites = {
-        { Missile::MissileType::PL_SIMPLE, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png" }
-        // { MissileType::PL_CONDENSED, "" },
-        // { MissileType::EN, ""}
+        { Missile::MissileType::PL_SIMPLE, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png" },
+        { Missile::MissileType::PL_CONDENSED, "" },
+        { Missile::MissileType::EN, ""}
     };
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        { Missile::MissileType::PL_SIMPLE, {[](float dt) { return dt * 10; }, [](float) { return 0; }} },
+        { Missile::MissileType::PL_SIMPLE, {[](float dt) { return dt * dt; }, [](float) { return 0; }} },
+        { Missile::MissileType::PL_CONDENSED, {[](float dt) { return dt * dt; }, [](float) { return 0; }} },
+        { Missile::MissileType::EN, {[](float dt) { return -dt; }, [](float) { return 0; }} }
     };
 
     void GameSystem::init(ecs::SceneManager &sceneManager)

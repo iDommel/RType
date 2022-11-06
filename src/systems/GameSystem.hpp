@@ -174,7 +174,9 @@ namespace ecs
         static unsigned int nbr_ai;
         static const Position _uiPos[4];
         static const std::map<int, std::string> _bindings;
+        /// @brief Link a missile type to a sprite location
         static std::map<Missile::MissileType, std::string> _missilesSprites;
+        /// @brief Link a missile type to a pair of trajectories
         static std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> _missilesTrajectories;
 
         CollideSystem _collideSystem;

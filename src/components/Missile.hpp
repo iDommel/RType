@@ -16,9 +16,9 @@ namespace ecs
     {
     public:
         enum class MissileType {
-            PL_SIMPLE
-            // PL_CONDENSED,
-            // EN
+            PL_SIMPLE,
+            PL_CONDENSED,
+            EN
         };
 
         Missile(MissileType type) : Component(Type::MISSILE), _missileType(type)
