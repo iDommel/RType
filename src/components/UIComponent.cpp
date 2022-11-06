@@ -20,10 +20,9 @@ namespace ecs
         _text = Component::castComponent<String>((*text)[IComponent::Type::TEXT]);
         _textToDestroy = text;
         int id = _player->getId();
-        int nbBombs = _player->getNbBomb();
         int speed = _player->getSpeed();
         int power = _player->getBlastPower();
-        std::string displayString = "Player " + std::to_string(id) + ":\nBombs : " + std::to_string(nbBombs) + "\nSpeed : " + std::to_string(speed) + "\nBlast Power : " + std::to_string(power);
+        std::string displayString = "Player " + std::to_string(id) + ":\nSpeed : " + std::to_string(speed) + "\nBlast Power : " + std::to_string(power);
         _text->getValue() = displayString;
     }
 
@@ -45,10 +44,9 @@ namespace ecs
             auto textPos = Component::castComponent<Position>((*_textToDestroy)[IComponent::Type::POSITION]);
             int id = _player->getId();
             *textPos = uiPos[id - 1];
-            int nbBombs = _player->getNbBomb();
             int speed = _player->getSpeed();
             int power = _player->getBlastPower();
-            std::string displayString = "Player " + std::to_string(id) + ":\nBombs : " + std::to_string(nbBombs) + "\nSpeed : " + std::to_string(speed) + "\nBlast Power : " + std::to_string(power);
+            std::string displayString = "Player " + std::to_string(id) + ":\nSpeed : " + std::to_string(speed) + "\nBlast Power : " + std::to_string(power);
             _text->getValue() = displayString;
         } else {
             _shouldBeDestroyed = true;

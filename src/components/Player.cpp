@@ -43,7 +43,6 @@ namespace ecs
         changeUp = 0;
         changeLeft = 0;
         changeRight = 0;
-        _nbBomb = _defaultNbBomb;
         _blastPower = _defaultBlastPower;
         _speed = _defaultSpeed;
         _blastPower = _defaultBlastPower;
@@ -55,9 +54,7 @@ namespace ecs
 
     void Player::handleBonus(const Bonus &bonus)
     {
-        if (bonus.getBonusType() == Bonus::Type::BOMB)
-            _nbBomb++;
-        else if (bonus.getBonusType() == Bonus::Type::SPEED)
+        if (bonus.getBonusType() == Bonus::Type::SPEED)
             _speed += 10;
         else if (bonus.getBonusType() == Bonus::Type::POWER)
             _blastPower++;
@@ -157,84 +154,14 @@ namespace ecs
         return _speed;
     }
 
-    int Player::getNbBomb() const
-    {
-        return _nbBomb;
-    }
-
-    void Player::setNbBomb(int newNbBomb)
-    {
-        _nbBomb = newNbBomb;
-    }
-
-    void Player::generateBomb(SceneManager &manager, std::shared_ptr<IEntity> entity)
-    {
-        int bombNb = _bombs.size();
-
-        if (bombNb >= _nbBomb)
-            return;
-
-        std::shared_ptr<Entity> bomb = std::make_shared<Entity>();
-        std::shared_ptr<Entity> timerSound = std::make_shared<Entity>();
-        auto pos = Component::castComponent<Position>((*entity)[Component::Type::POSITION]);
-        Vector3 size = {GAME_TILE_SIZE, GAME_TILE_SIZE, GAME_TILE_SIZE};
-        Vector3 bPos = {std::roundf(pos->x / GAME_TILE_SIZE) * GAME_TILE_SIZE - GAME_TILE_SIZE / 2, pos->y, std::roundf(pos->z / GAME_TILE_SIZE) * GAME_TILE_SIZE - GAME_TILE_SIZE / 2};
-
-        bomb->addComponent(std::make_shared<Bomb>(_blastPower))
-            .addComponent(std::make_shared<Position>(std::roundf(pos->x / GAME_TILE_SIZE) * GAME_TILE_SIZE, pos->y, std::roundf(pos->z / GAME_TILE_SIZE) * GAME_TILE_SIZE))
-            .addComponent(std::make_shared<Model3D>("assets/other_asset/water_bomb/water_bomb.obj", "assets/other_asset/water_bomb/water_bomb.png", 2.0f))
-            .addComponent(std::make_shared<Hitbox>(CollideSystem::makeBBoxFromSizePos(size, bPos)));
-        _bombs.push_back(bomb);
-        timerSound->addComponent(std::make_shared<SoundComponent>("sound_det"));
-        manager.getCurrentScene().addEntity(bomb).addEntity(timerSound);
-    }
-
-    void Player::shootMissile(SceneManager &manager, std::shared_ptr<IEntity> player, unsigned long int id)
-    {
-        // if (_shootTimer.isNull())
-        //     throw std::runtime_error("Can't shoot a missile without starting timer");
-        // auto playerPos = Component::castComponent<Position>((*player)[Component::Type::POSITION]);
-        // std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
-        // std::shared_ptr<Missile> missile = nullptr;
-        // std::shared_ptr<Sprite> sprite = nullptr;
-        // std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos->x + 64, playerPos->y + 32);
-        // std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
-        //     [](float dt) { return dt; },
-        //     [](float) { return 0; }, std::make_shared<Position>(*pos)
-        // );
-        // if (_shootTimer.msecsTo(QTime::currentTime()) < 1000) {
-        //     missile = std::make_shared<Missile>(MISSILE_DAMAGE);
-        //     sprite = std::make_shared<Sprite>("assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png");
-        // } else
-        //     return;
-
-        // entity->addComponent(missile)
-        //     .addComponent(sprite)
-        //     .addComponent(pos)
-        //     .addComponent(trajectory);
-        // manager.getCurrentScene().addEntity(entity);
-    }
-
     void Player::startClock()
     {
-        std::cerr << "Player start clock" << std::endl;
         _shootTimer = QTime::currentTime();
     }
 
     QTime &Player::getShootTimer()
     {
         return _shootTimer;
-    }
-
-    void Player::updateBombsVec()
-    {
-        for (auto bomb = _bombs.begin(); bomb != _bombs.end();) {
-            auto b = Component::castComponent<Bomb>((**bomb)[IComponent::Type::BOMB]);
-            if (b->getTimer() <= 0)
-                bomb = _bombs.erase(std::find(_bombs.begin(), _bombs.end(), *bomb));
-            else
-                bomb++;
-        }
     }
 
     int Player::getBlastPower() const

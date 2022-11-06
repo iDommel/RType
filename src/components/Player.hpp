@@ -37,26 +37,12 @@ namespace ecs
          * @param bonus The Bonus that was given to the player
          */
         void handleBonus(const Bonus &bonus);
-        /**
-         * @brief Generate a bomb and add it to the entities list
-         * @param manager The scene manager
-         * @param entity Player
-         */
-        void generateBomb(SceneManager &manager, std::shared_ptr<IEntity> entity);
-        void updateBombsVec();
-
-        void shootMissile(SceneManager &manager, std::shared_ptr<IEntity> entity, unsigned long int entityId);
 
         ///@brief gets the player ID
         int getId() const;
 
         ///@brief gets the current player speed
         int getSpeed() const;
-
-        ///@brief gets the current maximum number of bomb a player can drop
-        int getNbBomb() const;
-        ///@brief Sets the current maximum number of bomb a player can drop
-        void setNbBomb(int newNbBomb);
 
         ///@brief gets the current blast power
         int getBlastPower() const;
@@ -115,7 +101,6 @@ namespace ecs
     private:
         void move(std::shared_ptr<Velocity> vel);
 
-        int _nbBomb;
         int _blastPower;
         int _speed;
         int _id;
@@ -125,13 +110,11 @@ namespace ecs
         bool _isDown = false;
         bool _isLeft = false;
         bool _isRight = false;
-        static const int _defaultNbBomb = 1;
         static const int _defaultBlastPower = 3;
         std::string UP;
         std::string DOWN;
         std::string LEFT;
         std::string RIGHT;
-        std::vector<std::shared_ptr<IEntity>> _bombs;
         std::string BOMB;
     };
 
