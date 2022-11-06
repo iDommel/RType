@@ -27,6 +27,7 @@
 #define GAME_TILE_SIZE 12
 #define GAME_NB_INDESTRUCTIBLE_WALL 0  //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
+#define SCALE 64 // Global scale
 
 #define SPLASH_TIMEOUT 3000       // value in milliseconds
 #define CONNECTION_TIMEOUT 30000  // value in milliseconds
@@ -154,6 +155,7 @@ namespace ecs
         /// @param msg Message to send when left mouse button is pressed
         void createMsgEvent(std::shared_ptr<Entity> &entity, const NetworkMessageType &msg);
 
+        std::shared_ptr<IEntity> create2DCamera(int x, int y);
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();

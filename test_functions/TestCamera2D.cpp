@@ -12,20 +12,20 @@
 #include "components/EventListener.hpp"
 #include "Shape2D.hpp"
 #include "Window.hpp"
-
+#include "Position.hpp"
 void testRaylibCamera2D()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 450;
-    Vector2 cameraPosition = {0.0f, 10.0f};
-    Vector2 rectPosition = {0.0f, 0.0f};
+    auto cameraPosition = std::make_shared<ecs::Position>(0.0f, 0.0f);
+    auto rectPosition = std::make_shared<ecs::Position>(0.0f, 10.0f);
 
     InitWindow(screenWidth, screenHeight, "2D camera encapsulation test");
 
-    std::shared_ptr<Vector2> rectPositionPtr = std::make_shared<Vector2>(rectPosition);
-    std::shared_ptr<Vector2> cameraPositionPtr = std::make_shared<Vector2>(cameraPosition);
+    std::shared_ptr<ecs::Position> rectPositionPtr = rectPosition;
+    std::shared_ptr<ecs::Position> cameraPositionPtr = cameraPosition;
     ecs::Camera2D camera(rectPositionPtr);
 
     SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
@@ -49,9 +49,9 @@ void testRaylibCamera2D()
             rectPositionPtr->y -= 1.0f;
         }
         if (IsKeyDown(KEY_KP_ADD)) {
-            cameraPosition.y += 1.0f;
+            cameraPosition->y += 1.0f;
         } else if (IsKeyDown(KEY_KP_SUBTRACT)) {
-            cameraPosition.y -= 1.0f;
+            cameraPosition->y -= 1.0f;
         }
         camera.update();  // Update camera
         //----------------------------------------------------------------------------------
