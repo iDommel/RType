@@ -20,6 +20,7 @@
 #include "CollideSystem.hpp"
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
+#include "Missile.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
@@ -98,7 +99,7 @@ namespace ecs
 
         static std::vector<Position> playerSpawns;
 
-        static void createSimpleMissile(IScene &scene, long unsigned int id, Position pos);
+        static void createMissile(IScene &scene, long unsigned int id, Position pos, Missile::MissileType type);
 
     signals:
         void writeMsg(const Message &message);
@@ -173,6 +174,8 @@ namespace ecs
         static unsigned int nbr_ai;
         static const Position _uiPos[4];
         static const std::map<int, std::string> _bindings;
+        static std::map<Missile::MissileType, std::string> _missilesSprites;
+        static std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> _missilesTrajectories;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;

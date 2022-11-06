@@ -88,7 +88,7 @@ namespace ecs
                     id, GameSystem::playerSpawns.front(), message.getIsMe());
                     GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
                 } else if (message.getEntityType() == EntityType::MISSILE)
-                    GameSystem::createSimpleMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition().x, message.getEntityPosition().y));
+                    GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition().x, message.getEntityPosition().y), Missile::MissileType::PL_SIMPLE);
                 break;
             case EntityAction::UPDATE:
                 if (message.getEntityType() == EntityType::PLAYER)

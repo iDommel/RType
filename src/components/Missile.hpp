@@ -10,20 +10,24 @@
 
 #include "Component.hpp"
 
-#define MISSILE_DAMAGE  1.0f
-
 namespace ecs
 {
     class Missile : public Component
     {
     public:
-        Missile(float damage) : Component(Type::MISSILE), _damage(damage)
+        enum class MissileType {
+            PL_SIMPLE
+            // PL_CONDENSED,
+            // EN
+        };
+
+        Missile(MissileType type) : Component(Type::MISSILE), _missileType(type)
         {
             _isInitialized = true;
         }
 
     private:
-        float _damage = .0f;
+        MissileType _missileType;
     };
 }
 

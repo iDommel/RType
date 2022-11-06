@@ -47,7 +47,6 @@
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 #include "Trajectory.hpp"
-#include "Missile.hpp"
 
 namespace ecs
 {
@@ -107,6 +106,16 @@ namespace ecs
     unsigned int GameSystem::nbr_player;
 
     unsigned int GameSystem::nbr_ai;
+
+    std::map<Missile::MissileType, std::string> GameSystem::_missilesSprites = {
+        { Missile::MissileType::PL_SIMPLE, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png" }
+        // { MissileType::PL_CONDENSED, "" },
+        // { MissileType::EN, ""}
+    };
+
+    std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
+        { Missile::MissileType::PL_SIMPLE, {[](float dt) { return dt * 10; }, [](float) { return 0; }} },
+    };
 
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
@@ -779,15 +788,16 @@ namespace ecs
         scene.addEntity(playerEntity);
     }
 
-    void GameSystem::createSimpleMissile(IScene &scene, long unsigned int id, Position playerPos)
+    void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos, Missile::MissileType type)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
-        std::shared_ptr<Missile> missile = std::make_shared<Missile>(MISSILE_DAMAGE);
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png");
+        std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
+
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type]);
         std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
-            [](float dt) { return dt * 10; },
-            [](float) { return 0; }, std::make_shared<Position>(*pos)
+            _missilesTrajectories[type].first,
+            _missilesTrajectories[type].second, std::make_shared<Position>(*pos)
         );
 
         entity->addComponent(missile)
