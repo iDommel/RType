@@ -51,13 +51,14 @@
 namespace ecs
 {
 
-    static int SCALE = 64;
-
     std::shared_ptr<Entity> GameSystem::whichEnemy(int mobId, int x, int y)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
-        entity->addComponent(position);
+        Rectangle rect = {position->x + SCALE / 2, position->y + SCALE / 2, SCALE, SCALE};
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
+        entity->addComponent(position).addComponent(hitbox);
+
         if (mobId == 1)
         {
             std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
@@ -173,7 +174,9 @@ namespace ecs
         }
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
-        entity->addComponent(sprite).addComponent(position);
+        Rectangle rect = {position->x, position->y, SCALE, SCALE};
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
+        entity->addComponent(sprite).addComponent(position).addComponent(hitbox);
         return entity;
     }
 
@@ -248,7 +251,7 @@ namespace ecs
                     scene->addEntity(whichWall(strCube, row, line));
                 }
                 else if (lineTwo[line] == 'P')
-                    _playerSpawns.push_back({row * SCALE, (lastLine - line) * SCALE, 0});
+                    playerSpawns.push_back({row * SCALE, (lastLine - line) * SCALE, 0});
                 else if (lineTwo[line] >= '0' && lineTwo[line] <= '9')
                 {
                     std::shared_ptr<Entity> entity = whichEnemy(lineTwo[line] - '0', row * SCALE, (lastLine - line) * SCALE);

@@ -36,7 +36,7 @@ namespace ecs
     void GraphicSystem::init(SceneManager &sceneManager)
     {
         std::cerr << "GraphicSystem::init" << std::endl;
-        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "Indie Studio");
+        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "R-Type");
 
         for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
@@ -74,8 +74,6 @@ namespace ecs
                 displayCube(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::AESTHETIC])
                 displayParticles(e);
-            /* for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-                displayCollidable(e); */
             cam->getCamera().endDrawScope();
         }
         if (sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D].size() == 1) {
@@ -96,6 +94,8 @@ namespace ecs
                 displaySprite(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                 displayText(e);
+            for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                displayCollidable(e);
         }
         _window->endDraw();
     }
@@ -211,6 +211,8 @@ namespace ecs
 
         if (hitbox->is3D())
             ::DrawBoundingBox(hitbox->getBBox(), RED);
+        else
+            ::DrawRectangleLinesEx(hitbox->getRect(), 1, RED);
     }
 
     void GraphicSystem::loadModel(std::shared_ptr<IEntity> &entity)

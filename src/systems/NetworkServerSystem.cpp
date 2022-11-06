@@ -114,12 +114,12 @@ namespace ecs
             _socket->write(msg, QHostAddress(client.first), client.second);
     }
 
-    void NetworkServerSystem::writeToClient(const std::string &msg, int clientId)
+    void NetworkServerSystem::writeToClient(Message msg, int clientId)
     {
         _socket->write(msg, QHostAddress(_senders[clientId].first), _senders[clientId].second);
     }
 
-    void NetworkServerSystem::writeToClient(const std::string &msg, std::pair<QString /*addr*/, unsigned short /*port*/> client)
+    void NetworkServerSystem::writeToClient(Message msg, std::pair<QString /*addr*/, unsigned short /*port*/> client)
     {
         _socket->write(msg, QHostAddress(client.first), client.second);
     }
@@ -195,7 +195,7 @@ namespace ecs
             return;
         _states[client] = ClientState::READYTOPLAY;
         // add new player entity
-        _playersId[client] = ++_players;
+        // _playersId[client] = ++_players;
 
         // check if all players are ready
         for (auto s : _states) {
@@ -205,13 +205,14 @@ namespace ecs
 
         // Create players inside clients
         for (auto &client : _senders) {
-            unsigned int id = _playersId[client];
-            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::_playerSpawns[id], false);
+            _playersId[client] = Entity::idCounter++;
+            unsigned long int id = _playersId[client];
+            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::playerSpawns.front(), false);
+            GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
             for (auto &player : _senders) {
-                if (player == client)
-                    writeToClient(std::string("CR_ME") + std::to_string(id), player);
-                else
-                    writeToClient(std::string("CR_PLAYER") + std::to_string(id), player);
+                Message msg(EntityAction::CREATE, id, EntityType::PLAYER, (client == player));
+                std::cout << msg.getIsMe() << std::endl;
+                writeToClient(msg, player);
             }
         }
 
