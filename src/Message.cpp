@@ -52,6 +52,13 @@ namespace ecs
             throw std::runtime_error("Wrong constructor for this action");
     }
 
+    Message::Message(EntityAction action, uint64_t id, EntityType type, bool isMe)
+        : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id), _isMe(isMe)
+    {
+        if (action != EntityAction::CREATE)
+            throw std::runtime_error("Wrong constructor for this action");
+    }
+
     Message::Message(EntityAction action, uint64_t id)
         : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _id(id)
     {
@@ -115,7 +122,6 @@ namespace ecs
 
     std::string Message::getText() const
     {
-        // return _textMessage;
         return _textMessage.toStdString();
     }
 
@@ -155,6 +161,7 @@ namespace ecs
     {
         qint8 entityAction;
         qint8 entityType;
+        bool isMe;
 
         in >> entityAction;
         in >> toWrite._id;
@@ -162,7 +169,9 @@ namespace ecs
         switch (toWrite._entityAction) {
         case EntityAction::CREATE:
             in >> entityType;
+            in >> isMe;
             toWrite._entityType = static_cast<EntityType>(entityType);
+            toWrite._isMe = static_cast<bool>(isMe);
             break;
         case EntityAction::UPDATE:
             qint32 x;
@@ -235,8 +244,9 @@ namespace ecs
         out << to_integral(toWrite._entityAction);
         switch (toWrite._entityAction) {
         case EntityAction::CREATE:
-            out << quint64(toWrite._id);
+            out << toWrite._id;
             out << to_integral(toWrite._entityType);
+            out << toWrite._isMe;
             break;
         case EntityAction::UPDATE:
             out << quint64(toWrite._id);
