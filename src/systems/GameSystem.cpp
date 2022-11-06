@@ -523,9 +523,8 @@ namespace ecs
             splitVel.y = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            for (auto &collider : _collideSystem.getColliders(player))
-            {
-                //TODO: The collision should probably lead to player's death
+            for (auto &collider : _collideSystem.getColliders(player)) {
+                // TODO: The collision should probably lead to player's death
                 std::cout << "Hitboxes collide !" << std::endl;
             }
 
@@ -594,9 +593,9 @@ namespace ecs
         std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
         std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
 
-        cam->addComponent(camera);
-        cam->addComponent(pos);
-        cam->addComponent(vel);
+        cam->addComponent(camera)
+            .addComponent(pos)
+            .addComponent(vel);
         return cam;
     }
 
