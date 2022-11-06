@@ -1,18 +1,21 @@
 r-type_server
 r-type_client
 build
-.vscode
-*.manifest
 cmake-build-release
 CMakeFiles
-cmake_install.cmake
 CMakeCache.txt
+debug
 CMakeUserPresets.json
+settings.json
+*.manifest
+*_autogen
+*.cmake
 Makefile
-r-type_library.dir
-x64*
-*vcxproj*
-*.sln
+log*
+cmake
+x64
+cmake.msi:Zone.Identifier
+conan.exe:Zone.Identifier
 
 # Prerequisites
 *.d
@@ -43,6 +46,5 @@ x64*
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app

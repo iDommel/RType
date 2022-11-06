@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2021
 ** Untitled (Workspace)
 ** File description:
-** CameraComponent.cpp
+** Camera3DComponent.cpp
 */
 
 #include <raylib.h>
@@ -11,10 +11,10 @@
 
 namespace ecs
 {
-    CameraComponent::CameraComponent(Vector3 target, Vector3 position) : Component(Type::CAMERA_3D), _camera(target, position)
+    Camera3DComponent::Camera3DComponent(Vector3 target, Vector3 position) : Component(Type::CAMERA_3D), _camera(target, position)
     {
         _isInitialized = true;
     }
 
-    Camera &CameraComponent::getCamera() { return _camera; }
+    Camera &Camera3DComponent::getCamera() { return _camera; }
 }

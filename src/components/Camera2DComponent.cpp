@@ -7,10 +7,11 @@
 
 #include <raylib.h>
 #include "Camera2DComponent.hpp"
+#include "Position.hpp"
 
 namespace ecs
 {
-    Camera2DComponent::Camera2DComponent(Vector2 target) : Component(Type::CAMERA_2D), _camera(target)
+    Camera2DComponent::Camera2DComponent(std::shared_ptr<Position> target) : Component(Type::CAMERA_2D), _camera(target)
     {
         _isInitialized = true;
     }
