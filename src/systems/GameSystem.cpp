@@ -532,8 +532,8 @@ namespace ecs
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(550, 350);
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
-        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
-        std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(250, 100), 30);
+        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(900, 50), 50);
+        std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(850, 100), 30);
         std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nCyril Dehaese\nRoxane Baert", Position(10, 450), 15);
 
         scene->addEntities({entity, entity2, entity3, entity4});
@@ -565,9 +565,9 @@ namespace ecs
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
         std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
         std::shared_ptr<Position> bgPos = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
-        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
-        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/option.png", Position(800 - 80, 600 - 80), 80, 80);
-        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/quit_unpressed.png", Position(800 / 2 - 60, 700 / 2 - 18), 120, 28);
+        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(1920 / 2 - 60, 850 / 2 - 18), 120, 28);
+        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/option.png", Position(0, 0), 80, 80);
+        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/quit_unpressed.png", Position(1920 / 2 - 60, 1110 / 2 - 18), 120, 28);
 
         backgroundEntity->addComponent(bgPos)
             .addComponent(bg);
@@ -582,13 +582,13 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createSoundMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSoundMenu, this), SceneType::OPTION);
-        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), 800, 600);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), 1920, 1080);
         std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/fleche.png", Position(0, 0), 80, 80);
-        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/minus.png", Position(220, 250), 80, 80);
-        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/plus.png", Position(500, 250), 80, 80);
-        std::shared_ptr<Entity> entity5 = createText("Option Menu", Position(250, 50), 50);
-        std::shared_ptr<Entity> entity6 = createText("Master Volume", Position(300, 200), 25);
-        std::shared_ptr<Entity> entity7 = createText("50", Position(370, 250), 80);
+        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/minus.png", Position(820, 450), 80, 80);
+        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/plus.png", Position(1040, 450), 80, 80);
+        std::shared_ptr<Entity> entity5 = createText("Option Menu", Position(800, 100), 50);
+        std::shared_ptr<Entity> entity6 = createText("Volume", Position(870, 200), 50);
+        std::shared_ptr<Entity> entity7 = createText("50", Position(925, 450), 80);
 
         createSceneEvent(entity2, SceneType::PREVIOUS);
         createSoundEvent(entity3, "-");
