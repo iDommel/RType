@@ -96,10 +96,11 @@ namespace ecs
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
             else if (keyState == KeyState::RELEASED) {
-                playerComp->shootMissile(manager, entity, dt);
+                // playerComp->shootMissile(manager, entity, dt);
                 if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000)
                     return;
                 Vector2 missilePos = {pos->x + 64, pos->y + 32};
+                GameSystem::createSimpleMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos.x, missilePos.y));
                 Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos);
                 writeMsg(msg);
             }

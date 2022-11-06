@@ -97,12 +97,13 @@ namespace ecs
 
         static std::vector<Position> playerSpawns;
 
+        static void createSimpleMissile(IScene &scene, long unsigned int id, Position pos);
+
     signals:
         void writeMsg(const Message &message);
 
     public slots:
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
-        void createSimpleMissile(IScene &scene, long unsigned int id, Position pos);
 
     private:
         /// @brief Read map file and generate all the game scene entities
