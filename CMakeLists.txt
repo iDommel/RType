@@ -7,7 +7,7 @@ set(SERVER_NAME "r-type_server")
 set(LIBRARY_NAME "r-type_library")
 
 # Call the cmake that checks and pulls the raylib
-# set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
@@ -95,8 +95,8 @@ endif()
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
 
-find_package(raylib CONFIG REQUIRED)
-# find_package(raylib REQUIRED)
+# find_package(raylib CONFIG REQUIRED)
+find_package(raylib REQUIRED)
 find_package(Qt5 COMPONENTS Core Network CONFIG REQUIRED)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${raylib_INCLUDE_DIRS})
