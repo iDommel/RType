@@ -54,51 +54,52 @@ namespace ecs
 
     std::shared_ptr<Entity> GameSystem::whichEnemy(quint8 mobId, int x, int y)
     {
+        if (mobId >= quint8(Enemy::EnemyType::NB))
+            return nullptr;
+
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
         Rectangle rect = {position->x + SCALE / 2, position->y + SCALE / 2, SCALE, SCALE};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
-        entity->addComponent(position).addComponent(hitbox);
+        auto enemyComponent = std::make_shared<Enemy>(mobId);
+        std::shared_ptr<Sprite> sprite = nullptr;
+        std::shared_ptr<Trajectory> trajectory = nullptr;
 
-        if (mobId == quint8(Enemy::EnemyType::SCOUT))
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
-            auto enemyComponent = std::make_shared<Enemy>(Enemy::EnemyType::SCOUT);
-            entity->addComponent(sprite)
-                .addComponent(enemyComponent);
-            std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                                          { return -a / 120; }),
-                                                                                  std::function<float(float)>([](float a)
-                                                                                                          { return std::sin(a / 40) * 2; }),
-                                                                                  position);
-            entity->addComponent(trajectory);
-            return entity;
+        if (mobId == quint8(Enemy::EnemyType::SCOUT)) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
+                                                                            { return -a / 120; }),
+                                                    std::function<float(float)>([](float a)
+                                                                            { return std::sin(a / 40) * 2; }),
+                                                    position);
+        } else if (mobId == quint8(Enemy::EnemyType::FIGHTER)) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
+                                                                            { return -a / 120; }),
+                                                    std::function<float(float)>([](float a)
+                                                                            { return 0; }),
+                                                    position);
+        } else if (mobId == quint8(Enemy::EnemyType::TORPEDO)) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
+                                                                            { return -a / 120; }),
+                                                    std::function<float(float)>([](float a)
+                                                                            { return 0; }),
+                                                    position);
+        } else if (mobId == quint8(Enemy::EnemyType::FRIGATE)) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
+                                                                            { return -a / 120; }),
+                                                    std::function<float(float)>([](float a)
+                                                                            { return 0; }),
+                                                    position);
         }
-        if (mobId == quint8(Enemy::EnemyType::FIGHTER))
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
-            auto enemyComponent = std::make_shared<Enemy>(Enemy::EnemyType::FIGHTER);
-            entity->addComponent(sprite)
-                .addComponent(enemyComponent);
-            return entity;
-        }
-        if (mobId == quint8(Enemy::EnemyType::TORPEDO))
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
-            auto enemyComponent = std::make_shared<Enemy>(Enemy::EnemyType::TORPEDO);
-            entity->addComponent(sprite)
-                .addComponent(enemyComponent);
-            return entity;
-        }
-        if (mobId == quint8(Enemy::EnemyType::FRIGATE))
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
-            auto enemyComponent = std::make_shared<Enemy>(Enemy::EnemyType::FRIGATE);
-            entity->addComponent(sprite)
-                .addComponent(enemyComponent);
-            return entity;
-        }
-        return nullptr;
+        entity->addComponent(position)
+            .addComponent(enemyComponent)
+            .addComponent(hitbox)
+            .addComponent(sprite)
+            .addComponent(trajectory);
+        return entity;
     }
 
     std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)

@@ -18,12 +18,19 @@ namespace ecs {
             SCOUT = 1,
             FIGHTER,
             TORPEDO,
-            FRIGATE
+            FRIGATE,
+            NB
         };
 
         Enemy(EnemyType enemyType) : Component(Type::ENEMY), _enemyType(enemyType)
         {
             _isInitialized = true;
+        };
+
+        Enemy(quint8 enemyType) : Component(Type::ENEMY)
+        {
+            _isInitialized = true;
+            _enemyType = EnemyType(enemyType);
         };
 
         EnemyType getEnemyType() const { return _enemyType; }
