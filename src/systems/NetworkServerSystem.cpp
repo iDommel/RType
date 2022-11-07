@@ -64,6 +64,13 @@ namespace ecs
             Message msg(EntityAction::UPDATE, (uint64_t)missile->getId(), EntityType::MISSILE, pos->getVector2());
             writeMsg(msg);
         }
+
+        auto enemies = manager.getCurrentScene()[IEntity::Tags::ENEMY];
+        for (auto enemy : enemies) {
+            auto pos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            Message msg(EntityAction::UPDATE, (uint64_t)enemy->getId(), EntityType::ENEMY, pos->getVector2());
+            writeMsg(msg);
+        }
     }
 
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, int id, uint64_t dt)

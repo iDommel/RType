@@ -95,6 +95,8 @@ namespace ecs
                     handlePlayerEvent(sceneManager, message, dt);
                 else if (message.getEntityType() == EntityType::MISSILE)
                     handleMissileUpdate(sceneManager, message, dt);
+                else if (message.getEntityType() == EntityType::ENEMY)
+                    handleEnemyUpdate(sceneManager, message, dt);
                 break;
             default:
                 break;
@@ -139,6 +141,20 @@ namespace ecs
             if (missile->getId() != msg.getEntityId())
                 continue;
             auto pos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
+            pos->x = msg.getEntityPosition().x;
+            pos->y = msg.getEntityPosition().y;
+            break;
+        }
+    }
+
+    void NetworkClientSystem::handleEnemyUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt)
+    {
+        auto enemies = sceneManager.getCurrentScene()[IEntity::Tags::ENEMY];
+
+        for (auto &enemy : enemies) {
+            if (enemy->getId() != msg.getEntityId())
+                continue;
+            auto pos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
             pos->x = msg.getEntityPosition().x;
             pos->y = msg.getEntityPosition().y;
             break;

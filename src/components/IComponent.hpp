@@ -45,6 +45,7 @@ namespace ecs
             RADAR,
             TRAJECTORY,
             MISSILE,
+            ENEMY,
             TYPE_NB
         };
         virtual const Type &getType() const = 0;
