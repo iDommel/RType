@@ -52,8 +52,8 @@ namespace ecs
             throw std::runtime_error("Wrong constructor for this action");
     }
 
-    Message::Message(EntityAction action, uint64_t id, EntityType type, bool isMe)
-        : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id), _isMe(isMe)
+    Message::Message(EntityAction action, uint64_t id, EntityType type, Vector2 pos, quint8 arg)
+        : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id), _pos(pos), _arg(arg)
     {
         if (action != EntityAction::CREATE)
             throw std::runtime_error("Wrong constructor for this action");
@@ -161,7 +161,8 @@ namespace ecs
     {
         qint8 entityAction;
         qint8 entityType;
-        bool isMe;
+        qint32 x;
+        qint32 y;
 
         in >> entityAction;
         in >> toWrite._id;
@@ -170,21 +171,13 @@ namespace ecs
         case EntityAction::CREATE:
             in >> entityType;
             toWrite._entityType = static_cast<EntityType>(entityType);
-            if (toWrite._entityType == EntityType::PLAYER) {
-                in >> isMe;
-                toWrite._isMe = static_cast<bool>(isMe);
-            } else {
-                qint32 x;
-                qint32 y;
-                in >> x;
-                in >> y;
-                toWrite._pos.x = float(x);
-                toWrite._pos.y = float(y);
-            }
+            in >> toWrite._arg;
+            in >> x;
+            in >> y;
+            toWrite._pos.x = float(x);
+            toWrite._pos.y = float(y);
             break;
         case EntityAction::UPDATE:
-            qint32 x;
-            qint32 y;
             in >> entityType;
             in >> x;
             in >> y;
@@ -256,7 +249,7 @@ namespace ecs
             out << toWrite._id;
             out << to_integral(toWrite._entityType);
             if (toWrite._entityType == EntityType::PLAYER)
-                out << toWrite._isMe;
+                out << toWrite._arg;
             else {
                 out << qint32(toWrite._pos.x);
                 out << qint32(toWrite._pos.y);

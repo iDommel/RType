@@ -23,6 +23,7 @@ namespace ecs
         Position(const Position &&other);
         void operator=(const Position &other);
         Position(const AVector &other);
+        Position(const Vector2 &other);
         void operator=(const AVector &other);
     };
 }

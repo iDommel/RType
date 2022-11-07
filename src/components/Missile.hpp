@@ -15,7 +15,7 @@ namespace ecs
     class Missile : public Component
     {
     public:
-        enum class MissileType {
+        enum class MissileType : qint8 {
             PL_SIMPLE,
             PL_CONDENSED,
             EN

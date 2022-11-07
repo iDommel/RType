@@ -795,8 +795,8 @@ namespace ecs
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
-
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type]);
+        // TODO: different for enemy missile
         std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
             _missilesTrajectories[type].first,
             _missilesTrajectories[type].second, std::make_shared<Position>(*pos)

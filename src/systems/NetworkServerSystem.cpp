@@ -113,12 +113,13 @@ namespace ecs
         case KEY_RIGHT_CONTROL:
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
-            else if (keyState == KeyState::RELEASED) {
+            else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
+                playerComp->startShootCooldownTimer();
                 if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000)
                     return;
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
-                GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos.x, missilePos.y), Missile::MissileType::PL_SIMPLE);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos);
+                GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::PL_SIMPLE);
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::PL_SIMPLE));
                 writeMsg(msg);
             }
             return;
@@ -225,12 +226,11 @@ namespace ecs
             _playersId[client] = Entity::idCounter++;
             unsigned long int id = _playersId[client];
             emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::playerSpawns.front(), false);
-            GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
             for (auto &player : _senders) {
-                Message msg(EntityAction::CREATE, id, EntityType::PLAYER, (client == player));
-                std::cout << msg.getIsMe() << std::endl;
+                Message msg(EntityAction::CREATE, id, EntityType::PLAYER, GameSystem::playerSpawns.front().getVector2(), (client == player));
                 writeToClient(msg, player);
             }
+            GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
         }
 
         // notify clients game can start
