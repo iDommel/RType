@@ -81,14 +81,14 @@ namespace ecs
     void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager, uint64_t dt)
     {
         long unsigned int id = message.getEntityId();
+
         switch (message.getEntityAction()) {
             case EntityAction::CREATE:
                 if (message.getEntityType() == EntityType::PLAYER) {
                     emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
-                    id, GameSystem::playerSpawns.front(), message.getIsMe());
-                    GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
+                    id, Position(message.getEntityPosition()), bool(message.getArg()));
                 } else if (message.getEntityType() == EntityType::MISSILE)
-                    GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition().x, message.getEntityPosition().y), Missile::MissileType::PL_SIMPLE);
+                    GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
                 break;
             case EntityAction::UPDATE:
                 if (message.getEntityType() == EntityType::PLAYER)
