@@ -42,30 +42,6 @@ namespace ecs
         int getHeight() const;
 
         /**
-         * @brief Draw a Texture2D
-         * @param posX The horizontal position
-         * @param posY The vertical position
-         * @param tint The color tint
-         */
-        void draw(int posX, int posY, Color tint);
-
-        /**
-         * @brief Draw a Texture2D
-         * @param posX The horizontal position
-         * @param posY The vertical position
-         */
-        void draw(int posX, int posY);
-
-        /**
-         * @brief Draw a Texture2D with more params
-         * @param pos The Texture position
-         * @param rotation The texture rotation
-         * @param scale The texture scale
-         * @param tint The color tint
-         */
-        void drawEx(Vector2 pos, float rotation, float scale, Color tint);
-
-        /**
          * @brief Set the params of the texture's rect
          * @param x The horizontal position
          * @param y The vertical position
@@ -97,6 +73,31 @@ namespace ecs
          */
         void drawRec(Vector2 position);
 
+        /**
+         * @brief Draw a Texture2D
+         * @param posX The horizontal position
+         * @param posY The vertical position
+         * @param tint The color tint
+         */
+        void draw(int posX, int posY, Color tint);
+
+        /**
+         * @brief Draw a Texture2D
+         * @param posX The horizontal position
+         * @param posY The vertical position
+         */
+        void draw(int posX, int posY);
+
+        /**
+         * @brief Draw a Texture2D with more params
+         * @param pos The Texture position
+         * @param rotation The texture rotation
+         * @param scale The texture scale
+         * @param tint The color tint
+         */
+        void drawEx(Vector2 pos, float rotation, float scale, Color tint);
+
+        void drawPro(Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint);
         /// @brief Copy a texture
         void operator=(const Texture2D &other);
 
