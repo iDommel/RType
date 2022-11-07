@@ -831,8 +831,8 @@ namespace ecs
 
     void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos, Missile::MissileType type)
     {
-        // if (quint8(type) >= quint8(Missile::MissileType::NB))
-        //     throw std::invalid_argument("Missile type: " + quint8(type));
+        if (quint8(type) >= quint8(Missile::MissileType::NB))
+            throw std::invalid_argument("Missile type: " + quint8(type));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
@@ -842,8 +842,6 @@ namespace ecs
             _missilesTrajectories[type].first,
             _missilesTrajectories[type].second, std::make_shared<Position>(*pos)
         );
-        // if (type == Missile::MissileType::EN)
-            std::cerr << "create missile: " << int(type) << std::endl;
         entity->addComponent(missile)
             .addComponent(sprite)
             .addComponent(pos)
