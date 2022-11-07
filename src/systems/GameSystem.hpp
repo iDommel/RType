@@ -116,7 +116,7 @@ namespace ecs
         std::shared_ptr<Entity> whichWall(std::string mapAround, int x, int y);
         /// @brief Choose what enemy generate
         /// @return Return the good entity or Nullptr if no entity match
-        std::shared_ptr<Entity> whichEnemy(int mobId, int x, int y);
+        std::shared_ptr<Entity> whichEnemy(quint8 mobId, int x, int y);
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
@@ -168,6 +168,7 @@ namespace ecs
 
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
+        void updateEnemies(IScene &scene, uint64_t dt);
 
         int timeElasped = 0;
         static unsigned int nbr_player;

@@ -59,6 +59,7 @@ namespace ecs
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, const Message &msg, uint64_t deltaTime);
         void handleMissileUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
+        void handleEnemyUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
 
         void removePlayer(std::string s, SceneManager &manager);
         void processEntityMessage(Message &msg, SceneManager &sceneManager, uint64_t deltaTime);
