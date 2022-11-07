@@ -20,7 +20,7 @@ namespace ecs
     void Trajectory::update(std::shared_ptr<Position> actualPos)
     {
         _timer++;
-        actualPos->y = _origin->y + _trajFuncY(_timer / 40);
-        actualPos->x = _origin->x + _trajFuncX(_timer / 120);
+        actualPos->y = _origin->y + _trajFuncY(_timer);
+        actualPos->x = _origin->x + _trajFuncX(_timer);
     }
 }

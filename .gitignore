@@ -14,8 +14,6 @@ Makefile
 log*
 cmake
 x64
-cmake.msi:Zone.Identifier
-conan.exe:Zone.Identifier
 
 # Prerequisites
 *.d
@@ -46,5 +44,6 @@ conan.exe:Zone.Identifier
 *.lib
 
 # Executables
+*.exe
 *.out
 *.app

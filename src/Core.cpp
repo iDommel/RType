@@ -78,6 +78,7 @@ namespace ecs
             if (netSys == nullptr || game == nullptr)
                 return;
             connect(netSys, &NetworkClientSystem::createPlayer, game, &GameSystem::createPlayer);
+            // connect(netSys, &NetworkClientSystem::createMissile, game, &GameSystem::createSimpleMissile);
         }
     }
 

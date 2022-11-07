@@ -107,6 +107,18 @@ namespace ecs
 
     unsigned int GameSystem::nbr_ai;
 
+    std::map<Missile::MissileType, std::string> GameSystem::_missilesSprites = {
+        { Missile::MissileType::PL_SIMPLE, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png" },
+        { Missile::MissileType::PL_CONDENSED, "" },
+        { Missile::MissileType::EN, ""}
+    };
+
+    std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
+        { Missile::MissileType::PL_SIMPLE, {[](float dt) { return dt * dt; }, [](float) { return 0; }} },
+        { Missile::MissileType::PL_CONDENSED, {[](float dt) { return dt * dt; }, [](float) { return 0; }} },
+        { Missile::MissileType::EN, {[](float dt) { return -dt; }, [](float) { return 0; }} }
+    };
+
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
@@ -642,44 +654,56 @@ namespace ecs
         return _networkActivated;
     }
 
-    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe)
+    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyMissile, long unsigned int id, Position pos, bool isMe)
     {
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>(id);
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
         Rectangle rect = {playerPos->x + SCALE / 4, playerPos->y + SCALE / 4, SCALE, SCALE};
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
-        std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyBomb);
+        std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyMissile);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
+        ButtonCallbacks missileCallbacks(
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_RIGHT_CONTROL));
+            },
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_RIGHT_CONTROL));
+            },
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_RIGHT_CONTROL));
+            },
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_RIGHT_CONTROL));
+            });
         ButtonCallbacks moveRightCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_RIGHT));
-                // emit writeMsg("PLAYER RIGHT PRESSED");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_RIGHT));
-                // emit writeMsg("PLAYER RIGHT RELEASED");
                 else
                     player->stopRight(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_RIGHT));
-
-                // emit writeMsg("PLAYER RIGHT DOWN");
                 else
                     player->moveRight(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_RIGHT));
-                // emit writeMsg("PLAYER RIGHT UP");
                 else
                     player->stopRight(manager, playerEntity, 1);
             });
@@ -687,28 +711,24 @@ namespace ecs
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_LEFT));
-                // emit writeMsg("PLAYER LEFT PRESSED");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_LEFT));
-                // emit writeMsg("PLAYER LEFT RELEASED");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_LEFT));
-                // emit writeMsg("PLAYER LEFT DOWN");
                 else
                     player->moveLeft(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_LEFT));
-                // emit writeMsg("PLAYER LEFT UP");
                 else
                     player->stopLeft(manager, playerEntity, 17);
             });
@@ -716,28 +736,24 @@ namespace ecs
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_UP));
-                // emit writeMsg("PLAYER UP PRESSED");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_UP));
-                // emit writeMsg("PLAYER UP RELEASED");
                 else
                     player->stopUp(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_UP));
-                // emit writeMsg("PLAYER UP DOWN");
                 else
                     player->moveUp(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_UP));
-                // emit writeMsg("PLAYER UP UP");
                 else
                     player->stopUp(manager, playerEntity, 1);
             });
@@ -745,28 +761,24 @@ namespace ecs
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_DOWN));
-                // emit writeMsg("PLAYER DOWN PRESSED");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_DOWN));
-                // emit writeMsg("PLAYER DOWN RELEASED");
                 else
                     player->stopDown(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_DOWN));
-                // emit writeMsg("PLAYER DOWN DOWN");
                 else
                     player->moveDown(manager, playerEntity, 1);
             },
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_DOWN));
-                // emit writeMsg("PLAYER DOWN UP");
                 else
                     player->stopDown(manager, playerEntity, 1);
             });
@@ -789,6 +801,7 @@ namespace ecs
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagLeft(), moveLeftCallbacks);
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagRight(), moveRightCallbacks);
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagDown(), moveDownCallbacks);
+            playerListener->addKeyboardEvent((KeyboardKey)player->getTagBomb(), missileCallbacks);
             playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_UP, moveUpCallbacks);
             playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
             playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);
@@ -799,6 +812,25 @@ namespace ecs
         }
         playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerHitbox, destruct});
         scene.addEntity(playerEntity);
+    }
+
+    void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos, Missile::MissileType type)
+    {
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
+        std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
+        std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
+
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type]);
+        std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
+            _missilesTrajectories[type].first,
+            _missilesTrajectories[type].second, std::make_shared<Position>(*pos)
+        );
+
+        entity->addComponent(missile)
+            .addComponent(sprite)
+            .addComponent(pos)
+            .addComponent(trajectory);
+        scene.addEntity(entity);
     }
 
     void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene)

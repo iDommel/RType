@@ -23,6 +23,9 @@
 #include "Sphere.hpp"
 #include "GameSystem.hpp"
 #include "Model3D.hpp"
+#include "Missile.hpp"
+#include "Sprite.hpp"
+#include "Trajectory.hpp"
 
 namespace ecs
 {
@@ -40,7 +43,6 @@ namespace ecs
         changeUp = 0;
         changeLeft = 0;
         changeRight = 0;
-        _nbBomb = _defaultNbBomb;
         _blastPower = _defaultBlastPower;
         _speed = _defaultSpeed;
         _blastPower = _defaultBlastPower;
@@ -52,9 +54,7 @@ namespace ecs
 
     void Player::handleBonus(const Bonus &bonus)
     {
-        if (bonus.getBonusType() == Bonus::Type::BOMB)
-            _nbBomb++;
-        else if (bonus.getBonusType() == Bonus::Type::SPEED)
+        if (bonus.getBonusType() == Bonus::Type::SPEED)
             _speed += 10;
         else if (bonus.getBonusType() == Bonus::Type::POWER)
             _blastPower++;
@@ -154,47 +154,14 @@ namespace ecs
         return _speed;
     }
 
-    int Player::getNbBomb() const
+    void Player::startClock()
     {
-        return _nbBomb;
+        _shootTimer = QTime::currentTime();
     }
 
-    void Player::setNbBomb(int newNbBomb)
+    QTime &Player::getShootTimer()
     {
-        _nbBomb = newNbBomb;
-    }
-
-    void Player::generateBomb(SceneManager &manager, std::shared_ptr<IEntity> entity)
-    {
-        int bombNb = _bombs.size();
-
-        if (bombNb >= _nbBomb)
-            return;
-
-        std::shared_ptr<Entity> bomb = std::make_shared<Entity>();
-        std::shared_ptr<Entity> timerSound = std::make_shared<Entity>();
-        auto pos = Component::castComponent<Position>((*entity)[Component::Type::POSITION]);
-        Vector3 size = {GAME_TILE_SIZE, GAME_TILE_SIZE, GAME_TILE_SIZE};
-        Vector3 bPos = {std::roundf(pos->x / GAME_TILE_SIZE) * GAME_TILE_SIZE - GAME_TILE_SIZE / 2, pos->y, std::roundf(pos->z / GAME_TILE_SIZE) * GAME_TILE_SIZE - GAME_TILE_SIZE / 2};
-
-        bomb->addComponent(std::make_shared<Bomb>(_blastPower))
-            .addComponent(std::make_shared<Position>(std::roundf(pos->x / GAME_TILE_SIZE) * GAME_TILE_SIZE, pos->y, std::roundf(pos->z / GAME_TILE_SIZE) * GAME_TILE_SIZE))
-            .addComponent(std::make_shared<Model3D>("assets/other_asset/water_bomb/water_bomb.obj", "assets/other_asset/water_bomb/water_bomb.png", 2.0f))
-            .addComponent(std::make_shared<Hitbox>(CollideSystem::makeBBoxFromSizePos(size, bPos)));
-        _bombs.push_back(bomb);
-        timerSound->addComponent(std::make_shared<SoundComponent>("sound_det"));
-        manager.getCurrentScene().addEntity(bomb).addEntity(timerSound);
-    }
-
-    void Player::updateBombsVec()
-    {
-        for (auto bomb = _bombs.begin(); bomb != _bombs.end();) {
-            auto b = Component::castComponent<Bomb>((**bomb)[IComponent::Type::BOMB]);
-            if (b->getTimer() <= 0)
-                bomb = _bombs.erase(std::find(_bombs.begin(), _bombs.end(), *bomb));
-            else
-                bomb++;
-        }
+        return _shootTimer;
     }
 
     int Player::getBlastPower() const

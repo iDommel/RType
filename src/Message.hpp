@@ -53,7 +53,7 @@ namespace ecs
         UNDEFINED = -1,
         PLAYER,
         ENEMY,
-        BULLET,
+        MISSILE,
     };
 
     enum class KeyState : qint8 {
