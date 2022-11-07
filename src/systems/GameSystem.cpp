@@ -110,7 +110,7 @@ namespace ecs
 
     std::map<Missile::MissileType, std::string> GameSystem::_missilesSprites = {
         { Missile::MissileType::PL_SIMPLE, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png" },
-        { Missile::MissileType::PL_CONDENSED, "" },
+        { Missile::MissileType::PL_CONDENSED, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png" },
         { Missile::MissileType::EN, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png"}
     };
 
@@ -561,7 +561,7 @@ namespace ecs
             Position pos(enPos->x, enPos->y + (SCALE / 2));
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
-                createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
+                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
                 Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
                 emit writeMsg(msg);
                 if (enComp->getNbMissile() > 1) {
@@ -572,7 +572,7 @@ namespace ecs
                     enComp->startShootTimer();
             } else if (enComp->salvoTime() && enComp->isShooting()) {
                 // Shoot a salvo
-                createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
+                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
                 Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
                 emit writeMsg(msg);
                 enComp->getSalvo()++;
@@ -831,6 +831,8 @@ namespace ecs
 
     void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos, Missile::MissileType type)
     {
+        if (quint8(type) >= quint8(Missile::MissileType::NB))
+            throw std::invalid_argument("Missile type: " + quint8(type));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);

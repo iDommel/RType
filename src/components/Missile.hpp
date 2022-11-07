@@ -18,7 +18,8 @@ namespace ecs
         enum class MissileType : qint8 {
             PL_SIMPLE,
             PL_CONDENSED,
-            EN
+            EN,
+            NB
         };
 
         Missile(MissileType type) : Component(Type::MISSILE), _missileType(type)
