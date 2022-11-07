@@ -16,15 +16,14 @@
 #include "SceneManager.hpp"
 #include "ANetworkSystem.hpp"
 
-#define UPDATE_DELTA        17
-#define NB_CLIENTS_MAX      4
+#define UPDATE_DELTA 17
+#define NB_CLIENTS_MAX 4
 
 namespace ecs
 {
 
     class Core : public QCoreApplication
     {
-
         Q_OBJECT
 
     public:
@@ -75,7 +74,6 @@ namespace ecs
     private slots:
         void loop();
         void onChangeScene(SceneType scene);
-
     signals:
         void doLoop();
         void exitApp();
@@ -87,7 +85,14 @@ namespace ecs
         bool _end = false;
         std::chrono::_V2::system_clock::time_point _clock;
         bool _running = false;
+        std::string _ip;
+        int _port;
     };
+    /// @brief Checks the arguments for the core
+    /// @param ac Argument count
+    /// @param av Argument vector
+    /// @return null if error, the given ip and port or "127.0.0.1" "8080" by default
+    char **checkArguments(int ac, char **av);
 }
 
 #endif /* CORE_HPP */
