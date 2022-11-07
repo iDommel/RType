@@ -24,6 +24,13 @@ namespace ecs
         ///@brief Map between Entity tags and combinaisons of Components tags
         static const std::map<Tags, std::vector<std::vector<IComponent::Type>>> entityTags;
 
+        /// @brief Entity Constructor
+        Entity();
+
+        /// @brief Entity Constructor
+        /// @param id ID of the new entity
+        Entity(unsigned long int id);
+
         ///@brief Add component to entity and update entity's tags accordingly, mustn't be called after moving entity to scene
         IEntity &addComponent(std::shared_ptr<IComponent> component);
         ///@brief Add component to entity and update entity's tags accordingly
@@ -60,6 +67,10 @@ namespace ecs
          * @return Returns a vector of components of the given types in the same order
          */
         std::vector<std::shared_ptr<IComponent>> getFilteredComponents(std::vector<IComponent::Type> components);
+
+        /// @brief Gets the entity identifier
+        unsigned long int getId() const;
+
         /**
          * @brief Allows the access to an entity's component via a Tag. Throws a std::runtime_error if the component is not found.
          *
@@ -68,7 +79,11 @@ namespace ecs
          */
         std::shared_ptr<IComponent> &operator[](IComponent::Type type);
 
+        static unsigned long int idCounter;
+
     private:
+        unsigned long int _id = 0;
+
         std::vector<Tags> _tags;
         std::map<IComponent::Type, std::shared_ptr<IComponent>> _components;
         std::vector<IComponent::Type> _componentsType;

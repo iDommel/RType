@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** ParticlesSystem
 */
@@ -44,7 +44,7 @@ namespace ecs
     {
     }
 
-    void ParticlesSystem::onEntityAdded(std::shared_ptr<IEntity>)
+    void ParticlesSystem::onEntityAdded(std::shared_ptr<IEntity>, SceneType)
     {
     }
 

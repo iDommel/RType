@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** EventListener
 */
@@ -10,6 +10,8 @@
 
 #include <functional>
 #include <map>
+
+#include "raylib.h"
 
 #include "ButtonCallbacks.hpp"
 #include "Component.hpp"

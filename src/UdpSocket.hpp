@@ -8,11 +8,11 @@
 #ifndef UDP_SOCKET_HPP
 #define UDP_SOCKET_HPP
 
-#define WAIT_CONNECTION     "WAIT"
-#define CONNECTION_OK       "OK"
-
+#include "Message.hpp"
 #include <QtNetwork>
 #include <string>
+
+#define RM_PLAYER "RM_PLAYER"
 
 namespace ecs
 {
@@ -29,27 +29,27 @@ namespace ecs
          * @param port Port to bind to
          * @param mode Bind mode
          */
-        UdpSocket(QObject *parent = nullptr, QHostAddress address = QHostAddress::AnyIPv4, \
-            int port = 0, QAbstractSocket::BindMode mode = QAbstractSocket::DefaultForPlatform);
+        UdpSocket(QObject *parent = nullptr, QHostAddress address = QHostAddress::AnyIPv4,
+                  int port = 0, QAbstractSocket::BindMode mode = QAbstractSocket::DefaultForPlatform);
 
         /// @brief Joins the multicast group on the default interface chosen by the operating system.
         /// @param groupAddress Address of the group to join
         void joinMulticastGroup(QHostAddress groupAddress);
 
-        /// @brief Writes a message
-        /// @param msg Message to send
+        /// @brief Writes a message using the Message class
+        /// @param msg Data stream to read from
         /// @param address Address to send message to
         /// @param port Port to send message to
-        void write(const std::string &msg, const QHostAddress &address, int port);
-
-        /// @brief Read a message from the queue
-        std::string readDatagram();
+        void write(const Message &msg, const QHostAddress &address, int port);
 
         /// @brief Tells if datagrams are available
         /// @return Returns True if the queue is not empty, false otherwise
         bool canRead();
 
-        bool waitForServerConnection();
+        bool waitReadyRead(int ms = 30000);
+
+        /// @brief Returns socket state
+        QAbstractSocket::SocketState state() const { return _socket->state(); };
 
         /// @brief Returns the address of the last sender
         QHostAddress getLastAddress() { return _lastAddr; };
@@ -58,13 +58,20 @@ namespace ecs
         unsigned short getLastPort() { return _lastPort; };
 
     public slots:
+        /// @brief Reads all pending messages
         void readDatagrams();
+        /// @brief Reads a message from the queue
+        void readDatagram();
+
+    signals:
+        /// @brief Transferts the received message to the ANetworkSystem
+        /// @param msg Massage to be transfered
+        void transferMsgToSystem(Message msg);
 
     private:
         QUdpSocket *_socket;
         QHostAddress _lastAddr;
         unsigned short _lastPort = 0;
-
     };
 
 }

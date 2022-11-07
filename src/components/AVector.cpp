@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** AVector
 */
@@ -27,6 +27,11 @@ namespace ecs
         x = other.x;
         y = other.y;
         z = other.z;
+    }
+
+    Vector2 AVector::getVector2() const
+    {
+        return {x, y};
     }
 
     std::tuple<float, float, float> AVector::getVector() const

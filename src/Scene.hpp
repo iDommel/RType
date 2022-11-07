@@ -15,6 +15,7 @@
 
 #include "IEntity.hpp"
 #include "IScene.hpp"
+#include "SceneManager.hpp"
 
 namespace ecs
 {
@@ -27,8 +28,9 @@ namespace ecs
         /**
          * @brief Scene constructor
          * @param init Scene init function
+         * @param type Scene type
          */
-        Scene(std::function<std::unique_ptr<IScene>()> init);
+        Scene(std::function<std::unique_ptr<IScene>()> init, SceneType type);
 
         /// @brief Add entity to scene
         IScene &addEntity(std::shared_ptr<IEntity> entity);
@@ -54,7 +56,7 @@ namespace ecs
          * @brief Set the callback function to call when an entity is added
          * @param callback Callback function
          */
-        void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback);
+        void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback);
 
         /**
          * @brief Set the callback function to call when an entity is removed
@@ -62,7 +64,7 @@ namespace ecs
          */
         void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback);
 
-        std::function<void(std::shared_ptr<IEntity>)> getAddEntityCallback() { return _addEntityCallback; };
+        std::function<void(std::shared_ptr<IEntity>, SceneType)> getAddEntityCallback() { return _addEntityCallback; };
 
         std::function<void(std::shared_ptr<IEntity>)> getRemoveEntityCallback() { return _removeEntityCallback; };
 
@@ -75,12 +77,13 @@ namespace ecs
         std::vector<std::shared_ptr<IEntity>> &operator[](IEntity::Tags tag);
 
     protected:
+        SceneType _type;
         /// @brief Entities sorted by tags
         std::map<IEntity::Tags, std::vector<std::shared_ptr<IEntity>>> _taggedEntities;
         /// @brief Scene's init function; called by GameSystem::init & Scene::reloadScene
         std::function<std::unique_ptr<IScene>()> _initFunc;
         /// @brief Callback when an entity is added to the scene
-        std::function<void(std::shared_ptr<IEntity>)> _addEntityCallback;
+        std::function<void(std::shared_ptr<IEntity>, SceneType)> _addEntityCallback;
         /// @brief Callback when an entity is removed from the scene
         std::function<void(std::shared_ptr<IEntity>)> _removeEntityCallback;
     };
