@@ -46,6 +46,7 @@ namespace ecs
         _blastPower = _defaultBlastPower;
         _speed = _defaultSpeed;
         _blastPower = _defaultBlastPower;
+        _shootCooldownTimer.setSingleShot(true);
     }
 
     Player::~Player()
@@ -251,5 +252,23 @@ namespace ecs
     bool Player::isDead() const
     {
         return _isDead;
+    }
+
+    QTimer &Player::getShootCooldownTimer()
+    {
+        return _shootCooldownTimer;
+    }
+
+    bool Player::hasCooldownTimedOut() const
+    {
+        if (_shootCooldownTimer.remainingTime() > 0)
+            return false;
+        else
+            return true;
+    }
+
+    void Player::startShootCooldownTimer(std::chrono::milliseconds msecs)
+    {
+        _shootCooldownTimer.start(msecs);
     }
 }

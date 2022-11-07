@@ -113,7 +113,8 @@ namespace ecs
         case KEY_RIGHT_CONTROL:
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
-            else if (keyState == KeyState::RELEASED) {
+            else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
+                playerComp->startShootCooldownTimer();
                 if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000)
                     return;
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
