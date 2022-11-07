@@ -248,12 +248,9 @@ namespace ecs
         case EntityAction::CREATE:
             out << toWrite._id;
             out << to_integral(toWrite._entityType);
-            if (toWrite._entityType == EntityType::PLAYER)
-                out << toWrite._arg;
-            else {
-                out << qint32(toWrite._pos.x);
-                out << qint32(toWrite._pos.y);
-            }
+            out << toWrite._arg;
+            out << qint32(toWrite._pos.x);
+            out << qint32(toWrite._pos.y);
             break;
         case EntityAction::UPDATE:
             out << quint64(toWrite._id);
