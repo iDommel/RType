@@ -193,6 +193,7 @@ namespace ecs
     void NetworkServerSystem::deconnectClientTimedout(std::pair<QString, unsigned short> client)
     {
         deconnectClient(client);
+        
     }
 
     void NetworkServerSystem::removePlayer(int id)
