@@ -111,18 +111,21 @@ namespace ecs
 
     std::map<Missile::MissileType, std::string> GameSystem::_missilesSprites = {
 
-        {Missile::MissileType::PL_SIMPLE, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png"},
-        {Missile::MissileType::PL_CONDENSED, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png"},
-        {Missile::MissileType::EN, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png"}};
+        {Missile::MissileType::P_SIMPLE, "assets/Player/BasicMissile.png"},
+        {Missile::MissileType::P_CONDENSED, "assets/Player/ChargedMissile.png"},
+        {Missile::MissileType::EN, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"}};
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
         {
             {"assets/Player/ChargedMissile.png", 5},
-            {"assets/Player/MainShipSSP1.png", 4}};
+            {"assets/Player/BasicMissile.png", 5},
+            {"assets/Player/MainShipSSP1.png", 4},
+            {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 4},
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        {Missile::MissileType::PL_SIMPLE, {[](float dt) { return dt * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::PL_CONDENSED, {[](float dt) { return dt * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::EN, {[](float dt) { return -dt * dt; }, [](float) { return 0; }}}};
+        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::EN, {[](float dt) { return -4 * dt; }, [](float) { return 0; }}}};
 
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
@@ -831,8 +834,8 @@ namespace ecs
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
         int nbFrames = _spriteFrameCounts.find(_missilesSprites[type]) != _spriteFrameCounts.end() ? _spriteFrameCounts[_missilesSprites[type]] : 0;
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], 0, 1.0f);
-        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, Animation2D::AnimationType::ONCE);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], type == Missile::MissileType::EN ? 180.0f : 0.0f, 1.0f);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, type == Missile::MissileType::EN ? Animation2D::AnimationType::LOOP : Animation2D::AnimationType::ONCE);
         std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
             _missilesTrajectories[type].first,
             _missilesTrajectories[type].second, std::make_shared<Position>(*pos));
