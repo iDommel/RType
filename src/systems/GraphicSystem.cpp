@@ -80,7 +80,6 @@ namespace ecs
             for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
                 auto camComponent = (*camera)[IComponent::Type::CAMERA_2D];
                 auto cam = Component::castComponent<Camera2DComponent>(camComponent);
-                std::cout << "detected camera" << std::endl;
                 cam->getCamera().beginDrawScope();
 
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
