@@ -168,6 +168,7 @@ namespace ecs
 
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
+        void updateEnemies(IScene &scene, uint64_t dt);
 
         int timeElasped = 0;
         static unsigned int nbr_player;

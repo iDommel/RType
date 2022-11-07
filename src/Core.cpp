@@ -97,6 +97,7 @@ namespace ecs
             if (netSys == nullptr || game == nullptr)
                 return;
             connect(netSys, &NetworkServerSystem::createPlayer, game, &GameSystem::createPlayer);
+            connect(game, &GameSystem::writeMsg, netSys, &NetworkServerSystem::writeMsg);
         } else if (networkRole == NetworkRole::CLIENT) {
             auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
             auto game = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
