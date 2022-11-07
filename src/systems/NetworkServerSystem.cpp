@@ -53,11 +53,16 @@ namespace ecs
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
         for (auto &player : players) {
-            auto playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             Message update(EntityAction::UPDATE, (uint64_t)player->getId(), EntityType::PLAYER, pos->getVector2());
             writeMsg(update);
-            std::cout << "Sending update to clients" << std::endl;
+        }
+
+        auto missiles = manager.getCurrentScene()[IEntity::Tags::MISSILE];
+        for (auto &missile : missiles) {
+            auto pos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
+            Message msg(EntityAction::UPDATE, (uint64_t)missile->getId(), EntityType::MISSILE, pos->getVector2());
+            writeMsg(msg);
         }
     }
 
@@ -105,6 +110,20 @@ namespace ecs
             else
                 playerComp->stopDown(manager, entity, dt);
             break;
+        case KEY_RIGHT_CONTROL:
+            if (keyState == KeyState::PRESSED)
+                playerComp->startClock();
+            else if (keyState == KeyState::RELEASED) {
+                if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000)
+                    return;
+                Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
+                GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos.x, missilePos.y), Missile::MissileType::PL_SIMPLE);
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos);
+                writeMsg(msg);
+            }
+            return;
+        default:
+            return;
         }
     }
 
@@ -194,8 +213,6 @@ namespace ecs
         if (_states[client] != ClientState::CONNECTED)
             return;
         _states[client] = ClientState::READYTOPLAY;
-        // add new player entity
-        // _playersId[client] = ++_players;
 
         // check if all players are ready
         for (auto s : _states) {

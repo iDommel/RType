@@ -42,7 +42,8 @@ namespace ecs
             RADAR,
             MUSIC,
             SOUND,
-            TRAJECTORY
+            TRAJECTORY,
+            MISSILE
         };
 
         virtual ~IEntity() = default;
