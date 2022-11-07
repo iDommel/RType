@@ -48,6 +48,7 @@
 #include "Window.hpp"
 #include "Trajectory.hpp"
 #include "Animation2D.hpp"
+#include "Enemy.hpp"
 
 namespace ecs
 {
@@ -111,7 +112,7 @@ namespace ecs
     std::map<Missile::MissileType, std::string> GameSystem::_missilesSprites = {
         {Missile::MissileType::PL_SIMPLE, "assets/Player/ChargedMissile.png"},
         {Missile::MissileType::PL_CONDENSED, ""},
-        {Missile::MissileType::EN, ""}};
+        {Missile::MissileType::EN, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png"}};
 
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
         {
@@ -119,9 +120,9 @@ namespace ecs
             {"assets/Player/MainShipSSP1.png", 4}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        {Missile::MissileType::PL_SIMPLE, {[](float dt) { return (0.1f) * dt * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::PL_SIMPLE, {[](float dt) { return dt * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::PL_CONDENSED, {[](float dt) { return dt * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::EN, {[](float dt) { return -dt; }, [](float) { return 0; }}}};
+        {Missile::MissileType::EN, {[](float dt) { return -dt * dt; }, [](float) { return 0; }}}};
 
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
@@ -229,6 +230,8 @@ namespace ecs
                 sceneManager.setShouldClose(true);
             }
         }
+        if (sceneManager.getCurrentSceneType() != SceneType::GAME)
+            return;
         if (Core::networkRole == NetworkRole::SERVER) {
             updatePlayers(sceneManager, dt);
             for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
@@ -236,6 +239,7 @@ namespace ecs
                 auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
                 trajectory->update(position);
             }
+            updateEnemies(sceneManager.getCurrentScene(), dt);
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
@@ -537,6 +541,41 @@ namespace ecs
             splitVel.x = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
+        }
+    }
+
+    void GameSystem::updateEnemies(IScene &scene, uint64_t dt)
+    {
+        auto enemies = scene[IEntity::Tags::ENEMY];
+
+        for (auto &enemy : enemies) {
+            auto enComp = Component::castComponent<Enemy>((*enemy)[IComponent::Type::ENEMY]);
+            auto enPos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            Position pos(enPos->x, enPos->y + (SCALE / 2));
+            if (enComp->isShootTime() && !enComp->isShooting()) {
+                // Shoot
+                createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                emit writeMsg(msg);
+                if (enComp->getNbMissile() > 1) {
+                    enComp->setShooting(true);
+                    enComp->startSalvoTimer();
+                    enComp->getSalvo()++;
+                } else
+                    enComp->startShootTimer();
+            } else if (enComp->salvoTime() && enComp->isShooting()) {
+                // Shoot a salvo
+                createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                emit writeMsg(msg);
+                enComp->getSalvo()++;
+                if (enComp->getSalvo() == enComp->getNbMissile()) {
+                    enComp->getSalvo() = 0;
+                    enComp->startShootTimer();
+                    enComp->setShooting(false);
+                } else
+                    enComp->startSalvoTimer();
+            }
         }
     }
 
