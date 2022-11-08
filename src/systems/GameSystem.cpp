@@ -539,6 +539,11 @@ namespace ecs
                 // TODO: The collision should probably lead to player's death
                 if (collider->hasTag(IEntity::Tags::WALL)) {
                     sceneManager.getCurrentScene().removeEntity(collider);
+                    Message msg(EntityAction::DELETE, collider->getId());
+                    writeMsg(msg);
+                } else if (collider->hasTag(IEntity::Tags::ENEMY)) {
+                    sceneManager.getCurrentScene().removeEntity(player);
+                    Message msg(EntityAction::DELETE, player->getId());
                 }
 
                 std::cout << "Hitboxes collide !" << std::endl;
@@ -558,6 +563,10 @@ namespace ecs
         for (auto &enemy : enemies) {
             auto enComp = Component::castComponent<Enemy>((*enemy)[IComponent::Type::ENEMY]);
             auto enPos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            auto hitbox = Component::castComponent<Hitbox>((*enemy)[IComponent::Type::HITBOX]);
+
+            Rectangle newRect = {enPos->x, enPos->y, hitbox->getRect().width, hitbox->getRect().height};
+            hitbox->setRect(newRect);
             Position pos(enPos->x, enPos->y + (SCALE / 2));
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
@@ -674,7 +683,7 @@ namespace ecs
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>(id);
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
-        Rectangle rect = {playerPos->x + SCALE / 4, playerPos->y + SCALE / 4, SCALE, SCALE};
+        Rectangle rect = {playerPos->x, playerPos->y, SCALE, SCALE};
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyMissile);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();

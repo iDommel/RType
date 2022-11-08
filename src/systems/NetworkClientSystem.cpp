@@ -81,26 +81,29 @@ namespace ecs
     void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager, uint64_t dt)
     {
         long unsigned int id = message.getEntityId();
+        std::shared_ptr<IEntity> e = sceneManager.getCurrentScene().getEntityById(id);
 
         switch (message.getEntityAction()) {
-            case EntityAction::CREATE:
-                if (message.getEntityType() == EntityType::PLAYER) {
-                    emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
-                    id, Position(message.getEntityPosition()), bool(message.getArg()));
-                } else if (message.getEntityType() == EntityType::MISSILE) {
-                    GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
-                }
-                break;
-            case EntityAction::UPDATE:
-                if (message.getEntityType() == EntityType::PLAYER)
-                    handlePlayerEvent(sceneManager, message, dt);
-                else if (message.getEntityType() == EntityType::MISSILE)
-                    handleMissileUpdate(sceneManager, message, dt);
-                else if (message.getEntityType() == EntityType::ENEMY)
-                    handleEnemyUpdate(sceneManager, message, dt);
-                break;
-            default:
-                break;
+        case EntityAction::CREATE:
+            if (message.getEntityType() == EntityType::PLAYER) {
+                emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
+                                  id, Position(message.getEntityPosition()), bool(message.getArg()));
+            } else if (message.getEntityType() == EntityType::MISSILE) {
+                GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
+            }
+            break;
+        case EntityAction::UPDATE:
+            if (message.getEntityType() == EntityType::PLAYER)
+                handlePlayerEvent(sceneManager, message, dt);
+            else if (message.getEntityType() == EntityType::MISSILE)
+                handleMissileUpdate(sceneManager, message, dt);
+            else if (message.getEntityType() == EntityType::ENEMY)
+                handleEnemyUpdate(sceneManager, message, dt);
+            break;
+        case EntityAction::DELETE:
+            sceneManager.getCurrentScene().removeEntity(e);
+        default:
+            break;
         }
     }
 
