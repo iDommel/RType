@@ -209,8 +209,8 @@ namespace ecs
         auto pos = Component::castComponent<Position>(components[1]);
         Vector3 position = {pos->x, pos->y, pos->z};
 
-        if ((*entity)[IComponent::Type::Animation_3D] != nullptr) {
-            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::Animation_3D]);
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr) {
+            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
             Vector3 size = {model->getSize(), model->getSize(), model->getSize()};
             _animations[anim->getAnimPath()].first->updateModelAnimation(*_models[model->getModelPath()].first, anim->getCurrentFrame());
             Vector3 x = {1.0f, 0.0f, 0.0f};
@@ -243,7 +243,7 @@ namespace ecs
             _models[model->getModelPath()].second++;
         else
             _models[model->getModelPath()] = std::make_pair(std::make_unique<Model>(model->getModelPath(), model->getTexturePath()), 1);
-        if ((*entity)[IComponent::Type::Animation_3D] != nullptr)
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr)
             loadModelAnimation(entity);
         if (boxComponent == nullptr)
             return;
@@ -333,7 +333,7 @@ namespace ecs
 
     void GraphicSystem::loadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::Animation_3D]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations.find(anim->getAnimPath()) != _animations.end())
             _animations[anim->getAnimPath()].second++;
@@ -346,7 +346,7 @@ namespace ecs
 
     void GraphicSystem::unloadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::Animation_3D]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations[anim->getAnimPath()].second < 1)
             _animations[anim->getAnimPath()].second--;

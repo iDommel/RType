@@ -35,7 +35,7 @@ namespace ecs
             SPHERE,
             CUBE,
             GRID,
-            Animation_3D,
+            ANIMATION_3D,
             ANIMATION_2D,
             PARTICLES,
             BOMB,
