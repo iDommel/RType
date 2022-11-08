@@ -90,6 +90,9 @@ namespace ecs
             }
         }
 
+        if (!entity)
+            return;
+
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
 
         switch (key) {
