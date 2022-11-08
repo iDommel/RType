@@ -124,13 +124,14 @@ namespace ecs
         std::cerr << "GameSystem::init" << std::endl;
         sceneManager.addScene(createGameScene(), SceneType::GAME);
         sceneManager.addScene(createSplashScreenScene(), SceneType::SPLASH);
-        // sceneManager.addScene(createMainMenuScene(), SceneType::MAIN_MENU);
         sceneManager.addScene(createLobbyScene(), SceneType::LOBBY);
         sceneManager.addScene(createSettingMenu(), SceneType::SOUND);
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
         sceneManager.addScene(createConnectionScene(), SceneType::CONNECTION);
-        if (Core::networkRole == NetworkRole::CLIENT)
+        if (Core::networkRole == NetworkRole::CLIENT) {
             sceneManager.setCurrentScene(SceneType::SPLASH);
+            createMusic("assets/Music/MenuMusic.ogg");
+        }
         else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
         sceneManager.addScene(createEndMenu(), SceneType::END);
@@ -573,21 +574,6 @@ namespace ecs
         return scene;
     }
 
-    std::unique_ptr<ecs::IScene> GameSystem::createMainMenuScene()
-    {
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenuScene, this), SceneType::MAIN_MENU);
-        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
-        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/Background/Background1.png");
-        std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
-
-        backgroundEntity->addComponent(component2)
-            .addComponent(component);
-        createSceneEvent(playButtonEntity, SceneType::GAME);
-        scene->addEntities({backgroundEntity, playButtonEntity});
-        return scene;
-    }
-
     std::unique_ptr<IScene> GameSystem::createLobbyScene()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
@@ -601,12 +587,13 @@ namespace ecs
 
         backgroundEntity->addComponent(bg)
             .addComponent(bgPos);
+        //createMusic(*scene, "assets/Music/music.ogg");
         createMsgEvent(playButtonEntity, NetworkMessageType::READY);
         createSceneEvent(optionButtonEntity, SceneType::SOUND);
         createSceneEvent(manetteButtonEntity, SceneType::HELP);
         createMsgEvent(quitButtonEntity, NetworkMessageType::DISCONNECTED);
         createSceneEvent(quitButtonEntity, SceneType::NONE);
-        scene->addEntities({backgroundEntity, playButtonEntity, optionButtonEntity, manetteButtonEntity, quitButtonEntity});
+        scene->addEntities({createMusic("assets/Music/music.ogg"), backgroundEntity, playButtonEntity, optionButtonEntity, manetteButtonEntity, quitButtonEntity});
         return scene;
     }
 
@@ -623,13 +610,13 @@ namespace ecs
         std::shared_ptr<Entity> entity8 = createText("Volume", Position(870, 200), 50);
         std::shared_ptr<Entity> entity9 = createText("50", Position(925, 450), 80);
 
+        //createMusic("assets/Music/music.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);
-        createMusic(*scene);
         createSoundEvent(entity3, "-");
         createSoundEvent(entity4, "+");
         createSoundEvent(entity5, "mute");
         createSoundEvent(entity6, "unmute");
-        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        scene->addEntities({createMusic("assets/Music/music.ogg"), entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
         return scene;
     }
 
@@ -646,9 +633,10 @@ namespace ecs
         std::shared_ptr<Entity> entity8 = createText("Down: Down", Position(850, 450), 40);
         std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(850, 500), 40);
 
+        //createMusic("assets/Music/music.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);
 
-        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        scene->addEntities({createMusic("assets/Music/music.ogg") ,entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
         return scene;
     }
 
@@ -685,13 +673,13 @@ namespace ecs
         return cam;
     }
 
-    void GameSystem::createMusic(Scene &scene)
+    std::shared_ptr<IEntity> GameSystem::createMusic(std::string path)
     {
-        std::shared_ptr<Entity> musicEntity = std::make_shared<Entity>();
-        std::shared_ptr<MusicComponent> musicComponent = std::make_shared<MusicComponent>("assets/music.ogg");
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+        std::shared_ptr<MusicComponent> component = std::make_shared<MusicComponent>(path);
 
-        musicEntity->addComponent(musicComponent);
-        scene.addEntities({musicEntity});
+        entity->addComponent(component);
+        return entity;
     }
 
     void GameSystem::activateNetwork()

@@ -120,7 +120,7 @@ namespace ecs
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
-        static void createMusic(Scene &scene);
+        std::shared_ptr<IEntity> createMusic(std::string path);
         /// @brief Adds a entity with a sound component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
         static void createSound(Scene &scene);
