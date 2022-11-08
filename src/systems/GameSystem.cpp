@@ -243,6 +243,13 @@ namespace ecs
                 trajectory->update(position);
             }
             updateEnemies(sceneManager.getCurrentScene(), dt);
+        } else if (Core::networkRole == NetworkRole::CLIENT) {
+            for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
+                auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
+                if (animationComp->getAnimationType() != Animation2D::AnimationType::FIXED) {
+                    animationComp->increment();
+                }
+            }
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
@@ -250,13 +257,6 @@ namespace ecs
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
             *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
             cameraComp->getCamera().update();
-        }
-
-        for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
-            auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
-            if (animationComp->getAnimationType() != Animation2D::AnimationType::FIXED) {
-                animationComp->increment();
-            }
         }
     }
 
@@ -537,6 +537,10 @@ namespace ecs
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
             for (auto &collider : _collideSystem.getColliders(player)) {
                 // TODO: The collision should probably lead to player's death
+                if (collider->hasTag(IEntity::Tags::WALL)) {
+                    sceneManager.getCurrentScene().removeEntity(collider);
+                }
+
                 std::cout << "Hitboxes collide !" << std::endl;
             }
 

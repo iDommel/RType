@@ -66,7 +66,6 @@ namespace ecs
         if (_socket->writeDatagram(data) == -1) {
             throw std::runtime_error("Error sending msg: " + msg.toString());
         }
-        std::cout << "Send msg: " << msg.toString() << std::endl;
     }
 
 }
