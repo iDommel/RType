@@ -135,7 +135,6 @@ namespace ecs
             sceneManager.setCurrentScene(SceneType::LOBBY);
         sceneManager.addScene(createEndMenu(), SceneType::END);
         _collideSystem.init(sceneManager);
-        AudioDevice::getMasterVolume() = 0.5;
         _aiSystem.init(sceneManager);
     }
 
@@ -315,14 +314,24 @@ namespace ecs
                     auto comp2 = sceneManger.getCurrentScene()[IEntity::Tags::TEXT][2];
                     auto text = (*comp2)[IComponent::Type::TEXT];
                     auto value2 = Component::castComponent<String>(text);
-                    if (AudioDevice::getMasterVolume() < 1 && value == "+") {
-                        AudioDevice::getMasterVolume() += 0.1;
-                        AudioDevice::setVolume(AudioDevice::getMasterVolume());
-                        value2->getValue() = std::to_string(int(AudioDevice::getMasterVolume() * 100));
-                    } else if (AudioDevice::getMasterVolume() >= 0.1 && value == "-") {
-                        AudioDevice::getMasterVolume() -= 0.1;
-                        AudioDevice::setVolume(AudioDevice::getMasterVolume());
-                        value2->getValue() = std::to_string(int(AudioDevice::getMasterVolume() * 100));
+                    if ((value == "+" || value == "-") && AudioDevice::isMute) {
+                        AudioDevice::isMute = false;
+                        AudioDevice::setVolume(AudioDevice::oldVolume);
+                    }
+                    if (AudioDevice::masterVolume <= 1 && value == "+") {
+                        AudioDevice::setVolume(AudioDevice::masterVolume + 0.1);
+                        value2->getValue() = std::to_string(int(AudioDevice::masterVolume * 100));
+                    } else if (AudioDevice::masterVolume >= 0.1 && value == "-") {
+                        AudioDevice::setVolume(AudioDevice::masterVolume - 0.1);
+                        value2->getValue() = std::to_string(int(AudioDevice::masterVolume * 100));
+                    }
+                    if (value == "unmute" && AudioDevice::isMute == true) {
+                        std::cerr << "unmute: " << AudioDevice::oldVolume << std::endl;
+                        AudioDevice::isMute = false;
+                        AudioDevice::setVolume(AudioDevice::oldVolume > 1 ? 1 : AudioDevice::oldVolume);
+                    } else if (value == "mute" && AudioDevice::isMute == false) {
+                        AudioDevice::isMute = true;
+                        AudioDevice::setVolume(0);
                     }
                 } },
                                       [](SceneManager &, Vector2 /*mousePosition*/) {},
@@ -615,6 +624,7 @@ namespace ecs
         std::shared_ptr<Entity> entity9 = createText("50", Position(925, 450), 80);
 
         createSceneEvent(entity2, SceneType::PREVIOUS);
+        createMusic(*scene);
         createSoundEvent(entity3, "-");
         createSoundEvent(entity4, "+");
         createSoundEvent(entity5, "mute");

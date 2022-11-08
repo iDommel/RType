@@ -21,9 +21,6 @@ namespace ecs
 
     void AudioSystem::init(SceneManager &sceneManager)
     {
-        if (AudioDevice::isReady()) {
-            AudioDevice::setVolume(100);
-        }
         for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::MUSIC])
                 loadMusic(entity);
