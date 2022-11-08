@@ -91,6 +91,8 @@ namespace ecs
                     displaySprite(e);
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                     displayText(e);
+                for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                    displayCollidable(e);
                 cam->getCamera().endDrawScope();
             }
         } else {
@@ -98,8 +100,6 @@ namespace ecs
                 displaySprite(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                 displayText(e);
-            // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-            //     displayCollidable(e);
         }
         _window->endDraw();
     }
@@ -179,9 +179,9 @@ namespace ecs
             float height = _textures.at(sprite->getValue()).first->getHeight();
 
             Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
-            Rectangle destRec = {p.x, p.y, width * sprite->getScale(), height * sprite->getScale()};
+            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
 
-            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2, height / 2}, sprite->getRotation(), WHITE);
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
         } else {
             float width = _textures.at(sprite->getValue()).first->getWidth();
             float height = _textures.at(sprite->getValue()).first->getHeight();
