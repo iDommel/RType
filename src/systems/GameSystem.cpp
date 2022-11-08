@@ -578,7 +578,7 @@ namespace ecs
             Position pos(enPos->x - SCALE, enPos->y + (SCALE));
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
-                GameSystem::createMissile(sceneManager, Entity::idCounter, pos, enComp->getMissileType());
+                GameSystem::createMissile(sceneManager, Entity::idCounter, pos, enComp->getMissileType(), IEntity::Tags::PLAYER);
                 Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 if (enComp->getNbMissile() > 1) {
@@ -589,7 +589,7 @@ namespace ecs
                     enComp->startShootTimer();
             } else if (enComp->salvoTime() && enComp->isShooting()) {
                 // Shoot a salvo
-                GameSystem::createMissile(sceneManager, Entity::idCounter, pos, enComp->getMissileType());
+                GameSystem::createMissile(sceneManager, Entity::idCounter, pos, enComp->getMissileType(), IEntity::Tags::PLAYER);
                 Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 enComp->getSalvo()++;
@@ -847,7 +847,7 @@ namespace ecs
         scene.addEntity(playerEntity);
     }
 
-    void GameSystem::createMissile(SceneManager &sceneManager, long unsigned int id, Position position, Missile::MissileType type)
+    void GameSystem::createMissile(SceneManager &sceneManager, long unsigned int id, Position position, Missile::MissileType type, IEntity::Tags targetType)
     {
         if (quint8(type) >= quint8(Missile::MissileType::NB_MISSILE) || quint8(type) == quint8(Missile::MissileType::HOMING_MISSILE))
             throw std::invalid_argument("Missile type invalid: " + quint8(type));
@@ -865,7 +865,7 @@ namespace ecs
             if (quint8(type) < quint8(Missile::MissileType::HOMING_MISSILE))
                 trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);
             else
-                trajectory = generateMissileTrajectory(sceneManager, pos);
+                trajectory = generateMissileTrajectory(sceneManager, pos, targetType);
             entity->addComponent(trajectory);
         }
         entity->addComponent(missile)
@@ -875,13 +875,15 @@ namespace ecs
         sceneManager.getCurrentScene().addEntity(entity);
     }
 
-    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager& sceneManager, std::shared_ptr<Position> missilePos)
+    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager& sceneManager, std::shared_ptr<Position> missilePos, IEntity::Tags targetType)
     {
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<Position> target = nullptr;
         float distRef = -1.0f, coeffDirX = .0f, coeffDirY = .0f;
 
-        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
+        if (targetType != IEntity::Tags::PLAYER && targetType != IEntity::Tags::ENEMY)
+            throw std::invalid_argument("Generate missile trajectory: invalid target type");
+        for (auto &entity : sceneManager.getCurrentScene()[targetType]) {
             auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
             float dist = AVector::getDistance2D(*pos, *missilePos);
             if (distRef < 0 || dist < distRef) {

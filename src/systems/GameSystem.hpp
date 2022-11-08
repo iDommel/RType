@@ -106,12 +106,13 @@ namespace ecs
         /// @param id Id of the new missile
         /// @param pos Position of the new missile
         /// @param type Missile type
-        static void createMissile(SceneManager &sceneManager, long unsigned int id, Position pos, Missile::MissileType type);
+        /// @param targetType The type of the target if is a homing missile
+        static void createMissile(SceneManager &sceneManager, long unsigned int id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS);
         /// @brief Generates missile trajectory functions for homing missile
         /// @param sceneManager Scene manager
         /// @param entityPos Position of the new missile
         /// @return Returns a shared pointer on a Trajectory component
-        static std::shared_ptr<Trajectory> generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> entityPos);
+        static std::shared_ptr<Trajectory> generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> entityPos, IEntity::Tags targetType);
 
     signals:
         void writeMsg(const Message &message);
