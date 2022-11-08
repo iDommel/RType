@@ -64,6 +64,13 @@ namespace ecs
             Message msg(EntityAction::UPDATE, (uint64_t)missile->getId(), EntityType::MISSILE, pos->getVector2());
             writeMsg(msg);
         }
+
+        auto enemies = manager.getCurrentScene()[IEntity::Tags::ENEMY];
+        for (auto enemy : enemies) {
+            auto pos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            Message msg(EntityAction::UPDATE, (uint64_t)enemy->getId(), EntityType::ENEMY, pos->getVector2());
+            writeMsg(msg);
+        }
     }
 
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, int id, uint64_t dt)
@@ -113,13 +120,18 @@ namespace ecs
         case KEY_RIGHT_CONTROL:
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
-            else if (keyState == KeyState::RELEASED) {
-                if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000)
-                    return;
+            else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
+                playerComp->startShootCooldownTimer();
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
-                GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos.x, missilePos.y), Missile::MissileType::PL_SIMPLE);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos);
-                writeMsg(msg);
+                if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000) {
+                    GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::P_CONDENSED);
+                    Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_CONDENSED));
+                    writeMsg(msg);
+                } else {
+                    GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::P_SIMPLE);
+                    Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_SIMPLE));
+                    writeMsg(msg);
+                }
             }
             return;
         default:
@@ -225,12 +237,11 @@ namespace ecs
             _playersId[client] = Entity::idCounter++;
             unsigned long int id = _playersId[client];
             emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::playerSpawns.front(), false);
-            GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
             for (auto &player : _senders) {
-                Message msg(EntityAction::CREATE, id, EntityType::PLAYER, (client == player));
-                std::cout << msg.getIsMe() << std::endl;
+                Message msg(EntityAction::CREATE, id, EntityType::PLAYER, GameSystem::playerSpawns.front().getVector2(), (client == player));
                 writeToClient(msg, player);
             }
+            GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
         }
 
         // notify clients game can start

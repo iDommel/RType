@@ -71,6 +71,13 @@ namespace ecs
         void startClock();
         /// @return Returns a reference to the internal clock, if not previously started clock will be null
         QTime &getShootTimer();
+        /// @return Returns a reference to the cooldown timer
+        QTimer &getShootCooldownTimer();
+        /// @return Returns true if the timer has timed out or has not started, false otherwise
+        bool hasCooldownTimedOut() const;
+        /// @brief Starts (or restarts) the shoot cooldown timer
+        /// @param msecs Cooldown time in milliseconds
+        void startShootCooldownTimer(std::chrono::milliseconds msecs = std::chrono::milliseconds(250));
 
         void kill();
         bool isDead() const;
@@ -105,6 +112,7 @@ namespace ecs
         int _speed;
         int _id;
         QTime _shootTimer;
+        QTimer _shootCooldownTimer;
         bool _isDead = false;
         bool _isUp = false;
         bool _isDown = false;

@@ -26,6 +26,7 @@
 #include "ModelAnim.hpp"
 #include "ModelAnimation.hpp"
 #include "ParticleCloud.hpp"
+#include "Animation2D.hpp"
 
 namespace ecs
 {
@@ -84,7 +85,6 @@ namespace ecs
             for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
                 auto camComponent = (*camera)[IComponent::Type::CAMERA_2D];
                 auto cam = Component::castComponent<Camera2DComponent>(camComponent);
-                std::cout << "detected camera" << std::endl;
                 cam->getCamera().beginDrawScope();
 
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
@@ -138,13 +138,13 @@ namespace ecs
             _textures[sprite->getValue()].second++;
         else
             _textures[sprite->getValue()] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
-        if (sprite->getNbFrame() == 0)
-            return;
+        // if (sprite->getNbFrame() == 0)
+        //     return;
 
-        auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
+        // auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
 
-        spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
-        spriteRect->height = _textures[sprite->getValue()].first->getHeight();
+        // spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
+        // spriteRect->height = _textures[sprite->getValue()].first->getHeight();
     }
 
     void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
@@ -164,14 +164,32 @@ namespace ecs
         auto pos = Component::castComponent<Position>(components[1]);
         Vector2 p = {pos->x * horizontalScale, pos->y * verticalScale};
 
-        try {
-            auto rect = (*entity)[IComponent::Type::RECT];
-            auto r = Component::castComponent<Rect>(rect);
+        // try {
+        //     auto rect = (*entity)[IComponent::Type::RECT];
+        //     auto r = Component::castComponent<Rect>(rect);
 
-            _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
-            _textures.at(sprite->getValue()).first->drawRec(p);
-        } catch (std::runtime_error &) {
-            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale() * horizontalScale, WHITE);
+        //     _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
+        //     _textures.at(sprite->getValue()).first->drawRec(p);
+        // } catch (std::runtime_error &) {
+        //     _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
+        // }
+        if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
+            auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
+            float width = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
+            float height = _textures.at(sprite->getValue()).first->getHeight();
+
+            Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
+            Rectangle destRec = {p.x, p.y, width * sprite->getScale(), height * sprite->getScale()};
+
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2, height / 2}, sprite->getRotation(), WHITE);
+        } else {
+            float width = _textures.at(sprite->getValue()).first->getWidth();
+            float height = _textures.at(sprite->getValue()).first->getHeight();
+
+            Rectangle sourceRec = {0, 0, width, height};
+            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
+
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
         }
     }
 
@@ -195,8 +213,8 @@ namespace ecs
         auto pos = Component::castComponent<Position>(components[1]);
         Vector3 position = {pos->x, pos->y, pos->z};
 
-        if ((*entity)[IComponent::Type::ANIMATION] != nullptr) {
-            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr) {
+            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
             Vector3 size = {model->getSize(), model->getSize(), model->getSize()};
             _animations[anim->getAnimPath()].first->updateModelAnimation(*_models[model->getModelPath()].first, anim->getCurrentFrame());
             Vector3 x = {1.0f, 0.0f, 0.0f};
@@ -229,7 +247,7 @@ namespace ecs
             _models[model->getModelPath()].second++;
         else
             _models[model->getModelPath()] = std::make_pair(std::make_unique<Model>(model->getModelPath(), model->getTexturePath()), 1);
-        if ((*entity)[IComponent::Type::ANIMATION] != nullptr)
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr)
             loadModelAnimation(entity);
         if (boxComponent == nullptr)
             return;
@@ -319,7 +337,7 @@ namespace ecs
 
     void GraphicSystem::loadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations.find(anim->getAnimPath()) != _animations.end())
             _animations[anim->getAnimPath()].second++;
@@ -332,7 +350,7 @@ namespace ecs
 
     void GraphicSystem::unloadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations[anim->getAnimPath()].second < 1)
             _animations[anim->getAnimPath()].second--;

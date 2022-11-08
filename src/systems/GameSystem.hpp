@@ -28,7 +28,7 @@
 #define GAME_TILE_SIZE 12
 #define GAME_NB_INDESTRUCTIBLE_WALL 0  //(GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 7
 #define GAME_NB_DESTRUCTIBLE_WALL (GAME_MAP_WIDTH * GAME_MAP_HEIGHT) / 3
-#define SCALE 64
+#define SCALE 64  // Global scale
 
 #define SPLASH_TIMEOUT 3000       // value in milliseconds
 #define CONNECTION_TIMEOUT 30000  // value in milliseconds
@@ -116,7 +116,7 @@ namespace ecs
         std::shared_ptr<Entity> whichWall(std::string mapAround, int x, int y);
         /// @brief Choose what enemy generate
         /// @return Return the good entity or Nullptr if no entity match
-        std::shared_ptr<Entity> whichEnemy(int mobId, int x, int y);
+        std::shared_ptr<Entity> whichEnemy(quint8 mobId, int x, int y);
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
@@ -168,6 +168,7 @@ namespace ecs
 
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
+        void updateEnemies(IScene &scene, uint64_t dt);
 
         int timeElasped = 0;
         static unsigned int nbr_player;
@@ -178,6 +179,7 @@ namespace ecs
         static std::map<Missile::MissileType, std::string> _missilesSprites;
         /// @brief Link a missile type to a pair of trajectories
         static std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> _missilesTrajectories;
+        static std::map<std::string, int> _spriteFrameCounts;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;
