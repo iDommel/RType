@@ -184,13 +184,15 @@ namespace ecs
         std::shared_ptr<Entity> BGentity2 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite2 = std::make_shared<Sprite>("assets/Background/Background2.png", 0.0f, 3.0f);
         std::shared_ptr<Position> BGposition2 = std::make_shared<Position>(0, 0, 0);
-        BGentity2->addComponent(BGsprite2).addComponent(BGposition2);
+        std::shared_ptr<Velocity> Speed1 = std::make_shared<Velocity>(0.3f, 0.0f);
+        BGentity2->addComponent(BGsprite2).addComponent(BGposition2).addComponent(Speed1);
         scene->addEntity(BGentity2);
 
         std::shared_ptr<Entity> BGentity3 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite3 = std::make_shared<Sprite>("assets/Background/Background3.png", 0.0f, 3.0f);
         std::shared_ptr<Position> BGposition3 = std::make_shared<Position>(0, 0, 0);
-        BGentity3->addComponent(BGsprite3).addComponent(BGposition3);
+        std::shared_ptr<Velocity> Speed2 = std::make_shared<Velocity>(0.6f, 0.0f);
+        BGentity3->addComponent(BGsprite3).addComponent(BGposition3).addComponent(Speed2);
         scene->addEntity(BGentity3);
 
         std::ifstream file;
