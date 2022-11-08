@@ -15,6 +15,8 @@ set(CMAKE_AUTOMOC ON)
 # set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_library(${LIBRARY_NAME}
     src/ModelAnimation.cpp
     src/Music.cpp
@@ -66,6 +68,7 @@ add_library(${LIBRARY_NAME}
     src/components/UIComponent.cpp
     src/components/AIPlayer.cpp
     src/components/Trajectory.cpp
+    src/components/Animation2D.cpp
 
     test_functions/TestAnimations2D.cpp
     test_functions/TestCamera2D.cpp

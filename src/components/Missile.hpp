@@ -15,10 +15,11 @@ namespace ecs
     class Missile : public Component
     {
     public:
-        enum class MissileType {
-            PL_SIMPLE,
-            PL_CONDENSED,
-            EN
+        enum class MissileType : qint8 {
+            P_SIMPLE,
+            P_CONDENSED,
+            EN,
+            NB
         };
 
         Missile(MissileType type) : Component(Type::MISSILE), _missileType(type)

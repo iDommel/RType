@@ -24,6 +24,11 @@ namespace ecs
         _isInitialized = true;
     }
 
+    Position::Position(const Vector2 &other) : AVector(Component::Type::POSITION, other.x, other.y, 0)
+    {
+        _isInitialized = true;
+    }
+
     void Position::operator=(const AVector &other)
     {
         x = other.x;

@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <thread>
+#include <regex>
 
 #include "Core.hpp"
 #include "systems/AudioSystem.hpp"
@@ -19,14 +20,39 @@
 #include "systems/ParticlesSystem.hpp"
 #include "systems/NetworkClientSystem.hpp"
 #include "systems/NetworkServerSystem.hpp"
+#include "ArgumentError.hpp"
 
 namespace ecs
 {
+    char **checkArguments(int ac, char **av)
+    {
+        std::regex ipRegex("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
+        std::regex portRegex("^[0-9]{1,5}$");
+        if (ac == 1) {
+            return nullptr;
+        }
+        if (ac == 3) {
+            try {
+                if (std::regex_match(av[1], ipRegex) && std::regex_match(av[2], portRegex)) {
+                    std::stoi(av[2]);
+                    return av;
+                }
+            } catch (std::invalid_argument &e) {
+                std::cerr << "Invalid port" << std::endl;
+                return nullptr;
+            } catch (std::exception &e) {
+                return nullptr;
+            }
+        }
+        std::cerr << "Invalid arguments" << std::endl;
+        return nullptr;
+    }
 
     Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
     {
         networkRole = role;
-
+        _ip = av[1];
+        _port = std::stoi(av[2]);
         // Connect signal doLoop to loop function
         connect(this, &Core::doLoop, this, &Core::loop, Qt::QueuedConnection);
         connect(this, &Core::exitApp, this, &QCoreApplication::quit, Qt::QueuedConnection);
@@ -50,11 +76,11 @@ namespace ecs
                 break;
             case SystemType::NETWORK:
                 if (role == NetworkRole::CLIENT) {
-                    auto client = new NetworkClientSystem(av[1], std::stoi(av[2]));
+                    auto client = new NetworkClientSystem(_ip, _port);
                     _systems[system] = client;
                     connect(this, &QCoreApplication::aboutToQuit, client, &NetworkClientSystem::destroy);
                 } else if (role == NetworkRole::SERVER) {
-                    auto server = new NetworkServerSystem(av[1], std::stoi(av[2]), _sceneManager);
+                    auto server = new NetworkServerSystem(_ip, _port, _sceneManager);
                     _systems[system] = server;
                     connect(server, &NetworkServerSystem::changeScene, this, &Core::onChangeScene);
                 }
@@ -71,6 +97,7 @@ namespace ecs
             if (netSys == nullptr || game == nullptr)
                 return;
             connect(netSys, &NetworkServerSystem::createPlayer, game, &GameSystem::createPlayer);
+            connect(game, &GameSystem::writeMsg, netSys, &NetworkServerSystem::writeMsg);
         } else if (networkRole == NetworkRole::CLIENT) {
             auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
             auto game = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);

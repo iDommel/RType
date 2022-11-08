@@ -47,6 +47,8 @@
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 #include "Trajectory.hpp"
+#include "Animation2D.hpp"
+#include "Enemy.hpp"
 
 namespace ecs
 {
@@ -108,29 +110,36 @@ namespace ecs
     unsigned int GameSystem::nbr_ai;
 
     std::map<Missile::MissileType, std::string> GameSystem::_missilesSprites = {
-        { Missile::MissileType::PL_SIMPLE, "assets/Sprites to work on/Foozle_2DS0011_Void_MainShip/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Big Space Gun.png" },
-        { Missile::MissileType::PL_CONDENSED, "" },
-        { Missile::MissileType::EN, ""}
-    };
+
+        {Missile::MissileType::P_SIMPLE, "assets/Player/BasicMissile.png"},
+        {Missile::MissileType::P_CONDENSED, "assets/Player/ChargedMissile.png"},
+        {Missile::MissileType::EN, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"}};
+    std::map<std::string, int> GameSystem::_spriteFrameCounts =
+        {
+            {"assets/Player/ChargedMissile.png", 5},
+            {"assets/Player/BasicMissile.png", 5},
+            {"assets/Player/MainShipSSP1.png", 4},
+            {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 4},
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        { Missile::MissileType::PL_SIMPLE, {[](float dt) { return dt * dt; }, [](float) { return 0; }} },
-        { Missile::MissileType::PL_CONDENSED, {[](float dt) { return dt * dt; }, [](float) { return 0; }} },
-        { Missile::MissileType::EN, {[](float dt) { return -dt; }, [](float) { return 0; }} }
-    };
+        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::EN, {[](float dt) { return -4 * dt; }, [](float) { return 0; }}}};
 
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
         std::cerr << "GameSystem::init" << std::endl;
-        sceneManager.addScene(createGameScene(), SceneType::GAME);
         sceneManager.addScene(createSplashScreenScene(), SceneType::SPLASH);
+        // sceneManager.addScene(createMainMenuScene(), SceneType::MAIN_MENU);
+        sceneManager.addScene(createConnectionScene(), SceneType::CONNECTION);
         sceneManager.addScene(createLobbyScene(), SceneType::LOBBY);
         sceneManager.addScene(createSettingMenu(), SceneType::SOUND);
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
-        sceneManager.addScene(createConnectionScene(), SceneType::CONNECTION);
+        sceneManager.addScene(createGameScene(), SceneType::GAME);
         if (Core::networkRole == NetworkRole::CLIENT) {
-            sceneManager.setCurrentScene(SceneType::SPLASH);
             createMusic("assets/Music/music.ogg");
+            sceneManager.setCurrentScene(SceneType::SPLASH);
         }
         else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
@@ -228,6 +237,8 @@ namespace ecs
                 sceneManager.setShouldClose(true);
             }
         }
+        if (sceneManager.getCurrentSceneType() != SceneType::GAME)
+            return;
         if (Core::networkRole == NetworkRole::SERVER) {
             updatePlayers(sceneManager, dt);
             for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
@@ -235,6 +246,7 @@ namespace ecs
                 auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
                 trajectory->update(position);
             }
+            updateEnemies(sceneManager.getCurrentScene(), dt);
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
@@ -243,24 +255,13 @@ namespace ecs
             *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
             cameraComp->getCamera().update();
         }
-        // _aiSystem.update(sceneManager, dt);
-        // _collideSystem.update(sceneManager, dt);
 
-        // auto renderables = sceneManager.getCurrentScene()[IEntity::Tags::RENDERABLE_3D];
-
-        // for (auto &renderable : renderables) {
-        //     if (renderable->hasComponent(IComponent::Type::ANIMATION)) {
-        //         auto component = Component::castComponent<ModelAnim>((*renderable)[IComponent::Type::ANIMATION]);
-        //         if (component->getNbFrames() == -1)
-        //             continue;
-        //         component->triggerPlay(renderable);
-        //         if (!component->shouldPlay())
-        //             continue;
-        //         component->getCurrentFrame()++;
-        //         if (component->getCurrentFrame() >= component->getNbFrames())
-        //             component->getCurrentFrame() = 0;
-        //     }
-        // }
+        for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
+            auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
+            if (animationComp->getAnimationType() != Animation2D::AnimationType::FIXED) {
+                animationComp->increment();
+            }
+        }
     }
 
     std::unique_ptr<IScene> GameSystem::createConnectionScene()
@@ -560,6 +561,41 @@ namespace ecs
         }
     }
 
+    void GameSystem::updateEnemies(IScene &scene, uint64_t dt)
+    {
+        auto enemies = scene[IEntity::Tags::ENEMY];
+
+        for (auto &enemy : enemies) {
+            auto enComp = Component::castComponent<Enemy>((*enemy)[IComponent::Type::ENEMY]);
+            auto enPos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            Position pos(enPos->x, enPos->y + (SCALE / 2));
+            if (enComp->isShootTime() && !enComp->isShooting()) {
+                // Shoot
+                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                emit writeMsg(msg);
+                if (enComp->getNbMissile() > 1) {
+                    enComp->setShooting(true);
+                    enComp->startSalvoTimer();
+                    enComp->getSalvo()++;
+                } else
+                    enComp->startShootTimer();
+            } else if (enComp->salvoTime() && enComp->isShooting()) {
+                // Shoot a salvo
+                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                emit writeMsg(msg);
+                enComp->getSalvo()++;
+                if (enComp->getSalvo() == enComp->getNbMissile()) {
+                    enComp->getSalvo() = 0;
+                    enComp->startShootTimer();
+                    enComp->setShooting(false);
+                } else
+                    enComp->startSalvoTimer();
+            }
+        }
+    }
+
     std::unique_ptr<IScene> GameSystem::createSplashScreenScene()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSplashScreenScene, this), SceneType::SPLASH);
@@ -571,6 +607,21 @@ namespace ecs
         std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nCyril Dehaese\nRoxane Baert", Position(10, 450), 15);
 
         scene->addEntities({entity, entity2, entity3, entity4});
+        return scene;
+    }
+
+    std::unique_ptr<ecs::IScene> GameSystem::createMainMenuScene()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenuScene, this), SceneType::MAIN_MENU);
+        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
+        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
+        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/Background/Background1.png");
+        std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
+
+        backgroundEntity->addComponent(component2)
+            .addComponent(component);
+        createSceneEvent(playButtonEntity, SceneType::GAME);
+        scene->addEntities({backgroundEntity, playButtonEntity});
         return scene;
     }
 
@@ -698,7 +749,8 @@ namespace ecs
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyMissile);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
-        std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShip.png", 0.0f, 2.0f);
+        std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShipSSP1.png", 0.0f, 2.0f);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(_spriteFrameCounts["assets/Player/MainShipSSP1.png"], 30, Animation2D::AnimationType::LOOP);
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
         ButtonCallbacks missileCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
@@ -845,24 +897,27 @@ namespace ecs
             playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
             playerEntity->addComponent(playerListener);
         }
-        playerEntity->addComponents({player, playerPos, playerSprite, playerVel, playerHitbox, destruct});
+        playerEntity->addComponents({player, playerPos, playerSprite, anim, playerVel, playerHitbox, destruct});
         scene.addEntity(playerEntity);
     }
 
     void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos, Missile::MissileType type)
     {
+        if (quint8(type) >= quint8(Missile::MissileType::NB))
+            throw std::invalid_argument("Missile type: " + quint8(type));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
-
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type]);
+        int nbFrames = _spriteFrameCounts.find(_missilesSprites[type]) != _spriteFrameCounts.end() ? _spriteFrameCounts[_missilesSprites[type]] : 0;
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], type == Missile::MissileType::EN ? 180.0f : 0.0f, 1.0f);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, type == Missile::MissileType::EN ? Animation2D::AnimationType::LOOP : Animation2D::AnimationType::ONCE);
         std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
             _missilesTrajectories[type].first,
-            _missilesTrajectories[type].second, std::make_shared<Position>(*pos)
-        );
+            _missilesTrajectories[type].second, std::make_shared<Position>(*pos));
 
         entity->addComponent(missile)
             .addComponent(sprite)
+            .addComponent(anim)
             .addComponent(pos)
             .addComponent(trajectory);
         scene.addEntity(entity);

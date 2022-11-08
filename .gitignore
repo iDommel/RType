@@ -14,6 +14,7 @@ Makefile
 log*
 cmake
 x64
+_deps
 
 # Prerequisites
 *.d
@@ -44,5 +45,6 @@ x64
 *.lib
 
 # Executables
+*.exe
 *.out
 *.app

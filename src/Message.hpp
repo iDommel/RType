@@ -112,8 +112,9 @@ namespace ecs
         /// @param action, the action to do, should be CREATE
         /// @param id the id of the entity to create
         /// @param type the type of the entity to create
-        /// @param isMe boolean indicating whether the player belongs to the client
-        Message(EntityAction action, uint64_t id, EntityType type, bool isMe);
+        /// @param pos the position of the entity to create
+        /// @param arg remaining argument depending on entity type
+        Message(EntityAction action, uint64_t id, EntityType type, Vector2 pos, quint8 arg);
 
         /// @brief Constructor for updating an Entity
         /// @param action, the action to do, should be UPDATE
@@ -140,7 +141,7 @@ namespace ecs
         Vector2 getEntityPosition() const;
         std::string getText() const;
         std::pair<QString, unsigned short> getSender() const { return _sender; };
-        bool getIsMe() const { return _isMe; };
+        quint8 getArg() const { return _arg; };
 
         void setSender(std::pair<QString, unsigned short> sender) { _sender = sender; };
 
@@ -163,7 +164,7 @@ namespace ecs
         Vector2 _pos = {-1, -1};
         QString _textMessage = "";
         quint64 _id = 0;
-        bool _isMe = false;
+        quint8 _arg = 0;
         std::pair<QString, unsigned short> _sender;
     };
 }

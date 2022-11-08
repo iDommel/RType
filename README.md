@@ -4,6 +4,16 @@ Repository for the R-Type project
 # Compilation:
     sh install.sh [Optional build type arg=(Release/Debug/ect)]
 
+
+---
+
+    For local compilation during development:
+        cmake -B build
+        cmake --build build
+
+    For debugging:
+        cmake -DCMAKE_BUILD_TYPE=Debug
+        cmake --build build
 # Recompilation (Debug or anything else)
     sh reBuild.sh [Optional rm of tmp files=Re] [Optional build type arg=(Release/Debug/ect)]
 
