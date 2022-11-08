@@ -124,6 +124,15 @@ namespace ecs
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4}};
 
+    std::map<std::string, Animation2D::AnimationType> GameSystem::_spriteAnimType = {
+            {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
+            {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
+            {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
+            {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
+            {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}
+    };
+
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
         {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::P_CONDENSED, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
@@ -837,8 +846,9 @@ namespace ecs
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(position);
         int nbFrames = _spriteFrameCounts.find(_missilesSprites[type]) != _spriteFrameCounts.end() ? _spriteFrameCounts[_missilesSprites[type]] : 0;
+        Animation2D::AnimationType animType = _spriteAnimType.find(_missilesSprites[type]) != _spriteAnimType.end() ? _spriteAnimType[_missilesSprites[type]] : Animation2D::AnimationType::ONCE;
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], 0.0f, 1.0f);
-        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, Animation2D::AnimationType::ONCE);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, animType);
         std::shared_ptr<Trajectory> trajectory = nullptr;
 
         if (Core::networkRole == NetworkRole::SERVER) {

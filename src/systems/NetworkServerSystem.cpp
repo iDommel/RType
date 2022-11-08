@@ -121,7 +121,6 @@ namespace ecs
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
             else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
-                playerComp->startShootCooldownTimer();
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
                 if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000) {
                     GameSystem::createMissile(manager, Entity::idCounter, Position(missilePos), Missile::MissileType::P_CONDENSED);
@@ -132,6 +131,7 @@ namespace ecs
                     Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_SIMPLE));
                     writeMsg(msg);
                 }
+                playerComp->startShootCooldownTimer();
             }
             return;
         default:
