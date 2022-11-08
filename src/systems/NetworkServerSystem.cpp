@@ -90,6 +90,8 @@ namespace ecs
             }
         }
 
+        if (!entity)
+            return;
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
 
         switch (key) {
@@ -195,7 +197,6 @@ namespace ecs
                 _timers.erase(s);
                 if (_sceneManager.getCurrentSceneType() == SceneType::GAME)
                     removePlayer(_playersId[s]);
-                std::cerr << "Removed client" << std::endl;
                 break;
             }
             i++;
@@ -210,8 +211,8 @@ namespace ecs
     void NetworkServerSystem::removePlayer(int id)
     {
         for (auto entity : _sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
-            auto player = Component::castComponent<Player>((*entity)[IComponent::Type::PLAYER]);
-            if (player->getId() == id) {
+            if (entity->getId() == id) {
+                std::cerr << "Removed entity" << std::endl;
                 _sceneManager.getCurrentScene().removeEntity(entity);
                 break;
             }

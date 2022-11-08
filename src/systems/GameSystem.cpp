@@ -866,7 +866,8 @@ namespace ecs
                 trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);
             else
                 trajectory = generateMissileTrajectory(sceneManager, pos, targetType);
-            entity->addComponent(trajectory);
+            if (trajectory != nullptr)
+                entity->addComponent(trajectory);
         }
         entity->addComponent(missile)
             .addComponent(sprite)
@@ -891,6 +892,8 @@ namespace ecs
                 target = pos;
             }
         }
+        if (!target)
+            return nullptr;
         coeffDirX = (target->x + SCALE / 2 - missilePos->x) / distRef;
         coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
         trajectory = std::make_shared<Trajectory>(
