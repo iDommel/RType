@@ -193,6 +193,7 @@ namespace ecs
         /// @brief Link a missile type to a pair of trajectories
         static std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> _missilesTrajectories;
         static std::map<std::string, int> _spriteFrameCounts;
+        static std::map<std::string, float> _spriteRotations;
         static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
 
         CollideSystem _collideSystem;
