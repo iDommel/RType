@@ -29,6 +29,8 @@
 
 namespace ecs
 {
+    float GraphicSystem::horizontalScale;
+    float GraphicSystem::verticalScale;
 
     GraphicSystem::GraphicSystem()
     {
@@ -36,7 +38,7 @@ namespace ecs
     void GraphicSystem::init(SceneManager &sceneManager)
     {
         std::cerr << "GraphicSystem::init" << std::endl;
-        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "R-Type");
+        _window = std::make_unique<Window>(::GetScreenWidth(), ::GetScreenHeight(), FLAG_WINDOW_RESIZABLE, "R-Type");
 
         for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
@@ -50,6 +52,8 @@ namespace ecs
 
     void GraphicSystem::update(SceneManager &sceneManager, uint64_t)
     {
+        horizontalScale = _window->getScreenWidth() / 1920.0f;
+        verticalScale = _window->getScreenHeight() / 1080.0f;
         for (auto &scene : sceneManager.getScenes())
             for (auto &e : (*scene.second)[IEntity::Tags::TEXT])
                 loadText(e);
@@ -158,7 +162,7 @@ namespace ecs
         auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
         auto sprite = Component::castComponent<Sprite>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
-        Vector2 p = {pos->x, pos->y};
+        Vector2 p = {pos->x * horizontalScale, pos->y * verticalScale};
 
         try {
             auto rect = (*entity)[IComponent::Type::RECT];
@@ -167,7 +171,7 @@ namespace ecs
             _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
             _textures.at(sprite->getValue()).first->drawRec(p);
         } catch (std::runtime_error &) {
-            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
+            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale() * horizontalScale, WHITE);
         }
     }
 
