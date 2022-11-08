@@ -130,7 +130,7 @@ namespace ecs
         sceneManager.addScene(createConnectionScene(), SceneType::CONNECTION);
         if (Core::networkRole == NetworkRole::CLIENT) {
             sceneManager.setCurrentScene(SceneType::SPLASH);
-            createMusic("assets/Music/MenuMusic.ogg");
+            createMusic("assets/Music/music.ogg");
         }
         else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
@@ -587,7 +587,6 @@ namespace ecs
 
         backgroundEntity->addComponent(bg)
             .addComponent(bgPos);
-        //createMusic(*scene, "assets/Music/music.ogg");
         createMsgEvent(playButtonEntity, NetworkMessageType::READY);
         createSceneEvent(optionButtonEntity, SceneType::SOUND);
         createSceneEvent(manetteButtonEntity, SceneType::HELP);
@@ -610,7 +609,6 @@ namespace ecs
         std::shared_ptr<Entity> entity8 = createText("Volume", Position(870, 200), 50);
         std::shared_ptr<Entity> entity9 = createText("50", Position(925, 450), 80);
 
-        //createMusic("assets/Music/music.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);
         createSoundEvent(entity3, "-");
         createSoundEvent(entity4, "+");
@@ -633,7 +631,6 @@ namespace ecs
         std::shared_ptr<Entity> entity8 = createText("Down: Down", Position(850, 450), 40);
         std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(850, 500), 40);
 
-        //createMusic("assets/Music/music.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);
 
         scene->addEntities({createMusic("assets/Music/music.ogg") ,entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
