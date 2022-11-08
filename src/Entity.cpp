@@ -61,7 +61,7 @@ namespace ecs
         {Entity::Tags::TRAJECTORY,
          {{IComponent::Type::TRAJECTORY, IComponent::Type::POSITION}}},
         {Entity::Tags::MISSILE,
-         {{IComponent::Type::MISSILE, IComponent::Type::POSITION, IComponent::Type::SPRITE, IComponent::Type::TRAJECTORY}}},
+         {{IComponent::Type::MISSILE, IComponent::Type::POSITION, IComponent::Type::SPRITE}}},
         {Entity::Tags::ENEMY,
          {{IComponent::Type::ENEMY, IComponent::Type::POSITION, IComponent::Type::SPRITE, IComponent::Type::TRAJECTORY}}},
         {Entity::Tags::AI,

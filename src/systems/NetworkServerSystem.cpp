@@ -124,11 +124,11 @@ namespace ecs
                 playerComp->startShootCooldownTimer();
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
                 if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000) {
-                    GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::P_CONDENSED);
+                    GameSystem::createMissile(manager, Entity::idCounter, Position(missilePos), Missile::MissileType::P_CONDENSED);
                     Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_CONDENSED));
                     writeMsg(msg);
                 } else {
-                    GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::P_SIMPLE);
+                    GameSystem::createMissile(manager, Entity::idCounter, Position(missilePos), Missile::MissileType::P_SIMPLE);
                     Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_SIMPLE));
                     writeMsg(msg);
                 }

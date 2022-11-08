@@ -88,7 +88,7 @@ namespace ecs
                     emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
                     id, Position(message.getEntityPosition()), bool(message.getArg()));
                 } else if (message.getEntityType() == EntityType::MISSILE) {
-                    GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
+                    GameSystem::createMissile(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
                 }
                 break;
             case EntityAction::UPDATE:

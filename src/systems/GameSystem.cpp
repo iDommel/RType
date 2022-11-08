@@ -46,7 +46,6 @@
 #include "ParticleCloud.hpp"
 #include "ModelAnim.hpp"
 #include "Window.hpp"
-#include "Trajectory.hpp"
 #include "Animation2D.hpp"
 #include "Enemy.hpp"
 
@@ -113,19 +112,23 @@ namespace ecs
 
         {Missile::MissileType::P_SIMPLE, "assets/Player/BasicMissile.png"},
         {Missile::MissileType::P_CONDENSED, "assets/Player/ChargedMissile.png"},
-        {Missile::MissileType::EN, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"}};
+        {Missile::MissileType::E_CLASSIC, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"},
+        {Missile::MissileType::E_SINUSOIDAL, "assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png"},
+        {Missile::MissileType::E_HOMING_MISSILE, "assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png"}};
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
         {
             {"assets/Player/ChargedMissile.png", 5},
             {"assets/Player/BasicMissile.png", 5},
             {"assets/Player/MainShipSSP1.png", 4},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 4},
+            {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
         {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::P_CONDENSED, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::EN, {[](float dt) { return -4 * dt; }, [](float) { return 0; }}}};
+        {Missile::MissileType::E_CLASSIC, {[](float dt) { return -4 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_SINUSOIDAL, {[](float dt) { return -dt; }, [](float a) { return std::sin(a / 10) * 50; }}}};
 
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
@@ -242,7 +245,7 @@ namespace ecs
                 auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
                 trajectory->update(position);
             }
-            updateEnemies(sceneManager.getCurrentScene(), dt);
+            updateEnemies(sceneManager, dt);
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
@@ -547,9 +550,9 @@ namespace ecs
         }
     }
 
-    void GameSystem::updateEnemies(IScene &scene, uint64_t dt)
+    void GameSystem::updateEnemies(SceneManager &sceneManager, uint64_t dt)
     {
-        auto enemies = scene[IEntity::Tags::ENEMY];
+        auto enemies = sceneManager.getCurrentScene()[IEntity::Tags::ENEMY];
 
         for (auto &enemy : enemies) {
             auto enComp = Component::castComponent<Enemy>((*enemy)[IComponent::Type::ENEMY]);
@@ -557,8 +560,8 @@ namespace ecs
             Position pos(enPos->x, enPos->y + (SCALE / 2));
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
-                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                GameSystem::createMissile(sceneManager, Entity::idCounter, pos, enComp->getMissileType());
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 if (enComp->getNbMissile() > 1) {
                     enComp->setShooting(true);
@@ -568,8 +571,8 @@ namespace ecs
                     enComp->startShootTimer();
             } else if (enComp->salvoTime() && enComp->isShooting()) {
                 // Shoot a salvo
-                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                GameSystem::createMissile(sceneManager, Entity::idCounter, pos, enComp->getMissileType());
+                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 enComp->getSalvo()++;
                 if (enComp->getSalvo() == enComp->getNbMissile()) {
@@ -826,26 +829,54 @@ namespace ecs
         scene.addEntity(playerEntity);
     }
 
-    void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos, Missile::MissileType type)
+    void GameSystem::createMissile(SceneManager &sceneManager, long unsigned int id, Position position, Missile::MissileType type)
     {
-        if (quint8(type) >= quint8(Missile::MissileType::NB))
-            throw std::invalid_argument("Missile type: " + quint8(type));
+        if (quint8(type) >= quint8(Missile::MissileType::NB_MISSILE) || quint8(type) == quint8(Missile::MissileType::HOMING_MISSILE))
+            throw std::invalid_argument("Missile type invalid: " + quint8(type));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
-        std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
+        std::shared_ptr<Position> pos = std::make_shared<Position>(position);
         int nbFrames = _spriteFrameCounts.find(_missilesSprites[type]) != _spriteFrameCounts.end() ? _spriteFrameCounts[_missilesSprites[type]] : 0;
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], type == Missile::MissileType::EN ? 180.0f : 0.0f, 1.0f);
-        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, type == Missile::MissileType::EN ? Animation2D::AnimationType::LOOP : Animation2D::AnimationType::ONCE);
-        std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
-            _missilesTrajectories[type].first,
-            _missilesTrajectories[type].second, std::make_shared<Position>(*pos));
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], 0.0f, 1.0f);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, Animation2D::AnimationType::ONCE);
+        std::shared_ptr<Trajectory> trajectory = nullptr;
 
+        if (Core::networkRole == NetworkRole::SERVER) {
+            if (quint8(type) < quint8(Missile::MissileType::HOMING_MISSILE))
+                trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);
+            else
+                trajectory = generateMissileTrajectory(sceneManager, pos);
+            entity->addComponent(trajectory);
+        }
         entity->addComponent(missile)
             .addComponent(sprite)
             .addComponent(anim)
-            .addComponent(pos)
-            .addComponent(trajectory);
-        scene.addEntity(entity);
+            .addComponent(pos);
+        sceneManager.getCurrentScene().addEntity(entity);
+    }
+
+    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager& sceneManager, std::shared_ptr<Position> missilePos)
+    {
+        std::shared_ptr<Trajectory> trajectory = nullptr;
+        std::shared_ptr<Position> target = nullptr;
+        float distRef = -1.0f, coeffDirX = .0f, coeffDirY = .0f;
+
+        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
+            auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            float dist = AVector::getDistance2D(*pos, *missilePos);
+            if (distRef < 0 || dist < distRef) {
+                distRef = dist;
+                target = pos;
+            }
+        }
+        coeffDirX = (target->x + SCALE / 2 - missilePos->x) / distRef;
+        coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
+        trajectory = std::make_shared<Trajectory>(
+            [ coeffDirX ](float t) { return t * 4 * coeffDirX; },
+            [ coeffDirY ](float t) { return t * 4 * coeffDirY; },
+            missilePos
+        );
+        return trajectory;
     }
 
     void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene)

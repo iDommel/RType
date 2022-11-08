@@ -18,8 +18,11 @@ namespace ecs
         enum class MissileType : qint8 {
             P_SIMPLE,
             P_CONDENSED,
-            EN,
-            NB
+            E_SINUSOIDAL,
+            E_CLASSIC,
+            HOMING_MISSILE, /// Separation for missile type: after missile have trajectory generated toward an entity
+            E_HOMING_MISSILE,
+            NB_MISSILE /// End of missile types
         };
 
         Missile(MissileType type) : Component(Type::MISSILE), _missileType(type)

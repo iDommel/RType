@@ -21,6 +21,7 @@
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
 #include "Missile.hpp"
+#include "Trajectory.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
@@ -99,7 +100,17 @@ namespace ecs
 
         static std::vector<Position> playerSpawns;
 
-        static void createMissile(IScene &scene, long unsigned int id, Position pos, Missile::MissileType type);
+        /// @brief Missile factory
+        /// @param sceneManager Scene manager
+        /// @param id Id of the new missile
+        /// @param pos Position of the new missile
+        /// @param type Missile type
+        static void createMissile(SceneManager &sceneManager, long unsigned int id, Position pos, Missile::MissileType type);
+        /// @brief Generates missile trajectory functions for homing missile
+        /// @param sceneManager Scene manager
+        /// @param entityPos Position of the new missile
+        /// @return Returns a shared pointer on a Trajectory component
+        static std::shared_ptr<Trajectory> generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> entityPos);
 
     signals:
         void writeMsg(const Message &message);
@@ -168,7 +179,8 @@ namespace ecs
 
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
-        void updateEnemies(IScene &scene, uint64_t dt);
+        void updateEnemies(SceneManager &scene, uint64_t dt);
+
 
         int timeElasped = 0;
         static unsigned int nbr_player;

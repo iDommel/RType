@@ -72,6 +72,8 @@ namespace ecs {
         uint8_t &getSalvo() { return _salvo; }
         uint8_t getNbMissile() const { return _missileNb; }
 
+        Missile::MissileType getMissileType() const { return _missile; }
+
     private:
         EnemyType _enemyType;
         Missile::MissileType _missile;
