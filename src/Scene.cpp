@@ -25,6 +25,7 @@ namespace ecs
         }
         if (_addEntityCallback)
             _addEntityCallback(entity, _type);
+        _entities.push_back(entity);
         return *this;
     }
 
@@ -34,6 +35,7 @@ namespace ecs
             for (auto &tag : entity->getTags()) {
                 _taggedEntities[tag].push_back(entity);
             }
+            _entities.push_back(entity);
             if (_addEntityCallback)
                 _addEntityCallback(entity, _type);
         }
@@ -49,6 +51,7 @@ namespace ecs
             if (it != _taggedEntities[tag].end())
                 _taggedEntities[tag].erase(it);
         }
+        _entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
         if (_removeEntityCallback)
             _removeEntityCallback(entity);
     }
@@ -66,6 +69,12 @@ namespace ecs
             taggedEntities[tag] = _taggedEntities[tag];
         }
         return taggedEntities;
+    }
+
+    std::vector<std::shared_ptr<IEntity>> Scene::getAllEntities()
+    {
+        std::cerr << "getAllEntities" << std::endl;
+        return _entities;
     }
 
     void Scene::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback)

@@ -207,6 +207,28 @@ namespace ecs
         }
     }
 
+    void GameSystem::purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> camPos)
+    {
+        const int validBoundingZone = 100;
+        static uint64_t lastPurge = 0;
+        if ((lastPurge += dt) < 100) {
+            std::cerr << "lastPurge: " << lastPurge << std::endl;
+            return;
+        } else {
+            lastPurge = 0;
+        }
+        auto rect = Rect(camPos->x - validBoundingZone,
+            camPos->y - validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,
+            camPos->y + 1080 + validBoundingZone);
+
+        for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
+            auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            if (pos && !(rect.contains(pos->x, pos->y)))
+                sceneManager.getCurrentScene().removeEntity(entity);
+        }
+    }
+
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
@@ -232,6 +254,7 @@ namespace ecs
                 auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
                 trajectory->update(position);
             }
+            _collideSystem.update(sceneManager, dt);
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
@@ -239,9 +262,10 @@ namespace ecs
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
             *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
             cameraComp->getCamera().update();
+            if (Core::networkRole == NetworkRole::SERVER)
+                purgeAroundCameraEntities(sceneManager, dt, pos);
         }
         // _aiSystem.update(sceneManager, dt);
-        // _collideSystem.update(sceneManager, dt);
 
         // auto renderables = sceneManager.getCurrentScene()[IEntity::Tags::RENDERABLE_3D];
 
@@ -796,6 +820,8 @@ namespace ecs
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type]);
+        Rectangle rect = {pos->x + SCALE / 2, pos->y + SCALE / 2, SCALE, SCALE};
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
         // TODO: different for enemy missile
         std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(
             _missilesTrajectories[type].first,
@@ -805,7 +831,8 @@ namespace ecs
         entity->addComponent(missile)
             .addComponent(sprite)
             .addComponent(pos)
-            .addComponent(trajectory);
+            .addComponent(trajectory)
+            .addComponent(hitbox);
         scene.addEntity(entity);
     }
 

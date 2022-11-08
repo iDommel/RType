@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "~/.conan/data/**"
+                "~/.conan/data/raylib/4.0.0/_/_/source/source_subfolder/src/**",
+                "~/.conan/data/qt/5.15.2/_/_/source/qt5/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -53,6 +53,13 @@ namespace ecs
         std::map<IEntity::Tags, std::vector<std::shared_ptr<IEntity>>> getTaggedEntities(std::vector<IEntity::Tags> tags);
 
         /**
+         * @brief Get every entity in the scene
+         * @return Returns a vector of entities
+         */
+        std::vector<std::shared_ptr<IEntity>> getAllEntities();
+
+
+        /**
          * @brief Set the callback function to call when an entity is added
          * @param callback Callback function
          */
@@ -80,6 +87,8 @@ namespace ecs
         SceneType _type;
         /// @brief Entities sorted by tags
         std::map<IEntity::Tags, std::vector<std::shared_ptr<IEntity>>> _taggedEntities;
+        /// @brief All entities
+        std::vector<std::shared_ptr<IEntity>> _entities;
         /// @brief Scene's init function; called by GameSystem::init & Scene::reloadScene
         std::function<std::unique_ptr<IScene>()> _initFunc;
         /// @brief Callback when an entity is added to the scene
