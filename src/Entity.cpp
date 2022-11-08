@@ -65,7 +65,9 @@ namespace ecs
         {Entity::Tags::ENEMY,
          {{IComponent::Type::ENEMY, IComponent::Type::POSITION, IComponent::Type::SPRITE, IComponent::Type::TRAJECTORY}}},
         {Entity::Tags::AI,
-         {{IComponent::Type::VELOCITY, IComponent::Type::AI, IComponent::Type::POSITION}}}};
+         {{IComponent::Type::VELOCITY, IComponent::Type::AI, IComponent::Type::POSITION}}},
+        {Entity::Tags::ANIMATED_2D,
+         {{IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::ANIMATION_2D}}}};
 
     Entity::Entity() : _id(idCounter++) {}
 
@@ -78,17 +80,13 @@ namespace ecs
         IComponent::Type type = component->getType();
         _componentsType.push_back(type);
         _components[type] = component;
-        for (auto &tag : entityTags)
-        {
+        for (auto &tag : entityTags) {
             if (this->hasTag(tag.first))
                 continue;
-            for (auto &vec : tag.second)
-            {
+            for (auto &vec : tag.second) {
                 notFound = false;
-                for (auto &ctag : vec)
-                {
-                    if (std::find(_componentsType.begin(), _componentsType.end(), ctag) == _componentsType.end())
-                    {
+                for (auto &ctag : vec) {
+                    if (std::find(_componentsType.begin(), _componentsType.end(), ctag) == _componentsType.end()) {
                         notFound = true;
                         break;
                     }
@@ -128,8 +126,7 @@ namespace ecs
     {
         std::vector<std::shared_ptr<IComponent>> res;
 
-        for (auto &c : components)
-        {
+        for (auto &c : components) {
             if (_components.find(c) == _components.end())
                 throw std::invalid_argument("Entity: Component type not found");
             res.push_back(_components[c]);

@@ -16,8 +16,8 @@ namespace ecs
     {
     public:
         enum class MissileType : qint8 {
-            PL_SIMPLE,
-            PL_CONDENSED,
+            P_SIMPLE,
+            P_CONDENSED,
             EN,
             NB
         };

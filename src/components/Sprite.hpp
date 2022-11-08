@@ -21,6 +21,7 @@ namespace ecs
         /**
          * @brief Construct a new Sprite object
          * @param str Filepath to the texture
+         * @param rotation rotation in degrees
          * @param nbFrame number of frames in the picture, default is 0 (means no rect update)
          */
         Sprite(std::string str, float rotation = 0, float scale = 1.0, int nbFrame = 0)

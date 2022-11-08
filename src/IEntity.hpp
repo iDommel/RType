@@ -33,6 +33,7 @@ namespace ecs
             BONUS,
             CAMERA_2D,
             CAMERA_3D,
+            ANIMATED_2D,
             BOMB,
             TIMED,
             DESTRUCTIBLE,
