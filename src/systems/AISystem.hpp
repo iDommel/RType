@@ -34,8 +34,8 @@ namespace ecs
         void update(SceneManager &manager, uint64_t deltaTime) final;
         void destroy() final;
 
-        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene) final;
-        void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
+        void onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene) final;
+        void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene) final;
 
     private:
         void loadMap(AIPlayer &ai, std::array<std::array<char, 5>, 5> &map, Position &pos, std::shared_ptr<IEntity> me);

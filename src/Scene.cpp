@@ -24,7 +24,7 @@ namespace ecs
             _taggedEntities[tag].push_back(entity);
         }
         if (_addEntityCallback)
-            _addEntityCallback(entity, _type);
+            _addEntityCallback(entity, *this);
         return *this;
     }
 
@@ -35,7 +35,7 @@ namespace ecs
                 _taggedEntities[tag].push_back(entity);
             }
             if (_addEntityCallback)
-                _addEntityCallback(entity, _type);
+                _addEntityCallback(entity, *this);
         }
         return *this;
     }
@@ -50,7 +50,7 @@ namespace ecs
                 _taggedEntities[tag].erase(it);
         }
         if (_removeEntityCallback)
-            _removeEntityCallback(entity);
+            _removeEntityCallback(entity, *this);
     }
 
     std::unique_ptr<IScene> Scene::initScene()
@@ -68,12 +68,12 @@ namespace ecs
         return taggedEntities;
     }
 
-    void Scene::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback)
+    void Scene::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback)
     {
         _addEntityCallback = callback;
     }
 
-    void Scene::setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback)
+    void Scene::setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback)
     {
         _removeEntityCallback = callback;
     }

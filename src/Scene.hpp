@@ -56,17 +56,17 @@ namespace ecs
          * @brief Set the callback function to call when an entity is added
          * @param callback Callback function
          */
-        void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback);
+        void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback);
 
         /**
          * @brief Set the callback function to call when an entity is removed
          * @param callback Callback function
          */
-        void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback);
+        void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback);
 
-        std::function<void(std::shared_ptr<IEntity>, SceneType)> getAddEntityCallback() { return _addEntityCallback; };
+        std::function<void(std::shared_ptr<IEntity>, IScene &)> getAddEntityCallback() { return _addEntityCallback; };
 
-        std::function<void(std::shared_ptr<IEntity>)> getRemoveEntityCallback() { return _removeEntityCallback; };
+        std::function<void(std::shared_ptr<IEntity>, IScene &)> getRemoveEntityCallback() { return _removeEntityCallback; };
 
         /**
          * @brief retrieves the entities for a given tag
@@ -76,6 +76,8 @@ namespace ecs
          */
         std::vector<std::shared_ptr<IEntity>> &operator[](IEntity::Tags tag);
 
+        SceneType getSceneType() const { return _type; }
+
     protected:
         SceneType _type;
         /// @brief Entities sorted by tags
@@ -83,9 +85,9 @@ namespace ecs
         /// @brief Scene's init function; called by GameSystem::init & Scene::reloadScene
         std::function<std::unique_ptr<IScene>()> _initFunc;
         /// @brief Callback when an entity is added to the scene
-        std::function<void(std::shared_ptr<IEntity>, SceneType)> _addEntityCallback;
+        std::function<void(std::shared_ptr<IEntity>, IScene &)> _addEntityCallback;
         /// @brief Callback when an entity is removed from the scene
-        std::function<void(std::shared_ptr<IEntity>)> _removeEntityCallback;
+        std::function<void(std::shared_ptr<IEntity>, IScene &)> _removeEntityCallback;
     };
 }
 

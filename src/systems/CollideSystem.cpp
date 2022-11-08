@@ -75,7 +75,7 @@ namespace ecs
         _collidables2D.clear();
     }
 
-    void CollideSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType)
+    void CollideSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &)
     {
         std::shared_ptr<ecs::Hitbox> hitbox = nullptr;
         std::shared_ptr<ecs::IComponent> maybeCollider = nullptr;
@@ -89,7 +89,7 @@ namespace ecs
             _collidables2D.push_back(std::make_pair(entity, hitbox));
     }
 
-    void CollideSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void CollideSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &)
     {
         for (auto it = _collidables3D.begin(); it != _collidables3D.end(); ++it)
             if (it->first == entity) {

@@ -142,6 +142,13 @@ namespace ecs
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
         _aiSystem.init(sceneManager);
+        setAddNRmEntityCallbacks();
+    }
+
+    void GameSystem::setAddNRmEntityCallbacks()
+    {
+        // TODO: entity id ???
+        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/jump.wav", 0);
     }
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
@@ -655,6 +662,15 @@ namespace ecs
         scene.addEntities({musicEntity});
     }
 
+    void GameSystem::createSound(IScene &scene, const std::string &file, long unsigned int id)
+    {
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
+        std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(file);
+
+        entity->addComponent(sound);
+        scene.addEntity(entity);
+    }
+
     void GameSystem::activateNetwork()
     {
         _networkActivated = true;
@@ -848,14 +864,24 @@ namespace ecs
         scene.addEntity(entity);
     }
 
-    void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene)
+    void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene)
     {
+        for (auto tag : entity->getTags()) {
+            if (_onEntityAddedCallbacks.find(tag) != _onEntityAddedCallbacks.end()) {
+                _onEntityAddedCallbacks[tag](scene);
+            }
+        }
         _collideSystem.onEntityAdded(entity, scene);
     }
 
-    void GameSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void GameSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene)
     {
-        _collideSystem.onEntityRemoved(entity);
+        for (auto tag : entity->getTags()) {
+            if (_onEntityRemovedCallbacks.find(tag) != _onEntityRemovedCallbacks.end()) {
+                _onEntityRemovedCallbacks[tag](scene);
+            }
+        }
+        _collideSystem.onEntityRemoved(entity, scene);
         if (entity->hasComponent(IComponent::Type::PLAYER))
             nbr_player -= 1;
         else if (entity->hasComponent(IComponent::Type::AI))

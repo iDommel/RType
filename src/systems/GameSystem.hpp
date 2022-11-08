@@ -60,12 +60,12 @@ namespace ecs
          * @param entity The Entity that was added
          * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene) final;
+        void onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene) final;
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
          */
-        void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
+        void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene) final;
 
         static const std::string getBinding(int keyboard);
 
@@ -123,7 +123,9 @@ namespace ecs
         static void createMusic(Scene &scene);
         /// @brief Adds a entity with a sound component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
-        static void createSound(Scene &scene);
+        /// @param soundFile Filepath of the sound to be created
+        /// @param id ID of the new entity
+        static void createSound(IScene &scene, const std::string &soundFile, unsigned long int id);
         /// @brief Create an image entity
         /// @param path Path to the image to load
         /// @param position Position of the Image
@@ -169,6 +171,10 @@ namespace ecs
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
         void updateEnemies(IScene &scene, uint64_t dt);
+
+        void setAddNRmEntityCallbacks();
+        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityAddedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityRemovedCallbacks;
 
         int timeElasped = 0;
         static unsigned int nbr_player;
