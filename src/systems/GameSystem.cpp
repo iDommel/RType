@@ -131,6 +131,7 @@ namespace ecs
             sceneManager.setCurrentScene(SceneType::SPLASH);
         else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
+        sceneManager.addScene(createEndScene(), SceneType::END);
         _collideSystem.init(sceneManager);
         AudioDevice::getMasterVolume() = 0.5;
         _aiSystem.init(sceneManager);
@@ -226,7 +227,8 @@ namespace ecs
             }
         }
         if (Core::networkRole == NetworkRole::SERVER) {
-            updatePlayers(sceneManager, dt);
+            if (sceneManager.getCurrentSceneType() == SceneType::GAME)
+                updatePlayers(sceneManager, dt);
             for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
                 auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
                 auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
@@ -258,6 +260,21 @@ namespace ecs
         //             component->getCurrentFrame() = 0;
         //     }
         // }
+    }
+
+    std::unique_ptr<IScene> GameSystem::createEndScene()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndScene, this), SceneType::END);
+        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
+        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
+        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/Background/Background1.png");
+        std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
+
+        backgroundEntity->addComponent(component2)
+            .addComponent(component);
+        createSceneEvent(playButtonEntity, SceneType::GAME);
+        scene->addEntities({backgroundEntity, playButtonEntity});
+        return scene;
     }
 
     std::unique_ptr<IScene> GameSystem::createConnectionScene()
@@ -544,6 +561,10 @@ namespace ecs
             splitVel.x = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
+        }
+        if (players.size() == 0) {
+            sceneManager.setCurrentScene(SceneType::END);
+            std::cerr << "No more players left" << std::endl;
         }
     }
 
