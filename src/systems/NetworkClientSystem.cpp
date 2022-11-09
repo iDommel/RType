@@ -63,7 +63,7 @@ namespace ecs
         _msgQueue.clear();
     }
 
-    void NetworkClientSystem::removePlayer(long unsigned int id, SceneManager &sceneManager)
+    void NetworkClientSystem::removePlayer(QUuid id, SceneManager &sceneManager)
     {
         for (auto &player : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
             if (player->getId() == id) {
@@ -74,7 +74,7 @@ namespace ecs
         return;
     }
 
-    void NetworkClientSystem::removeEntity(long unsigned int id, SceneManager &sceneManager)
+    void NetworkClientSystem::removeEntity(QUuid id, SceneManager &sceneManager)
     {
         auto entity = sceneManager.getCurrentScene().getEntityById(id);
         if (entity) {
@@ -85,7 +85,7 @@ namespace ecs
 
     void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager, uint64_t dt)
     {
-        long unsigned int id = message.getEntityId();
+        QUuid id = message.getEntityId();
         std::shared_ptr<IEntity> e = sceneManager.getCurrentScene().getEntityById(id);
 
         switch (message.getEntityAction()) {
@@ -95,6 +95,9 @@ namespace ecs
                                   id, Position(message.getEntityPosition()), bool(message.getArg()));
             } else if (message.getEntityType() == EntityType::MISSILE) {
                 GameSystem::createMissile(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
+            } else if (message.getEntityType() == EntityType::ENEMY) {
+                Vector2 pos = message.getEntityPosition();
+                GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
             }
             break;
         case EntityAction::UPDATE:

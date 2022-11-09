@@ -15,6 +15,7 @@ log*
 cmake
 x64
 _deps
+jump.wav
 
 # Prerequisites
 *.d

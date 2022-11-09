@@ -60,13 +60,13 @@ namespace ecs
          * @param entity Entity to load
          * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene);
+        void onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene);
 
         /**
          * @brief Call each onEntityRemoved system function, set as removeEntity callback
          * @param entity Entity to unload
          */
-        void onEntityRemoved(std::shared_ptr<IEntity> entity);
+        void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene);
 
         /// @brief Network role: Client or Server
         static NetworkRole networkRole;

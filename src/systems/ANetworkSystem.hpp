@@ -48,12 +48,12 @@ namespace ecs
          * @param entity The Entity that was added
          * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene);
+        void onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene);
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
          */
-        void onEntityRemoved(std::shared_ptr<IEntity> entity);
+        void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene);
 
     protected:
         QHostAddress _serverAddr;

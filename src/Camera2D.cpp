@@ -11,13 +11,6 @@
 #include <iostream>
 #include "Camera2D.hpp"
 
-static int getNewId(void)
-{
-    static int idCounter = 0;
-
-    return (idCounter++);
-}
-
 namespace ecs
 {
     Camera2D::Camera2D(Vector2 target)
@@ -27,7 +20,6 @@ namespace ecs
         _camera->rotation = 0.0f;
         _camera->target = target;
         _camera->zoom = 1.0f;
-        _id = getNewId();
     }
 
     Camera2D::Camera2D(std::shared_ptr<Position> target) : _targetSnap(target), _snapMode(true)
@@ -38,7 +30,6 @@ namespace ecs
         _camera->rotation = 0.0f;
         _camera->target = pos;
         _camera->zoom = 1.0f;
-        _id = getNewId();
     }
 
     void Camera2D::setSnapMode(bool snapMode)
@@ -57,11 +48,6 @@ namespace ecs
         _snapMode = true;
         _targetSnap = target;
         _camera->target = pos;
-    }
-
-    int Camera2D::getId(void) const
-    {
-        return _id;
     }
 
     void Camera2D::update(void)

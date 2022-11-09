@@ -48,17 +48,17 @@ namespace ecs
          * @brief Set the callback function to call when an entity is added
          * @param callback Callback function
          */
-        virtual void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback) = 0;
+        virtual void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback) = 0;
 
         /**
          * @brief Set the callback function to call when an entity is removed
          * @param callback Callback function
          */
-        virtual void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback) = 0;
+        virtual void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback) = 0;
 
-        virtual std::function<void(std::shared_ptr<IEntity>, SceneType)> getAddEntityCallback() = 0;
+        virtual std::function<void(std::shared_ptr<IEntity>, IScene &)> getAddEntityCallback() = 0;
 
-        virtual std::function<void(std::shared_ptr<IEntity>)> getRemoveEntityCallback() = 0;
+        virtual std::function<void(std::shared_ptr<IEntity>, IScene &)> getRemoveEntityCallback() = 0;
         /**
          * @brief retrieves the entities for a given tag
          *
@@ -67,12 +67,13 @@ namespace ecs
          */
         virtual std::vector<std::shared_ptr<IEntity>> &operator[](IEntity::Tags tag) = 0;
 
+        virtual SceneType getSceneType() const = 0;
         /// @brief Gets all entites, regardless of tag
         virtual std::vector<std::shared_ptr<IEntity>> getAllEntities() = 0;
 
         /// @brief Finds an entity by looking at it's ID
         /// @param id ID of the entity to find
-        virtual std::shared_ptr<IEntity> getEntityById(long unsigned int id) = 0;
+        virtual std::shared_ptr<IEntity> getEntityById(QUuid id) = 0;
     };
 }
 
