@@ -120,7 +120,7 @@ namespace ecs
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
-        std::shared_ptr<IEntity> createMusic(std::string path);
+        void createMusic(IScene &scene, std::string path);
         /// @brief Adds a entity with a sound component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
         static void createSound(Scene &scene);
@@ -136,7 +136,7 @@ namespace ecs
         /// @param position Initial position of the text
         /// @param fontSize font size of the text
         /// @return Returns a pointer to an entity with an Text Component with information on its position and size
-        std::shared_ptr<Entity> createText(std::string text, Position position, float fontSize);
+        std::shared_ptr<Entity> createText(std::string text, Position position, float fontSize, std::string path);
         /// @brief Create a 3DCamera entity
         /// @param camPos Initial position of the camera
         /// @param camTarget Initial target of the camera

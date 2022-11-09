@@ -22,8 +22,8 @@ namespace ecs
          * @brief Construct a new String object
          * @param str Text to display
          */
-        String(const std::string &str, const std::string &fontFile = "", float fontSize = 10.0f)
-            : Component(Type::TEXT), _value(str), _fontFile(fontFile), _fontSize(fontSize)
+        String(const std::string &str, const std::string &fontFile = "", float fontSize = 10.0f, const std::string path = "")
+            : Component(Type::TEXT), _value(str), _fontFile(fontFile), _fontSize(fontSize), _path(path)
         {
             _isInitialized = true;
         }
@@ -34,11 +34,14 @@ namespace ecs
         float &getFontSize() { return _fontSize; }
         /// @brief Returns component font file reference
         std::string &getFontFile() { return _fontFile; }
+        /// @brief Returns component path reference
+        std::string &getPath() { return _path; }
 
     private:
         std::string _value;
         std::string _fontFile;
         float _fontSize;
+        std::string _path;
     };
 
 }
