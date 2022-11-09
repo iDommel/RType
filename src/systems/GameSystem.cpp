@@ -562,8 +562,6 @@ namespace ecs
                         writeMsg(missileMsg);
                     }
                 }
-
-                std::cout << "Hitboxes collide !" << std::endl;
             }
 
             splitVel.y = (*vel).y;
@@ -585,6 +583,24 @@ namespace ecs
             Rectangle newRect = {enPos->x, enPos->y, hitbox->getRect().width, hitbox->getRect().height};
             hitbox->setRect(newRect);
             Position pos(enPos->x, enPos->y + (SCALE / 2));
+            for (auto &collider : _collideSystem.getColliders(enemy)) {
+                if (collider->hasTag(IEntity::Tags::WALL)) {
+                    scene.removeEntity(enemy);
+                    Message msg(EntityAction::DELETE, enemy->getId());
+                    writeMsg(msg);
+                } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                    auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
+                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                        scene.removeEntity(enemy);
+                        scene.removeEntity(collider);
+                        Message enemyMsg(EntityAction::DELETE, enemy->getId());
+                        Message missileMsg(EntityAction::DELETE, collider->getId());
+                        writeMsg(enemyMsg);
+                        writeMsg(missileMsg);
+                    }
+                }
+            }
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
                 GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
