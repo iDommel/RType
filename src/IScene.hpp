@@ -45,6 +45,12 @@ namespace ecs
         virtual std::map<IEntity::Tags, std::vector<std::shared_ptr<IEntity>>> getTaggedEntities(std::vector<IEntity::Tags> tags) = 0;
 
         /**
+         * @brief Get all entities in scene
+         * @return Returns a vector of entities
+         */
+        virtual std::vector<std::shared_ptr<IEntity>> getAllEntities() = 0;
+
+        /**
          * @brief Set the callback function to call when an entity is added
          * @param callback Callback function
          */
