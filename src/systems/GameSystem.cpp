@@ -298,7 +298,6 @@ namespace ecs
         std::shared_ptr<String> component = std::make_shared<String>(text, path, fontSize);
         std::shared_ptr<Position> component2 = std::make_shared<Position>(position);
 
-
         entity->addComponent(component2)
             .addComponent(component);
         return (entity);
@@ -611,22 +610,6 @@ namespace ecs
         return scene;
     }
 
-    std::unique_ptr<ecs::IScene> GameSystem::createMainMenuScene()
-    {
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenuScene, this), SceneType::MAIN_MENU);
-        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
-        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/Background/Background1.png");
-        std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
-
-        backgroundEntity->addComponent(component2)
-            .addComponent(component);
-        createMusic(*scene, "assets/Music/Menu.ogg");
-        createSceneEvent(playButtonEntity, SceneType::GAME);
-        scene->addEntities({backgroundEntity, playButtonEntity});
-        return scene;
-    }
-
     std::unique_ptr<IScene> GameSystem::createLobbyScene()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
@@ -696,10 +679,11 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createEndMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndMenu, this), SceneType::END);
-        std::shared_ptr<Entity> entity1 = createImage("assets/MainMenu/pause.png", Position(0, 0), 800, 600);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Background.png", Position(0, 0), 800, 600);
         std::shared_ptr<Entity> entity2 = createText("End", Position(350, 25), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/Quit/Button Normal.png", Position(800 / 2 - 60, 800 / 2 - 18), 120, 28);
 
+        createMusic(*scene, "assets/Music/Menu.ogg");
         createMsgEvent(quitButtonEntity, NetworkMessageType::DISCONNECTED);
         createSceneEvent(quitButtonEntity, SceneType::NONE);
         scene->addEntities({entity1, entity2, quitButtonEntity});
