@@ -65,44 +65,53 @@ namespace ecs
 
     void NetworkClientSystem::removePlayer(QUuid id, SceneManager &sceneManager)
     {
-        for (auto &e : sceneManager.getCurrentScene()[{IEntity::Tags::PLAYER}]) {
-            if (e->getId() == id) {
-                sceneManager.getCurrentScene().removeEntity(e);
+        for (auto &player : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
+            if (player->getId() == id) {
+                sceneManager.getCurrentScene().removeEntity(player);
                 break;
             }
         }
+        return;
+    }
+
+    void NetworkClientSystem::removeEntity(QUuid id, SceneManager &sceneManager)
+    {
+        auto entity = sceneManager.getCurrentScene().getEntityById(id);
+        if (entity) {
+            sceneManager.getCurrentScene().removeEntity(entity);
+        }
+        return;
     }
 
     void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager, uint64_t dt)
     {
         QUuid id = message.getEntityId();
+        std::shared_ptr<IEntity> e = sceneManager.getCurrentScene().getEntityById(id);
 
         switch (message.getEntityAction()) {
-            case EntityAction::CREATE:
-                if (message.getEntityType() == EntityType::PLAYER) {
-                    emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
-                    id, Position(message.getEntityPosition()), bool(message.getArg()));
-                } else if (message.getEntityType() == EntityType::MISSILE) {
-                    GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
-                } else if (message.getEntityType() == EntityType::ENEMY) {
-                    Vector2 pos = message.getEntityPosition();
-                    GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
-                }
-                break;
-            case EntityAction::UPDATE:
-                if (message.getEntityType() == EntityType::PLAYER)
-                    handlePlayerEvent(sceneManager, message, dt);
-                else if (message.getEntityType() == EntityType::MISSILE)
-                    handleMissileUpdate(sceneManager, message, dt);
-                else if (message.getEntityType() == EntityType::ENEMY)
-                    handleEnemyUpdate(sceneManager, message, dt);
-                break;
-            case EntityAction::DELETE:
-                if (message.getEntityType() == EntityType::PLAYER)
-                    removePlayer(message.getEntityId(), sceneManager);
-                break;
-            default:
-                break;
+        case EntityAction::CREATE:
+            if (message.getEntityType() == EntityType::PLAYER) {
+                emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
+                                  id, Position(message.getEntityPosition()), bool(message.getArg()));
+            } else if (message.getEntityType() == EntityType::MISSILE) {
+                GameSystem::createMissile(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
+            } else if (message.getEntityType() == EntityType::ENEMY) {
+                Vector2 pos = message.getEntityPosition();
+                GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
+            }
+            break;
+        case EntityAction::UPDATE:
+            if (message.getEntityType() == EntityType::PLAYER)
+                handlePlayerEvent(sceneManager, message, dt);
+            else if (message.getEntityType() == EntityType::MISSILE)
+                handleMissileUpdate(sceneManager, message, dt);
+            else if (message.getEntityType() == EntityType::ENEMY)
+                handleEnemyUpdate(sceneManager, message, dt);
+            break;
+        case EntityAction::DELETE:
+            removeEntity(id, sceneManager);
+        default:
+            break;
         }
     }
 

@@ -28,6 +28,16 @@ namespace ecs
         /// @brief Called at each update to make the entity move depending to the trajectory
         void update(std::shared_ptr<Position> actualPos);
 
+        void setFunctionX(std::function<float(float)> func)
+        {
+            _trajFuncX = func;
+        }
+
+        void setFunctionY(std::function<float(float)> func)
+        {
+            _trajFuncY = func;
+        }
+
     private:
         std::function<float(float)> _trajFuncX;
         std::function<float(float)> _trajFuncY;

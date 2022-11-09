@@ -78,6 +78,10 @@ namespace ecs
 
         SceneType getSceneType() const { return _type; }
 
+        std::vector<std::shared_ptr<IEntity>> getAllEntities();
+
+        std::shared_ptr<IEntity> getEntityById(QUuid id);
+
     protected:
         SceneType _type;
         /// @brief Entities sorted by tags
@@ -88,6 +92,8 @@ namespace ecs
         std::function<void(std::shared_ptr<IEntity>, IScene &)> _addEntityCallback;
         /// @brief Callback when an entity is removed from the scene
         std::function<void(std::shared_ptr<IEntity>, IScene &)> _removeEntityCallback;
+        /// @brief Entities that are not sorted by tags
+        std::vector<std::shared_ptr<IEntity>> _entities;
     };
 }
 

@@ -5,6 +5,7 @@
 ** AVector
 */
 
+#include <cmath>
 #include "AVector.hpp"
 
 namespace ecs
@@ -19,6 +20,11 @@ namespace ecs
 
     AVector::AVector(const AVector &&other) : Component(other.getType()), x(other.x), y(other.y), z(other.z)
     {
+    }
+
+    float AVector::getDistance2D(const AVector &a, const AVector &b)
+    {
+        return std::sqrt(std::pow(b.x - a.x, 2.0f) + std::pow(b.y - a.y, 2.0f));
     }
 
     void AVector::operator=(const AVector &other)

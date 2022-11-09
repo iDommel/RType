@@ -23,6 +23,7 @@ namespace ecs
         for (auto &tag : entity->getTags()) {
             _taggedEntities[tag].push_back(entity);
         }
+        _entities.push_back(entity);
         if (_addEntityCallback)
             _addEntityCallback(entity, *this);
         return *this;
@@ -34,6 +35,7 @@ namespace ecs
             for (auto &tag : entity->getTags()) {
                 _taggedEntities[tag].push_back(entity);
             }
+            _entities.push_back(entity);
             if (_addEntityCallback)
                 _addEntityCallback(entity, *this);
         }
@@ -49,6 +51,7 @@ namespace ecs
             if (it != _taggedEntities[tag].end())
                 _taggedEntities[tag].erase(it);
         }
+        _entities.erase(std::find(_entities.begin(), _entities.end(), entity));
         if (_removeEntityCallback)
             _removeEntityCallback(entity, *this);
     }
@@ -81,5 +84,18 @@ namespace ecs
     std::vector<std::shared_ptr<IEntity>> &Scene::operator[](IEntity::Tags tag)
     {
         return _taggedEntities[tag];
+    }
+
+    std::vector<std::shared_ptr<IEntity>> Scene::getAllEntities()
+    {
+        return _entities;
+    }
+    std::shared_ptr<IEntity> Scene::getEntityById(QUuid id)
+    {
+        for (auto &entity : _entities) {
+            if (entity->getId() == id)
+                return entity;
+        }
+        return nullptr;
     }
 }

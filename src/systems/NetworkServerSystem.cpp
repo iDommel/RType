@@ -90,6 +90,8 @@ namespace ecs
             }
         }
 
+        if (!entity)
+            return;
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
 
         switch (key) {
@@ -121,18 +123,18 @@ namespace ecs
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
             else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
-                playerComp->startShootCooldownTimer();
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
                 QUuid idMissile = QUuid::createUuid();
                 if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000) {
-                    GameSystem::createMissile(manager.getCurrentScene(), idMissile, Position(missilePos), Missile::MissileType::P_CONDENSED);
+                    GameSystem::createMissile(manager, idMissile, Position(missilePos), Missile::MissileType::P_CONDENSED);
                     Message msg(EntityAction::CREATE, idMissile, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_CONDENSED));
                     writeMsg(msg);
                 } else {
-                    GameSystem::createMissile(manager.getCurrentScene(), idMissile, Position(missilePos), Missile::MissileType::P_SIMPLE);
+                    GameSystem::createMissile(manager, idMissile, Position(missilePos), Missile::MissileType::P_SIMPLE);
                     Message msg(EntityAction::CREATE, idMissile, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_SIMPLE));
                     writeMsg(msg);
                 }
+                playerComp->startShootCooldownTimer();
             }
             return;
         default:
@@ -196,7 +198,6 @@ namespace ecs
                 _timers.erase(s);
                 if (_sceneManager.getCurrentSceneType() == SceneType::GAME)
                     removePlayer(_playersId[s]);
-                std::cerr << "Removed client" << std::endl;
                 break;
             }
             i++;
@@ -216,7 +217,7 @@ namespace ecs
                 break;
             }
         }
-        writeMsg(Message(EntityAction::DELETE, id, EntityType::PLAYER));
+        writeMsg(Message(EntityAction::DELETE, id));
     }
 
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)
