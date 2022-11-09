@@ -48,11 +48,11 @@
 #include "Window.hpp"
 #include "Trajectory.hpp"
 #include "Animation2D.hpp"
-#include "Enemy.hpp"
 
 namespace ecs
 {
     std::vector<Position> GameSystem::playerSpawns;
+    std::vector<std::pair<Enemy::EnemyType, Position>> GameSystem::enemies;
 
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -147,8 +147,7 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        // TODO: entity id ???
-        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/jump.wav", 0);
+        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/jump.wav", QUuid::createUuid());
     }
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
@@ -418,7 +417,7 @@ namespace ecs
         entity->addComponent(eventListener);
     }
 
-    void GameSystem::createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button)
+    void GameSystem::createBindingsEvent(std::shared_ptr<Entity> &entity, QUuid id_player, int button)
     {
         MouseCallbacks mouseCallbacks(
             [entity, button, id_player, this](SceneManager &sceneManager, Vector2 mousePosition) {
@@ -433,7 +432,15 @@ namespace ecs
             [](SceneManager &, Vector2 /*mousePosition*/) {},
             [](SceneManager &, Vector2 /*mousePosition*/) {},
             [entity, button, id_player](SceneManager &sceneManager, Vector2 /*mousePosition*/) {
-                auto component = sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER][id_player];
+                std::shared_ptr<IEntity> component = nullptr;
+                for (auto &entity : sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
+                    if (entity->getId() == id_player) {
+                        component = entity;
+                        break;
+                    }
+                }
+                if (component == nullptr)
+                    return;
                 auto comp = component->getFilteredComponents({IComponent::Type::PLAYER, IComponent::Type::EVT_LISTENER});
                 auto player = Component::castComponent<Player>(comp[0]);
                 auto event = Component::castComponent<EventListener>(comp[1]);
@@ -564,8 +571,9 @@ namespace ecs
             Position pos(enPos->x, enPos->y + (SCALE / 2));
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
-                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                QUuid id = QUuid::createUuid();
+                GameSystem::createMissile(scene, id, pos, Missile::MissileType::EN);
+                Message msg(EntityAction::CREATE, id, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
                 emit writeMsg(msg);
                 if (enComp->getNbMissile() > 1) {
                     enComp->setShooting(true);
@@ -575,8 +583,9 @@ namespace ecs
                     enComp->startShootTimer();
             } else if (enComp->salvoTime() && enComp->isShooting()) {
                 // Shoot a salvo
-                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
+                QUuid id = QUuid::createUuid();
+                GameSystem::createMissile(scene, id, pos, Missile::MissileType::EN);
+                Message msg(EntityAction::CREATE, id, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
                 emit writeMsg(msg);
                 enComp->getSalvo()++;
                 if (enComp->getSalvo() == enComp->getNbMissile()) {
@@ -662,7 +671,7 @@ namespace ecs
         scene.addEntities({musicEntity});
     }
 
-    void GameSystem::createSound(IScene &scene, const std::string &file, long unsigned int id)
+    void GameSystem::createSound(IScene &scene, const std::string &file, QUuid id)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(file);
@@ -681,14 +690,15 @@ namespace ecs
         return _networkActivated;
     }
 
-    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyMissile, long unsigned int id, Position pos, bool isMe)
+    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyMissile, QUuid id, Position pos, bool isMe)
     {
+        static int idCounter = 0;
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>(id);
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
         Rectangle rect = {playerPos->x + SCALE / 4, playerPos->y + SCALE / 4, SCALE, SCALE};
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
-        std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyMissile);
+        std::shared_ptr<Player> player = std::make_shared<Player>(idCounter, keyUp, keyDown, keyLeft, keyRight, keyMissile);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShipSSP1.png", 0.0f, 2.0f);
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(_spriteFrameCounts["assets/Player/MainShipSSP1.png"], 30, Animation2D::AnimationType::LOOP);
@@ -830,19 +840,20 @@ namespace ecs
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagRight(), moveRightCallbacks);
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagDown(), moveDownCallbacks);
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagBomb(), missileCallbacks);
-            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_UP, moveUpCallbacks);
-            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
-            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);
-            playerListener->addGamepadEvent(id - 1, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_LEFT, moveLeftCallbacks);
-            playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_X, moveHorizontalStickCallback);
-            playerListener->addGamepadStickEvent(id - 1, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
+            playerListener->addGamepadEvent(idCounter, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_UP, moveUpCallbacks);
+            playerListener->addGamepadEvent(idCounter, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
+            playerListener->addGamepadEvent(idCounter, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);
+            playerListener->addGamepadEvent(idCounter, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_LEFT, moveLeftCallbacks);
+            playerListener->addGamepadStickEvent(idCounter, GAMEPAD_AXIS_LEFT_X, moveHorizontalStickCallback);
+            playerListener->addGamepadStickEvent(idCounter, GAMEPAD_AXIS_LEFT_Y, moveVerticalStickCallback);
             playerEntity->addComponent(playerListener);
         }
+        idCounter++;
         playerEntity->addComponents({player, playerPos, playerSprite, anim, playerVel, playerHitbox, destruct});
         scene.addEntity(playerEntity);
     }
 
-    void GameSystem::createMissile(IScene &scene, long unsigned int id, Position playerPos, Missile::MissileType type)
+    void GameSystem::createMissile(IScene &scene, QUuid id, Position playerPos, Missile::MissileType type)
     {
         if (quint8(type) >= quint8(Missile::MissileType::NB))
             throw std::invalid_argument("Missile type: " + quint8(type));
@@ -888,10 +899,19 @@ namespace ecs
             nbr_ai -= 1;
     }
 
-    void GameSystem::changeBindings(SceneManager &sceneManager, int id_player, int button)
+    void GameSystem::changeBindings(SceneManager &sceneManager, QUuid id_player, int button)
     {
-        auto entity = sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER][id_player];
-        auto component = (*entity)[IComponent::Type::PLAYER];
+        auto entities = sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER];
+        std::shared_ptr<IEntity> playerEntity = nullptr;
+        for (auto &entity : entities) {
+            if (entity->getId() == id_player) {
+                playerEntity = entity;
+                break;
+            }
+        }
+        if (playerEntity == nullptr)
+            return;
+        auto component = (*playerEntity)[IComponent::Type::PLAYER];
         auto player = Component::castComponent<Player>(component);
 
         switch (button) {

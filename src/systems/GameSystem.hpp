@@ -21,6 +21,7 @@
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
 #include "Missile.hpp"
+#include "Enemy.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
@@ -98,14 +99,19 @@ namespace ecs
         bool isNetworkActivated();
 
         static std::vector<Position> playerSpawns;
+        /// @brief Enemies to generate when launching game scene and their positions
+        static std::vector<std::pair<Enemy::EnemyType, Position>> enemies;
 
-        static void createMissile(IScene &scene, long unsigned int id, Position pos, Missile::MissileType type);
+        /// @brief Missile factory
+        static void createMissile(IScene &scene, QUuid id, Position pos, Missile::MissileType type);
+        /// @brief Enemy factory
+        static void createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id);
 
     signals:
         void writeMsg(const Message &message);
 
     public slots:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, QUuid id, Position pos, bool isMe);
 
     private:
         /// @brief Read map file and generate all the game scene entities
@@ -114,9 +120,6 @@ namespace ecs
         /// @brief Choose what sprite choose for the entity
         /// @return Return the entity with the good sprite
         std::shared_ptr<Entity> whichWall(std::string mapAround, int x, int y);
-        /// @brief Choose what enemy generate
-        /// @return Return the good entity or Nullptr if no entity match
-        std::shared_ptr<Entity> whichEnemy(quint8 mobId, int x, int y);
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
@@ -125,7 +128,7 @@ namespace ecs
         /// @param scene The scene to add the entity to
         /// @param soundFile Filepath of the sound to be created
         /// @param id ID of the new entity
-        static void createSound(IScene &scene, const std::string &soundFile, unsigned long int id);
+        static void createSound(IScene &scene, const std::string &soundFile, QUuid id);
         /// @brief Create an image entity
         /// @param path Path to the image to load
         /// @param position Position of the Image
@@ -147,7 +150,7 @@ namespace ecs
         void createSoundEvent(std::shared_ptr<Entity> &sound, std::string value);
         void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
         void createSceneEvent(std::shared_ptr<Entity> &scene, SceneType sceneType);
-        void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
+        void createBindingsEvent(std::shared_ptr<Entity> &entity, QUuid id_player, int button);
 
         /// @brief Create a MouseEvent that writes a msg through the NetworkSystem
         /// @param entity Entity to add the mouse event to
@@ -165,7 +168,7 @@ namespace ecs
         std::unique_ptr<IScene> createMainMenuScene();
         std::unique_ptr<IScene> createLobbyScene();
 
-        void changeBindings(SceneManager &SceneManager, int id_player, int button);
+        void changeBindings(SceneManager &SceneManager, QUuid id_player, int button);
         void replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
 
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);

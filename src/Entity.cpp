@@ -12,8 +12,6 @@
 
 namespace ecs
 {
-    unsigned long int Entity::idCounter = 0;
-
     const std::map<Entity::Tags, std::vector<std::vector<IComponent::Type>>> Entity::entityTags = {
         {IEntity::Tags::SPRITE_2D,
          {{IComponent::Type::SPRITE, IComponent::Type::POSITION}}},
@@ -69,9 +67,12 @@ namespace ecs
         {Entity::Tags::ANIMATED_2D,
          {{IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::ANIMATION_2D}}}};
 
-    Entity::Entity() : _id(idCounter++) {}
+    Entity::Entity()
+    {
+        _id = QUuid::createUuid();
+    }
 
-    Entity::Entity(unsigned long int id) : _id(id) {}
+    Entity::Entity(QUuid id) : _id(id) {}
 
     IEntity &Entity::addComponent(std::shared_ptr<IComponent> component)
     {
@@ -134,7 +135,7 @@ namespace ecs
         return res;
     }
 
-    unsigned long int Entity::getId() const
+    QUuid Entity::getId() const
     {
         return _id;
     }

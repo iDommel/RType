@@ -49,9 +49,7 @@ namespace ecs
         for (auto &msg : _msgQueue) {
             if (msg.getMessageType() == MessageType::ENTITYMESSAGE)
                 processEntityMessage(msg, manager, dt);
-            else if (msg.getMessageType() == MessageType::TEXTMESSAGE && std::regex_match(msg.getText(), std::regex(std::string(RM_PLAYER) + " [1-4]"))) {
-                removePlayer(msg.getText(), manager);
-            } else if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+            else if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
                 if (waitCo && !_connected && msg.getNetworkMessageType() == NetworkMessageType::CONNECTION_OK) {
                     manager.setCurrentScene(SceneType::LOBBY);
                     waitCo = false;
@@ -65,13 +63,10 @@ namespace ecs
         _msgQueue.clear();
     }
 
-    void NetworkClientSystem::removePlayer(std::string s, SceneManager &sceneManager)
+    void NetworkClientSystem::removePlayer(QUuid id, SceneManager &sceneManager)
     {
-        unsigned int id = std::stoi(s.erase(0, s.find(" ") + 1));
-
         for (auto &e : sceneManager.getCurrentScene()[{IEntity::Tags::PLAYER}]) {
-            auto player = Component::castComponent<Player>((*e)[IComponent::Type::PLAYER]);
-            if (player->getId() == id) {
+            if (e->getId() == id) {
                 sceneManager.getCurrentScene().removeEntity(e);
                 break;
             }
@@ -80,7 +75,7 @@ namespace ecs
 
     void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager, uint64_t dt)
     {
-        long unsigned int id = message.getEntityId();
+        QUuid id = message.getEntityId();
 
         switch (message.getEntityAction()) {
             case EntityAction::CREATE:
@@ -89,6 +84,9 @@ namespace ecs
                     id, Position(message.getEntityPosition()), bool(message.getArg()));
                 } else if (message.getEntityType() == EntityType::MISSILE) {
                     GameSystem::createMissile(sceneManager.getCurrentScene(), message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
+                } else if (message.getEntityType() == EntityType::ENEMY) {
+                    Vector2 pos = message.getEntityPosition();
+                    GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
                 }
                 break;
             case EntityAction::UPDATE:
@@ -98,6 +96,10 @@ namespace ecs
                     handleMissileUpdate(sceneManager, message, dt);
                 else if (message.getEntityType() == EntityType::ENEMY)
                     handleEnemyUpdate(sceneManager, message, dt);
+                break;
+            case EntityAction::DELETE:
+                if (message.getEntityType() == EntityType::PLAYER)
+                    removePlayer(message.getEntityId(), sceneManager);
                 break;
             default:
                 break;
@@ -152,6 +154,7 @@ namespace ecs
     {
         auto enemies = sceneManager.getCurrentScene()[IEntity::Tags::ENEMY];
 
+        std::cerr << msg.toString() << std::endl;
         for (auto &enemy : enemies) {
             if (enemy->getId() != msg.getEntityId())
                 continue;
