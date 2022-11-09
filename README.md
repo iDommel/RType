@@ -1,6 +1,9 @@
 # RType
 Repository for the R-Type project
 
+# Open Port
+    firewall-cmd --add-port=4000/tcp --permanent
+
 # Compilation:
     sh install.sh [Optional build type arg=(Release/Debug/ect)]
 
