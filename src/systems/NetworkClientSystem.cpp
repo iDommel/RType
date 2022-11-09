@@ -154,7 +154,6 @@ namespace ecs
     {
         auto enemies = sceneManager.getCurrentScene()[IEntity::Tags::ENEMY];
 
-        std::cerr << msg.toString() << std::endl;
         for (auto &enemy : enemies) {
             if (enemy->getId() != msg.getEntityId())
                 continue;
