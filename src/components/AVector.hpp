@@ -20,6 +20,7 @@ namespace ecs
         AVector(Component::Type type, float x, float y, float z = 0);
         AVector(const AVector &other);
         AVector(const AVector &&other);
+        static float getDistance2D(const AVector &a, const AVector &b);
         virtual void operator=(const AVector &other);
         virtual std::tuple<float, float, float> getVector() const;
         virtual void setVector(float newX, float newY, float newZ);

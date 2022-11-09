@@ -35,7 +35,6 @@ namespace ecs
 
     signals:
         void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
-        void createMissile(IScene &scene, long unsigned int id, Position pos);
 
     public slots:
         /// @brief Sends msg to server

@@ -68,25 +68,25 @@ namespace ecs
 
         if (mobId == quint8(Enemy::EnemyType::SCOUT)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 8000);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return std::sin(a / 10) * 50; }),
                                                       position);
         } else if (mobId == quint8(Enemy::EnemyType::FIGHTER)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 5000);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_MISSILE, 5000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
         } else if (mobId == quint8(Enemy::EnemyType::TORPEDO)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 4000);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_SINUSOIDAL, 4000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
         } else if (mobId == quint8(Enemy::EnemyType::FRIGATE)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 8000, 8);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000, 8);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);

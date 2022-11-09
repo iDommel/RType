@@ -47,6 +47,7 @@ namespace ecs
             MISSILE,
             ENEMY,
             WALL,
+            NB_TAGS
         };
 
         virtual ~IEntity() = default;

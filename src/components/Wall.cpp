@@ -71,5 +71,6 @@ namespace ecs
             }
             return path;
         }
+        return path;
     }
 }  // namespace ecs
