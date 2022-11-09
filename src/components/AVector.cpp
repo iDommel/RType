@@ -24,7 +24,7 @@ namespace ecs
 
     float AVector::getDistance2D(const AVector &a, const AVector &b)
     {
-        return std::sqrt(std::pow(b.x - a.x, 2.0f) + pow(b.y - a.y, 2.0f));
+        return std::sqrt(std::pow(b.x - a.x, 2.0f) + std::pow(b.y - a.y, 2.0f));
     }
 
     void AVector::operator=(const AVector &other)

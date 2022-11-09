@@ -111,6 +111,7 @@ namespace ecs
         /// @brief Generates missile trajectory functions for homing missile
         /// @param sceneManager Scene manager
         /// @param entityPos Position of the new missile
+        /// @param targetType The type of the target if is a homing missile
         /// @return Returns a shared pointer on a Trajectory component
         static std::shared_ptr<Trajectory> generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> entityPos, IEntity::Tags targetType);
 
