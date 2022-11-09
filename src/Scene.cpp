@@ -73,7 +73,6 @@ namespace ecs
 
     std::vector<std::shared_ptr<IEntity>> Scene::getAllEntities()
     {
-        std::cerr << "getAllEntities" << std::endl;
         return _entities;
     }
 

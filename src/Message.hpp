@@ -11,6 +11,8 @@
 #include <QString>
 #include <string>
 #include "raylib.h"
+
+#include "SceneManager.hpp"
 namespace ecs
 {
     template <typename E>
@@ -30,10 +32,11 @@ namespace ecs
 
     enum class MessageType : qint8 {
         UNDEFINED = -1,
-        ENTITYMESSAGE,
-        GRAPHICEVENTMESSAGE,
-        NETWORKEVENTMESSAGE,
-        TEXTMESSAGE,
+        ENTITY_MESSAGE,
+        GRAPHIC_EVENT_MESSAGE,
+        NETWORK_EVENT_MESSAGE,
+        TEXT_MESSAGE,
+        SCENE_CHANGE_MESSAGE
     };
 
     enum class EventType : qint8 {
@@ -75,16 +78,19 @@ namespace ecs
     {
     public:
         Message();
-        /// @brief Constructor for TEXTMESSAGE messages
+        /// @brief Constructor for TEXT_MESSAGE messages
         /// @param str the string to send
         Message(const std::string &);
-        /// @brief Alternate constructor for TEXTMESSAGE messages
+        /// @brief Alternate constructor for TEXT_MESSAGE messages
         /// @param str the string to send
         Message(const char *);
 
         /// @brief Constructor for a NetworkEventMessage
         /// @param the type of the event
         Message(NetworkMessageType);
+        /// @brief Constructor for a SceneTypeMessage
+        /// @param the type of the scene
+        Message(SceneType);
         /// @brief Constructor for KeyboardEvents messages
         /// @param eventType the type of the event
         /// @param keyState the state of the key pressed
@@ -142,6 +148,7 @@ namespace ecs
         std::string getText() const;
         std::pair<QString, unsigned short> getSender() const { return _sender; };
         quint8 getArg() const { return _arg; };
+        qint8 getSceneType() const { return _sceneType; };
 
         void setSender(std::pair<QString, unsigned short> sender) { _sender = sender; };
 
@@ -157,6 +164,7 @@ namespace ecs
         EntityAction _entityAction = EntityAction::UNDEFINED;
         EntityType _entityType = EntityType::UNDEFINED;
         NetworkMessageType _networkEventType = NetworkMessageType::UNDEFINED;
+        qint8 _sceneType = -1;
         KeyboardKey _keyboardKey = KeyboardKey::KEY_NULL;
         CustomMouseButton _mouseButton = CustomMouseButton::UNDEFINED;
         KeyState _keyState = KeyState::UNDEFINED;

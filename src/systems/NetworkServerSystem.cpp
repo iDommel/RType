@@ -31,9 +31,9 @@ namespace ecs
     void NetworkServerSystem::update(SceneManager &manager, uint64_t dt)
     {
         for (auto &s : _msgQueue) {
-            if (s.getMessageType() == MessageType::TEXTMESSAGE)
+            if (s.getMessageType() == MessageType::TEXT_MESSAGE)
                 std::cout << s.getText() << std::endl;
-            if (s.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+            if (s.getMessageType() == MessageType::NETWORK_EVENT_MESSAGE) {
                 if (s.getNetworkMessageType() == NetworkMessageType::DISCONNECTED)
                     deconnectClient(s.getSender());
                 else if (s.getNetworkMessageType() == NetworkMessageType::WAIT_CONNECTION && manager.getCurrentSceneType() == SceneType::LOBBY) {
@@ -69,7 +69,6 @@ namespace ecs
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, int id, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
-        EventType msgType = message.getEventType();
         KeyState keyState = message.getKeyState();
         KeyboardKey key = message.getKeyboardKey();
         std::shared_ptr<IEntity> entity = nullptr;

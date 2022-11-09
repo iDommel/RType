@@ -52,6 +52,11 @@ namespace ecs
 {
     std::vector<Position> GameSystem::playerSpawns;
 
+    // Purge of out of bounds entities frequency in ms
+    #define PURGE_FREQUENCY 200
+    // Size of valib area around camera in px
+    #define VALID_BORDER_SIZE 100
+
     const std::string GameSystem::getBinding(int keyboard)
     {
         return (_bindings.find(keyboard)->second);
@@ -210,14 +215,12 @@ namespace ecs
 
     void GameSystem::purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> camPos)
     {
-        const int validBoundingZone = 100;
+        const int validBoundingZone = VALID_BORDER_SIZE;
         static uint64_t lastPurge = 0;
-        if ((lastPurge += dt) < 100) {
-            std::cerr << "lastPurge: " << lastPurge << std::endl;
+        if ((lastPurge += dt) < PURGE_FREQUENCY)
             return;
-        } else {
+        else
             lastPurge = 0;
-        }
         auto rect = Rect(camPos->x - validBoundingZone,
             camPos->y - validBoundingZone,
             camPos->x + 1920 + validBoundingZone,
@@ -267,23 +270,6 @@ namespace ecs
             if (Core::networkRole == NetworkRole::SERVER)
                 purgeAroundCameraEntities(sceneManager, dt, pos);
         }
-        // _aiSystem.update(sceneManager, dt);
-
-        // auto renderables = sceneManager.getCurrentScene()[IEntity::Tags::RENDERABLE_3D];
-
-        // for (auto &renderable : renderables) {
-        //     if (renderable->hasComponent(IComponent::Type::ANIMATION)) {
-        //         auto component = Component::castComponent<ModelAnim>((*renderable)[IComponent::Type::ANIMATION]);
-        //         if (component->getNbFrames() == -1)
-        //             continue;
-        //         component->triggerPlay(renderable);
-        //         if (!component->shouldPlay())
-        //             continue;
-        //         component->getCurrentFrame()++;
-        //         if (component->getCurrentFrame() >= component->getNbFrames())
-        //             component->getCurrentFrame() = 0;
-        //     }
-        // }
     }
 
     std::unique_ptr<IScene> GameSystem::createEndScene()
