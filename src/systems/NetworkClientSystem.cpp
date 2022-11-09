@@ -65,17 +65,20 @@ namespace ecs
 
     void NetworkClientSystem::removePlayer(long unsigned int id, SceneManager &sceneManager)
     {
-        auto e = sceneManager.getCurrentScene().getEntityById(id);
-        std::cout << "remove player " << id << std::endl;
         for (auto &player : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
-            std::cout << "player " << player->getId() << std::endl;
             if (player->getId() == id) {
                 sceneManager.getCurrentScene().removeEntity(player);
                 break;
             }
         }
-        if (e) {
-            sceneManager.getCurrentScene().removeEntity(e);
+        return;
+    }
+
+    void NetworkClientSystem::removeEntity(long unsigned int id, SceneManager &sceneManager)
+    {
+        auto entity = sceneManager.getCurrentScene().getEntityById(id);
+        if (entity) {
+            sceneManager.getCurrentScene().removeEntity(entity);
         }
         return;
     }
@@ -103,7 +106,7 @@ namespace ecs
                 handleEnemyUpdate(sceneManager, message, dt);
             break;
         case EntityAction::DELETE:
-            removePlayer(id, sceneManager);
+            removeEntity(id, sceneManager);
         default:
             break;
         }

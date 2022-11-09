@@ -215,21 +215,6 @@ namespace ecs
         }
     }
 
-    void GameSystem::updateProjectiles(SceneManager &sceneManager, uint64_t dt)
-    {
-        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
-            auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
-            auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
-            auto hitbox = Component::castComponent<Hitbox>((*entity)[IComponent::Type::HITBOX]);
-
-            trajectory->update(position);
-            if (hitbox) {
-                Rectangle newRect = {position->x, position->y, hitbox->getRect().width, hitbox->getRect().height};
-                hitbox->setRect(newRect);
-            }
-        }
-    }
-
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
@@ -531,9 +516,25 @@ namespace ecs
         return cam;
     }
 
+    void GameSystem::updateProjectiles(SceneManager &sceneManager, uint64_t dt)
+    {
+        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
+            auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
+            auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            auto hitbox = Component::castComponent<Hitbox>((*entity)[IComponent::Type::HITBOX]);
+
+            trajectory->update(position);
+            if (hitbox) {
+                Rectangle newRect = {position->x, position->y, hitbox->getRect().width, hitbox->getRect().height};
+                hitbox->setRect(newRect);
+            }
+        }
+    }
+
     void GameSystem::updatePlayers(SceneManager &sceneManager, uint64_t dt)
     {
         auto players = sceneManager.getCurrentScene()[IEntity::Tags::PLAYER];
+        std::vector<std::shared_ptr<IEntity>> playersToDestroy;
 
         for (auto &player : players) {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
@@ -553,13 +554,14 @@ namespace ecs
                     writeMsg(msg);
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
                     if (missile->getMissileType() == Missile::MissileType::EN) {
-                        sceneManager.getCurrentScene().removeEntity(player);
                         sceneManager.getCurrentScene().removeEntity(collider);
+                        playersToDestroy.push_back(player);
                         Message playerMsg(EntityAction::DELETE, player->getId());
                         Message missileMsg(EntityAction::DELETE, collider->getId());
-                        writeMsg(playerMsg);
                         writeMsg(missileMsg);
+                        writeMsg(playerMsg);
                     }
                 }
             }
@@ -569,11 +571,15 @@ namespace ecs
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
         }
+        for (auto &player : playersToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(player);
+        }
     }
 
     void GameSystem::updateEnemies(IScene &scene, uint64_t dt)
     {
         auto enemies = scene[IEntity::Tags::ENEMY];
+        std::vector<std::shared_ptr<IEntity>> enemiesToDestroy;
 
         for (auto &enemy : enemies) {
             auto enComp = Component::castComponent<Enemy>((*enemy)[IComponent::Type::ENEMY]);
@@ -585,14 +591,14 @@ namespace ecs
             Position pos(enPos->x, enPos->y + (SCALE / 2));
             for (auto &collider : _collideSystem.getColliders(enemy)) {
                 if (collider->hasTag(IEntity::Tags::WALL)) {
-                    scene.removeEntity(enemy);
+                    enemiesToDestroy.push_back(enemy);
                     Message msg(EntityAction::DELETE, enemy->getId());
                     writeMsg(msg);
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
                         missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
-                        scene.removeEntity(enemy);
+                        enemiesToDestroy.push_back(enemy);
                         scene.removeEntity(collider);
                         Message enemyMsg(EntityAction::DELETE, enemy->getId());
                         Message missileMsg(EntityAction::DELETE, collider->getId());
@@ -625,6 +631,9 @@ namespace ecs
                 } else
                     enComp->startSalvoTimer();
             }
+        }
+        for (auto &enemy : enemiesToDestroy) {
+            scene.removeEntity(enemy);
         }
     }
 
