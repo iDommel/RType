@@ -45,7 +45,8 @@ namespace ecs
             SOUND,
             TRAJECTORY,
             MISSILE,
-            ENEMY
+            ENEMY,
+            WALL,
         };
 
         virtual ~IEntity() = default;

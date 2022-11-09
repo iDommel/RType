@@ -237,12 +237,15 @@ namespace ecs
             return;
         if (Core::networkRole == NetworkRole::SERVER) {
             updatePlayers(sceneManager, dt);
-            for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
-                auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
-                auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
-                trajectory->update(position);
-            }
+            updateProjectiles(sceneManager, dt);
             updateEnemies(sceneManager.getCurrentScene(), dt);
+        } else if (Core::networkRole == NetworkRole::CLIENT) {
+            for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
+                auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
+                if (animationComp->getAnimationType() != Animation2D::AnimationType::FIXED) {
+                    animationComp->increment();
+                }
+            }
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
@@ -250,13 +253,6 @@ namespace ecs
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
             *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
             cameraComp->getCamera().update();
-        }
-
-        for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
-            auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
-            if (animationComp->getAnimationType() != Animation2D::AnimationType::FIXED) {
-                animationComp->increment();
-            }
         }
     }
 
@@ -520,9 +516,25 @@ namespace ecs
         return cam;
     }
 
+    void GameSystem::updateProjectiles(SceneManager &sceneManager, uint64_t dt)
+    {
+        for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
+            auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
+            auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            auto hitbox = Component::castComponent<Hitbox>((*entity)[IComponent::Type::HITBOX]);
+
+            trajectory->update(position);
+            if (hitbox) {
+                Rectangle newRect = {position->x, position->y, hitbox->getRect().width, hitbox->getRect().height};
+                hitbox->setRect(newRect);
+            }
+        }
+    }
+
     void GameSystem::updatePlayers(SceneManager &sceneManager, uint64_t dt)
     {
         auto players = sceneManager.getCurrentScene()[IEntity::Tags::PLAYER];
+        std::vector<std::shared_ptr<IEntity>> playersToDestroy;
 
         for (auto &player : players) {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
@@ -536,8 +548,22 @@ namespace ecs
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
             for (auto &collider : _collideSystem.getColliders(player)) {
-                // TODO: The collision should probably lead to player's death
-                std::cout << "Hitboxes collide !" << std::endl;
+                if (collider->hasTag(IEntity::Tags::WALL) || collider->hasTag(IEntity::Tags::ENEMY)) {
+                    sceneManager.getCurrentScene().removeEntity(player);
+                    Message msg(EntityAction::DELETE, player->getId());
+                    writeMsg(msg);
+                } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                    auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
+                    if (missile->getMissileType() == Missile::MissileType::EN) {
+                        sceneManager.getCurrentScene().removeEntity(collider);
+                        playersToDestroy.push_back(player);
+                        Message playerMsg(EntityAction::DELETE, player->getId());
+                        Message missileMsg(EntityAction::DELETE, collider->getId());
+                        writeMsg(missileMsg);
+                        writeMsg(playerMsg);
+                    }
+                }
             }
 
             splitVel.y = (*vel).y;
@@ -545,16 +571,42 @@ namespace ecs
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
         }
+        for (auto &player : playersToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(player);
+        }
     }
 
     void GameSystem::updateEnemies(IScene &scene, uint64_t dt)
     {
         auto enemies = scene[IEntity::Tags::ENEMY];
+        std::vector<std::shared_ptr<IEntity>> enemiesToDestroy;
 
         for (auto &enemy : enemies) {
             auto enComp = Component::castComponent<Enemy>((*enemy)[IComponent::Type::ENEMY]);
             auto enPos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            auto hitbox = Component::castComponent<Hitbox>((*enemy)[IComponent::Type::HITBOX]);
+
+            Rectangle newRect = {enPos->x, enPos->y, hitbox->getRect().width, hitbox->getRect().height};
+            hitbox->setRect(newRect);
             Position pos(enPos->x, enPos->y + (SCALE / 2));
+            for (auto &collider : _collideSystem.getColliders(enemy)) {
+                if (collider->hasTag(IEntity::Tags::WALL)) {
+                    enemiesToDestroy.push_back(enemy);
+                    Message msg(EntityAction::DELETE, enemy->getId());
+                    writeMsg(msg);
+                } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                    auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
+                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                        enemiesToDestroy.push_back(enemy);
+                        scene.removeEntity(collider);
+                        Message enemyMsg(EntityAction::DELETE, enemy->getId());
+                        Message missileMsg(EntityAction::DELETE, collider->getId());
+                        writeMsg(enemyMsg);
+                        writeMsg(missileMsg);
+                    }
+                }
+            }
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
                 GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
@@ -579,6 +631,9 @@ namespace ecs
                 } else
                     enComp->startSalvoTimer();
             }
+        }
+        for (auto &enemy : enemiesToDestroy) {
+            scene.removeEntity(enemy);
         }
     }
 
@@ -670,7 +725,7 @@ namespace ecs
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>(id);
         std::shared_ptr<Position> playerPos = std::make_shared<Position>(pos);
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
-        Rectangle rect = {playerPos->x + SCALE / 4, playerPos->y + SCALE / 4, SCALE, SCALE};
+        Rectangle rect = {playerPos->x, playerPos->y, SCALE, SCALE};
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
         std::shared_ptr<Player> player = std::make_shared<Player>(id, keyUp, keyDown, keyLeft, keyRight, keyMissile);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
@@ -832,6 +887,8 @@ namespace ecs
             throw std::invalid_argument("Missile type: " + quint8(type));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
+        Rectangle missileHitbox = {playerPos.x, playerPos.y, SCALE / 2, SCALE / 2};
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(missileHitbox);
         std::shared_ptr<Position> pos = std::make_shared<Position>(playerPos);
         int nbFrames = _spriteFrameCounts.find(_missilesSprites[type]) != _spriteFrameCounts.end() ? _spriteFrameCounts[_missilesSprites[type]] : 0;
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], type == Missile::MissileType::EN ? 180.0f : 0.0f, 1.0f);
@@ -843,6 +900,7 @@ namespace ecs
         entity->addComponent(missile)
             .addComponent(sprite)
             .addComponent(anim)
+            .addComponent(hitbox)
             .addComponent(pos)
             .addComponent(trajectory);
         scene.addEntity(entity);

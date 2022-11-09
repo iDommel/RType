@@ -47,6 +47,7 @@ namespace ecs
             TRAJECTORY,
             MISSILE,
             ENEMY,
+            WALL,
             TYPE_NB
         };
         virtual const Type &getType() const = 0;

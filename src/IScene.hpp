@@ -66,6 +66,13 @@ namespace ecs
          * @return std::vector<std::shared_ptr<IEntity>>&
          */
         virtual std::vector<std::shared_ptr<IEntity>> &operator[](IEntity::Tags tag) = 0;
+
+        /// @brief Gets all entites, regardless of tag
+        virtual std::vector<std::shared_ptr<IEntity>> getAllEntities() = 0;
+
+        /// @brief Finds an entity by looking at it's ID
+        /// @param id ID of the entity to find
+        virtual std::shared_ptr<IEntity> getEntityById(long unsigned int id) = 0;
     };
 }
 
