@@ -56,7 +56,7 @@ namespace ecs
         void connectClient(std::pair<QString, unsigned short> client);
         void deconnectClient(std::pair<QString, unsigned short> client);
         void setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &sceneManager);
-        void removePlayer(int id);
+        void removePlayer(long unsigned int id);
 
         /// @brief Gets a player event message and moves entities accordingly
         /// @param manager SceneManager reference

@@ -48,6 +48,7 @@
 #include "Window.hpp"
 #include "Trajectory.hpp"
 #include "Enemy.hpp"
+#include "Wall.hpp"
 
 namespace ecs
 {
@@ -67,25 +68,25 @@ namespace ecs
 
         if (mobId == quint8(Enemy::EnemyType::SCOUT)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 8000);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return std::sin(a / 10) * 50; }),
                                                       position);
         } else if (mobId == quint8(Enemy::EnemyType::FIGHTER)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 5000);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_MISSILE, 5000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
         } else if (mobId == quint8(Enemy::EnemyType::TORPEDO)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 4000);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_SINUSOIDAL, 4000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
         } else if (mobId == quint8(Enemy::EnemyType::FRIGATE)) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
-            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::EN, 8000, 8);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000, 8);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
@@ -102,66 +103,17 @@ namespace ecs
     {
         int lastLine = 15;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::string path;
+        std::string path = Wall::getCorrespondingPath(mapAround);
 
-        if (mapAround[0] == 'a') {
-            if (mapAround[1] == 'a') {
-                if (mapAround[2] == 'a') {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Center.png";
-                    else
-                        path = "assets/Blue Ground/Top.png";
-                } else {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Right.png";
-                    else
-                        path = "assets/Blue Ground/TopRight.png";
-                }
-            } else {
-                if (mapAround[2] == 'a') {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Left.png";
-                    else
-                        path = "assets/Blue Ground/TopLeft.png";
-                } else {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/LeftRight.png";
-                    else
-                        path = "assets/Blue Ground/TopLeftRight.png";
-                }
-            }
-        } else {
-            if (mapAround[1] == 'a') {
-                if (mapAround[2] == 'a') {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Bot.png";
-                    else
-                        path = "assets/Blue Ground/TopBot.png";
-                } else {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotRight.png";
-                    else
-                        path = "assets/Blue Ground/TopBotRight.png";
-                }
-            } else {
-                if (mapAround[2] == 'a') {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotLeft.png";
-                    else
-                        path = "assets/Blue Ground/TopBotLeft.png";
-                } else {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotLeftRight.png";
-                    else
-                        path = "assets/Blue Ground/TopBotLeftRight.png";
-                }
-            }
-        }
+        std::shared_ptr<Wall> wallComponent = std::make_shared<Wall>();
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
         Rectangle rect = {position->x, position->y, SCALE, SCALE};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
-        entity->addComponent(sprite).addComponent(position).addComponent(hitbox);
+        entity->addComponent(sprite)
+            .addComponent(position)
+            .addComponent(wallComponent)
+            .addComponent(hitbox);
         return entity;
     }
 

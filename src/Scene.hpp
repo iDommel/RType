@@ -76,6 +76,10 @@ namespace ecs
          */
         std::vector<std::shared_ptr<IEntity>> &operator[](IEntity::Tags tag);
 
+        std::vector<std::shared_ptr<IEntity>> getAllEntities();
+
+        std::shared_ptr<IEntity> getEntityById(long unsigned int id);
+
     protected:
         SceneType _type;
         /// @brief Entities sorted by tags
@@ -86,6 +90,8 @@ namespace ecs
         std::function<void(std::shared_ptr<IEntity>, SceneType)> _addEntityCallback;
         /// @brief Callback when an entity is removed from the scene
         std::function<void(std::shared_ptr<IEntity>)> _removeEntityCallback;
+        /// @brief Entities that are not sorted by tags
+        std::vector<std::shared_ptr<IEntity>> _entities;
     };
 }
 

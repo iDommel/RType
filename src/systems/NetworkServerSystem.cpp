@@ -90,6 +90,8 @@ namespace ecs
             }
         }
 
+        if (!entity)
+            return;
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
 
         switch (key) {
@@ -121,17 +123,17 @@ namespace ecs
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
             else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
-                playerComp->startShootCooldownTimer();
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
                 if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000) {
-                    GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::P_CONDENSED);
+                    GameSystem::createMissile(manager, Entity::idCounter, Position(missilePos), Missile::MissileType::P_CONDENSED);
                     Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_CONDENSED));
                     writeMsg(msg);
                 } else {
-                    GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::P_SIMPLE);
+                    GameSystem::createMissile(manager, Entity::idCounter, Position(missilePos), Missile::MissileType::P_SIMPLE);
                     Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_SIMPLE));
                     writeMsg(msg);
                 }
+                playerComp->startShootCooldownTimer();
             }
             return;
         default:
@@ -195,7 +197,6 @@ namespace ecs
                 _timers.erase(s);
                 if (_sceneManager.getCurrentSceneType() == SceneType::GAME)
                     removePlayer(_playersId[s]);
-                std::cerr << "Removed client" << std::endl;
                 break;
             }
             i++;
@@ -207,17 +208,16 @@ namespace ecs
         deconnectClient(client);
     }
 
-    void NetworkServerSystem::removePlayer(int id)
+    void NetworkServerSystem::removePlayer(long unsigned int id)
     {
-        for (auto entity : _sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
-            auto player = Component::castComponent<Player>((*entity)[IComponent::Type::PLAYER]);
+        for (auto &player : _sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
             if (player->getId() == id) {
-                _sceneManager.getCurrentScene().removeEntity(entity);
+                _sceneManager.getCurrentScene().removeEntity(player);
                 break;
             }
         }
         for (auto &s : _senders)
-            writeMsg(Message(EntityAction::DELETE, (uint64_t)id));
+            writeMsg(Message(EntityAction::DELETE, id));
     }
 
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)

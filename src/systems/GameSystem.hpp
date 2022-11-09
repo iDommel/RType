@@ -21,6 +21,8 @@
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
 #include "Missile.hpp"
+#include "Trajectory.hpp"
+#include "Animation2D.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
@@ -99,7 +101,19 @@ namespace ecs
 
         static std::vector<Position> playerSpawns;
 
-        static void createMissile(IScene &scene, long unsigned int id, Position pos, Missile::MissileType type);
+        /// @brief Missile factory
+        /// @param sceneManager Scene manager
+        /// @param id Id of the new missile
+        /// @param pos Position of the new missile
+        /// @param type Missile type
+        /// @param targetType The type of the target if is a homing missile
+        static void createMissile(SceneManager &sceneManager, long unsigned int id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS);
+        /// @brief Generates missile trajectory functions for homing missile
+        /// @param sceneManager Scene manager
+        /// @param entityPos Position of the new missile
+        /// @param targetType The type of the target if is a homing missile
+        /// @return Returns a shared pointer on a Trajectory component
+        static std::shared_ptr<Trajectory> generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> entityPos, IEntity::Tags targetType);
 
     signals:
         void writeMsg(const Message &message);
@@ -168,7 +182,8 @@ namespace ecs
 
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
-        void updateEnemies(IScene &scene, uint64_t dt);
+        void updateEnemies(SceneManager &scene, uint64_t dt);
+        void updateProjectiles(SceneManager &scene, uint64_t dt);
 
         int timeElasped = 0;
         static unsigned int nbr_player;
@@ -180,6 +195,8 @@ namespace ecs
         /// @brief Link a missile type to a pair of trajectories
         static std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> _missilesTrajectories;
         static std::map<std::string, int> _spriteFrameCounts;
+        static std::map<std::string, float> _spriteRotations;
+        static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;
