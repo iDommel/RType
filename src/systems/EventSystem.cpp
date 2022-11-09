@@ -13,6 +13,7 @@
 #include "EventListener.hpp"
 #include "Window.hpp"
 #include "EventSystem.hpp"
+#include "GraphicSystem.hpp"
 
 namespace ecs
 {
@@ -73,6 +74,8 @@ namespace ecs
     {
         for (auto &it : listener->getMouseMappings()) {
             Vector2 pos = Window::getMousePosition();
+            pos.x /= GraphicSystem::horizontalScale;
+            pos.y /= GraphicSystem::verticalScale;
             if (it.second._pressed && Window::isMouseButtonPressed(it.first)) {
                 it.second._pressed(manager, pos);
                 break;

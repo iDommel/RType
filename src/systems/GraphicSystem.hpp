@@ -38,6 +38,8 @@ namespace ecs
          * @param entity The Entity that was removed
          */
         void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene) final;
+        static float horizontalScale;
+        static float verticalScale;
 
     private:
         void loadSprite(std::shared_ptr<IEntity> &entity);

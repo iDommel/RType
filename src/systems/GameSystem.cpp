@@ -729,7 +729,8 @@ namespace ecs
     {
         std::shared_ptr<Entity> cam = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
-        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
+        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(0, 0);
+        //std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
         std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
 
         cam->addComponent(camera)
