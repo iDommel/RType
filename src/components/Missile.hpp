@@ -9,6 +9,7 @@
 #define MISSILE_HPP
 
 #include "Component.hpp"
+#include <QtGlobal>
 
 namespace ecs
 {
@@ -21,11 +22,9 @@ namespace ecs
             EN,
             NB
         };
+        Missile(MissileType type);
 
-        Missile(MissileType type) : Component(Type::MISSILE), _missileType(type)
-        {
-            _isInitialized = true;
-        }
+        MissileType getMissileType() const;
 
     private:
         MissileType _missileType;

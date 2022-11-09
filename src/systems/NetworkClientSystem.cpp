@@ -49,9 +49,7 @@ namespace ecs
         for (auto &msg : _msgQueue) {
             if (msg.getMessageType() == MessageType::ENTITYMESSAGE)
                 processEntityMessage(msg, manager, dt);
-            else if (msg.getMessageType() == MessageType::TEXTMESSAGE && std::regex_match(msg.getText(), std::regex(std::string(RM_PLAYER) + " [1-4]"))) {
-                removePlayer(msg.getText(), manager);
-            } else if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+            else if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
                 if (waitCo && !_connected && msg.getNetworkMessageType() == NetworkMessageType::CONNECTION_OK) {
                     manager.setCurrentScene(SceneType::LOBBY);
                     waitCo = false;
@@ -65,17 +63,21 @@ namespace ecs
         _msgQueue.clear();
     }
 
-    void NetworkClientSystem::removePlayer(std::string s, SceneManager &sceneManager)
+    void NetworkClientSystem::removePlayer(long unsigned int id, SceneManager &sceneManager)
     {
-        unsigned int id = std::stoi(s.erase(0, s.find(" ") + 1));
-
-        for (auto &e : sceneManager.getCurrentScene()[{IEntity::Tags::PLAYER}]) {
-            auto player = Component::castComponent<Player>((*e)[IComponent::Type::PLAYER]);
+        auto e = sceneManager.getCurrentScene().getEntityById(id);
+        std::cout << "remove player " << id << std::endl;
+        for (auto &player : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
+            std::cout << "player " << player->getId() << std::endl;
             if (player->getId() == id) {
-                sceneManager.getCurrentScene().removeEntity(e);
+                sceneManager.getCurrentScene().removeEntity(player);
                 break;
             }
         }
+        if (e) {
+            sceneManager.getCurrentScene().removeEntity(e);
+        }
+        return;
     }
 
     void NetworkClientSystem::processEntityMessage(Message &message, SceneManager &sceneManager, uint64_t dt)
@@ -101,7 +103,7 @@ namespace ecs
                 handleEnemyUpdate(sceneManager, message, dt);
             break;
         case EntityAction::DELETE:
-            sceneManager.getCurrentScene().removeEntity(e);
+            removePlayer(id, sceneManager);
         default:
             break;
         }
