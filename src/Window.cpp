@@ -92,6 +92,11 @@ namespace ecs
         EndMode2D();
     }
 
+    void Window::toggleFullscreen()
+    {
+        ToggleFullscreen();
+    }
+
     bool Window::isMouseButtonPressed(int button)
     {
         return IsMouseButtonPressed(button);
@@ -183,17 +188,19 @@ namespace ecs
         SetExitKey(key);
     }
 
-    int Window::getScreenWidth()
+    const int Window::getScreenWidth()
     {
         int position = GetScreenWidth();
 
         return (position);
     }
 
-    int Window::getScreenHeight()
+    const int Window::getScreenHeight()
     {
         int position = GetScreenHeight();
 
+        if (position <= 0)
+            throw std::runtime_error("Invalid Screen Height");
         return (position);
     }
 }
