@@ -208,17 +208,16 @@ namespace ecs
         deconnectClient(client);
     }
 
-    void NetworkServerSystem::removePlayer(int id)
+    void NetworkServerSystem::removePlayer(long unsigned int id)
     {
-        for (auto entity : _sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
-            if (entity->getId() == id) {
-                std::cerr << "Removed entity" << std::endl;
-                _sceneManager.getCurrentScene().removeEntity(entity);
+        for (auto &player : _sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
+            if (player->getId() == id) {
+                _sceneManager.getCurrentScene().removeEntity(player);
                 break;
             }
         }
         for (auto &s : _senders)
-            writeMsg(Message(EntityAction::DELETE, (uint64_t)id));
+            writeMsg(Message(EntityAction::DELETE, id));
     }
 
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)

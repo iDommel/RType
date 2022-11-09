@@ -60,7 +60,8 @@ namespace ecs
         void handleMissileUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
         void handleEnemyUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
 
-        void removePlayer(std::string s, SceneManager &manager);
+        void removePlayer(long unsigned int id, SceneManager &manager);
+        void removeEntity(long unsigned int id, SceneManager &manager);
         void processEntityMessage(Message &msg, SceneManager &sceneManager, uint64_t deltaTime);
 
         std::vector<Message> _msgQueue;

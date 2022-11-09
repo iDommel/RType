@@ -46,6 +46,7 @@ namespace ecs
             TRAJECTORY,
             MISSILE,
             ENEMY,
+            WALL,
             NB_TAGS
         };
 

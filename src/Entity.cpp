@@ -66,6 +66,8 @@ namespace ecs
          {{IComponent::Type::ENEMY, IComponent::Type::POSITION, IComponent::Type::SPRITE, IComponent::Type::TRAJECTORY}}},
         {Entity::Tags::AI,
          {{IComponent::Type::VELOCITY, IComponent::Type::AI, IComponent::Type::POSITION}}},
+        {Entity::Tags::WALL,
+         {{IComponent::Type::WALL, IComponent::Type::POSITION, IComponent::Type::SPRITE, IComponent::Type::HITBOX}}},
         {Entity::Tags::ANIMATED_2D,
          {{IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::ANIMATION_2D}}}};
 
