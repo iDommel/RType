@@ -134,13 +134,12 @@ namespace ecs
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F}};
 
     std::map<std::string, Animation2D::AnimationType> GameSystem::_spriteAnimType = {
-            {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
-            {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
-            {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
-            {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
-            {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}
-    };
+        {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
+        {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
         {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
@@ -590,7 +589,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE ) {
+                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE) {
                         sceneManager.getCurrentScene().removeEntity(collider);
                         playersToDestroy.push_back(player);
                         Message playerMsg(EntityAction::DELETE, player->getId());
@@ -730,8 +729,7 @@ namespace ecs
         std::shared_ptr<Entity> cam = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
         std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(0, 0);
-        //std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
-        std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
+        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
 
         cam->addComponent(camera)
             .addComponent(pos)
@@ -962,7 +960,7 @@ namespace ecs
         sceneManager.getCurrentScene().addEntity(entity);
     }
 
-    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager& sceneManager, std::shared_ptr<Position> missilePos, IEntity::Tags targetType)
+    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> missilePos, IEntity::Tags targetType)
     {
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<Position> target = nullptr;
@@ -983,10 +981,9 @@ namespace ecs
         coeffDirX = (target->x + SCALE / 2 - missilePos->x) / distRef;
         coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
         trajectory = std::make_shared<Trajectory>(
-            [ coeffDirX ](float t) { return t * 4 * coeffDirX; },
-            [ coeffDirY ](float t) { return t * 4 * coeffDirY; },
-            missilePos
-        );
+            [coeffDirX](float t) { return t * 4 * coeffDirX; },
+            [coeffDirY](float t) { return t * 4 * coeffDirY; },
+            missilePos);
         return trajectory;
     }
 
