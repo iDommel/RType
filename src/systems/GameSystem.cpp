@@ -49,6 +49,7 @@
 #include "Trajectory.hpp"
 #include "Animation2D.hpp"
 #include "Enemy.hpp"
+#include "Text.hpp"
 
 namespace ecs
 {
@@ -294,7 +295,7 @@ namespace ecs
     std::shared_ptr<Entity> GameSystem::createText(std::string text, Position position, float fontSize, std::string path)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<String> component = std::make_shared<String>(text, "", fontSize, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<String> component = std::make_shared<String>(text, path, fontSize);
         std::shared_ptr<Position> component2 = std::make_shared<Position>(position);
 
 
