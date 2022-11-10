@@ -47,6 +47,7 @@
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 #include "Animation2D.hpp"
+#include "SpaceModule.hpp"
 
 namespace ecs
 {
@@ -264,6 +265,7 @@ namespace ecs
             return;
         if (Core::networkRole == NetworkRole::SERVER) {
             updatePlayers(sceneManager, dt);
+            updateModules(sceneManager, dt);
             updateProjectiles(sceneManager, dt);
             updateEnemies(sceneManager, dt);
         } else if (Core::networkRole == NetworkRole::CLIENT) {
@@ -605,9 +607,37 @@ namespace ecs
             splitVel.x = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
+
+            if (playerComp->getSpaceModule() == nullptr) {
+                // create space module ! ONLY FOR TESTS !
+                QUuid modId = QUuid::createUuid();
+                Position modPos(pos->x + SCALE * 2, pos->y);
+                playerComp->setSpaceModule(GameSystem::createSpaceModule(sceneManager, modId, modPos, player));
+                writeMsg(Message(EntityAction::CREATE, modId, EntityType::MODULE, modPos.getVector2(), 0));
+            }
         }
         for (auto &player : playersToDestroy) {
             sceneManager.getCurrentScene().removeEntity(player);
+        }
+    }
+
+    void GameSystem::updateModules(SceneManager &sceneManager, uint64_t dt)
+    {
+        auto modules = sceneManager.getCurrentScene()[IEntity::Tags::SPACE_MODULE];
+
+        for (auto &module : modules) {
+            auto pos = Component::castComponent<Position>((*module)[IComponent::Type::POSITION]);
+            auto vel = Component::castComponent<Velocity>((*module)[IComponent::Type::VELOCITY]);
+            auto hitbox = Component::castComponent<Hitbox>((*module)[IComponent::Type::HITBOX]);
+            auto splitVel = *vel;
+
+            splitVel.y = 0;
+            (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
+            (*hitbox) += splitVel * (float)(dt / 1000.0f);
+            splitVel.y = (*vel).y;
+            splitVel.x = 0;
+            (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
+            (*hitbox) += splitVel * (float)(dt / 1000.0f);
         }
     }
 
@@ -987,6 +1017,30 @@ namespace ecs
             missilePos
         );
         return trajectory;
+    }
+
+    std::shared_ptr<IEntity> GameSystem::createSpaceModule(SceneManager &manager, QUuid id, Position position, std::shared_ptr<IEntity> player)
+    {
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
+        std::shared_ptr<Position> pos = std::make_shared<Position>(position);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Player/Module.png", .0f, 2.0f);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(4, 24);
+        std::shared_ptr<SpaceModule> mod = std::make_shared<SpaceModule>(player);
+
+        entity->addComponent(pos)
+            .addComponent(anim)
+            .addComponent(mod)
+            .addComponent(sprite);
+        if (Core::networkRole == NetworkRole::SERVER) {
+            Rectangle rect = {pos->x, pos->y, SCALE / 2, SCALE / 2};
+            std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
+            std::shared_ptr<Velocity> velocity = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
+
+            entity->addComponent(hitbox)
+                .addComponent(velocity);
+        }
+        manager.getCurrentScene().addEntity(entity);
+        return entity;
     }
 
     void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene)

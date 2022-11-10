@@ -47,6 +47,11 @@ namespace ecs
         ///@brief gets the current blast power
         int getBlastPower() const;
 
+        /// @brief Gets the ptr to the space module associated, null otherwise
+        std::shared_ptr<IEntity> getSpaceModule();
+        /// @brief Associates spaceModule to the player
+        void setSpaceModule(std::shared_ptr<IEntity> spaceModule);
+
         /// @brief sets the velocity of the player to its speed value to the right
         void moveRight(SceneManager &manager, std::shared_ptr<IEntity> entity, float dT);
         /// @brief sets the velocity of the player to 0 to the right
@@ -124,6 +129,8 @@ namespace ecs
         std::string LEFT;
         std::string RIGHT;
         std::string BOMB;
+
+        std::shared_ptr<IEntity> _spaceModule = nullptr;
     };
 
 }

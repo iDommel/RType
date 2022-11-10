@@ -58,6 +58,11 @@ namespace ecs
             writeMsg(update);
         }
 
+        for (auto &mod : manager.getCurrentScene()[IEntity::Tags::SPACE_MODULE]) {
+            auto pos = Component::castComponent<Position>((*mod)[IComponent::Type::POSITION]);
+            writeMsg(Message(EntityAction::UPDATE, mod->getId(), EntityType::MODULE, pos->getVector2()));
+        }
+
         auto missiles = manager.getCurrentScene()[IEntity::Tags::MISSILE];
         for (auto &missile : missiles) {
             auto pos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);

@@ -62,6 +62,8 @@ namespace ecs
          {{IComponent::Type::MISSILE, IComponent::Type::POSITION, IComponent::Type::SPRITE}}},
         {Entity::Tags::ENEMY,
          {{IComponent::Type::ENEMY, IComponent::Type::POSITION, IComponent::Type::SPRITE, IComponent::Type::TRAJECTORY}}},
+        {Entity::Tags::SPACE_MODULE,
+         {{IComponent::Type::SPACE_MODULE, IComponent::Type::POSITION, IComponent::Type::SPRITE}}},
         {Entity::Tags::AI,
          {{IComponent::Type::VELOCITY, IComponent::Type::AI, IComponent::Type::POSITION}}},
         {Entity::Tags::WALL,

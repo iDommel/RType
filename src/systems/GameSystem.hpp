@@ -125,6 +125,13 @@ namespace ecs
         /// @param id ID of the entity
         static void createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id);
 
+        /// @param manager Scene manager
+        /// @param id ID of the new entity
+        /// @param position Position of the new space module
+        /// @param player Player associated to the new space module
+        /// @return Returns the new space module entity
+        static std::shared_ptr<IEntity> createSpaceModule(SceneManager &manager, QUuid id, Position position, std::shared_ptr<IEntity> player = nullptr);
+
     signals:
         void writeMsg(const Message &message);
 
@@ -193,6 +200,7 @@ namespace ecs
         void updatePlayers(SceneManager &scene, uint64_t dt);
         void updateEnemies(SceneManager &scene, uint64_t dt);
         void updateProjectiles(SceneManager &scene, uint64_t dt);
+        void updateModules(SceneManager &scene, uint64_t dt);
 
         void setAddNRmEntityCallbacks();
         std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityAddedCallbacks;

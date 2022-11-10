@@ -98,7 +98,8 @@ namespace ecs
             } else if (message.getEntityType() == EntityType::ENEMY) {
                 Vector2 pos = message.getEntityPosition();
                 GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
-            }
+            } else if (message.getEntityType() == EntityType::MODULE)
+                GameSystem::createSpaceModule(sceneManager, message.getEntityId(), Position(message.getEntityPosition()));
             break;
         case EntityAction::UPDATE:
             if (message.getEntityType() == EntityType::PLAYER)
@@ -107,6 +108,8 @@ namespace ecs
                 handleMissileUpdate(sceneManager, message, dt);
             else if (message.getEntityType() == EntityType::ENEMY)
                 handleEnemyUpdate(sceneManager, message, dt);
+            else if (message.getEntityType() == EntityType::MODULE)
+                handleSpaceModuleUpdate(sceneManager, message, dt);
             break;
         case EntityAction::DELETE:
             removeEntity(id, sceneManager);
@@ -167,6 +170,18 @@ namespace ecs
             if (enemy->getId() != msg.getEntityId())
                 continue;
             auto pos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            pos->x = msg.getEntityPosition().x;
+            pos->y = msg.getEntityPosition().y;
+            break;
+        }
+    }
+
+    void NetworkClientSystem::handleSpaceModuleUpdate(SceneManager &manager, const Message &msg, uint64_t dt)
+    {
+        for (auto &mod : manager.getCurrentScene()[IEntity::Tags::SPACE_MODULE]) {
+            if (mod->getId() != msg.getEntityId())
+                continue;
+            auto pos = Component::castComponent<Position>((*mod)[IComponent::Type::POSITION]);
             pos->x = msg.getEntityPosition().x;
             pos->y = msg.getEntityPosition().y;
             break;

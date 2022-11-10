@@ -59,6 +59,8 @@ namespace ecs
         void handlePlayerEvent(SceneManager &manager, const Message &msg, uint64_t deltaTime);
         void handleMissileUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
         void handleEnemyUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
+        void handleSpaceModuleUpdate(SceneManager &manager, const Message &msg, uint64_t dt);
+
 
         void removePlayer(QUuid id, SceneManager &manager);
         void removeEntity(QUuid id, SceneManager &manager);

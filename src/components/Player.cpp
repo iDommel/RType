@@ -169,6 +169,17 @@ namespace ecs
     {
         return _blastPower;
     }
+
+    std::shared_ptr<IEntity> Player::getSpaceModule()
+    {
+        return _spaceModule;
+    }
+
+    void Player::setSpaceModule(std::shared_ptr<IEntity> spaceModule)
+    {
+        _spaceModule = spaceModule;
+    }
+
     std::string Player::getUp()
     {
         return UP;
