@@ -27,8 +27,8 @@ namespace ecs
             throw std::invalid_argument("NetworkRole undefined");
     }
 
-    void ANetworkSystem::onEntityAdded(std::shared_ptr<IEntity>, SceneType) {}
+    void ANetworkSystem::onEntityAdded(std::shared_ptr<IEntity>, IScene &) {}
 
-    void ANetworkSystem::onEntityRemoved(std::shared_ptr<IEntity>) {}
+    void ANetworkSystem::onEntityRemoved(std::shared_ptr<IEntity>, IScene &) {}
 
 }

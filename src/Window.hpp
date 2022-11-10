@@ -61,6 +61,9 @@ namespace ecs
         static void endMode3D();
         /// @brief End 2D mode.
         static void endMode2D();
+        /// @brief get the screen width
+        /// @brief Toggle window state: fullscreen/windowed
+        static void toggleFullscreen();
         /// @brief Check if a mouse button has been pressed once
         static bool isMouseButtonPressed(int button);
         /// @brief Check if a mouse button is being pressed
@@ -100,9 +103,9 @@ namespace ecs
         ///  @brief Set a custom key to exit program(default is ESC)
         static void setExitKey(int key);
         /// @brief Get the screen width
-        static int getScreenWidth();
+        static const int getScreenWidth();
         /// @brief Get the screen height
-        static int getScreenHeight();
+        static const int getScreenHeight();
 
     private:
     };

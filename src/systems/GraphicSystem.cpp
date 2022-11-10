@@ -30,6 +30,8 @@
 
 namespace ecs
 {
+    float GraphicSystem::horizontalScale;
+    float GraphicSystem::verticalScale;
 
     GraphicSystem::GraphicSystem()
     {
@@ -37,7 +39,7 @@ namespace ecs
     void GraphicSystem::init(SceneManager &sceneManager)
     {
         std::cerr << "GraphicSystem::init" << std::endl;
-        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "R-Type");
+        _window = std::make_unique<Window>(::GetScreenWidth(), ::GetScreenHeight(), FLAG_WINDOW_RESIZABLE, "R-Type");
 
         for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
@@ -51,6 +53,8 @@ namespace ecs
 
     void GraphicSystem::update(SceneManager &sceneManager, uint64_t)
     {
+        horizontalScale = _window->getScreenWidth() / 1920.0f;
+        verticalScale = _window->getScreenHeight() / 1080.0f;
         for (auto &scene : sceneManager.getScenes())
             for (auto &e : (*scene.second)[IEntity::Tags::TEXT])
                 loadText(e);
@@ -87,6 +91,8 @@ namespace ecs
                     displaySprite(e);
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                     displayText(e);
+                // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                //     displayCollidable(e);
                 cam->getCamera().endDrawScope();
             }
         } else {
@@ -94,8 +100,6 @@ namespace ecs
                 displaySprite(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                 displayText(e);
-            // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-            //     displayCollidable(e);
         }
         _window->endDraw();
     }
@@ -105,7 +109,7 @@ namespace ecs
         std::cerr << "GraphicSystem::destroy" << std::endl;
     }
 
-    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType)
+    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D)) {
             std::cerr << "loadSprite" << std::endl;
@@ -117,7 +121,7 @@ namespace ecs
         }
     }
 
-    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D))
             unloadSprite(entity);
@@ -158,7 +162,7 @@ namespace ecs
         auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
         auto sprite = Component::castComponent<Sprite>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
-        Vector2 p = {pos->x, pos->y};
+        Vector2 p = {pos->x * horizontalScale, pos->y * verticalScale};
 
         // try {
         //     auto rect = (*entity)[IComponent::Type::RECT];
@@ -175,17 +179,17 @@ namespace ecs
             float height = _textures.at(sprite->getValue()).first->getHeight();
 
             Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
-            Rectangle destRec = {p.x, p.y, width * sprite->getScale(), height * sprite->getScale()};
+            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
 
-            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2, height / 2}, sprite->getRotation(), WHITE);
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
         } else {
             float width = _textures.at(sprite->getValue()).first->getWidth();
             float height = _textures.at(sprite->getValue()).first->getHeight();
 
             Rectangle sourceRec = {0, 0, width, height};
-            Rectangle destRec = {p.x, p.y, width * sprite->getScale(), height * sprite->getScale()};
+            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
 
-            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
         }
     }
 

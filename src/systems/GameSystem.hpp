@@ -21,6 +21,9 @@
 #include "AISystem.hpp"
 #include "ANetworkSystem.hpp"
 #include "Missile.hpp"
+#include "Enemy.hpp"
+#include "Trajectory.hpp"
+#include "Animation2D.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
@@ -60,12 +63,12 @@ namespace ecs
          * @param entity The Entity that was added
          * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene) final;
+        void onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene) final;
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
          */
-        void onEntityRemoved(std::shared_ptr<IEntity> entity) final;
+        void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene) final;
 
         static const std::string getBinding(int keyboard);
 
@@ -98,6 +101,29 @@ namespace ecs
         bool isNetworkActivated();
 
         static std::vector<Position> playerSpawns;
+        /// @brief Enemies to generate when launching game scene and their positions
+        static std::vector<std::pair<Enemy::EnemyType, Position>> enemies;
+
+        /// @brief Missile factory
+        /// @param sceneManager Scene manager
+        /// @param id Id of the new missile
+        /// @param pos Position of the new missile
+        /// @param type Missile type
+        /// @param targetType The type of the target if is a homing missile
+        static void createMissile(SceneManager &sceneManager, QUuid id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS);
+        /// @brief Generates missile trajectory functions for homing missile
+        /// @param sceneManager Scene manager
+        /// @param entityPos Position of the new missile
+        /// @param targetType The type of the target if is a homing missile
+        /// @return Returns a shared pointer on a Trajectory component
+        static std::shared_ptr<Trajectory> generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> entityPos, IEntity::Tags targetType);
+        /// @brief Enemy factory
+        /// @param scene Scene to add the enemy into
+        /// @param modId Enemy type
+        /// @param x X position
+        /// @param y Y position
+        /// @param id ID of the entity
+        static void createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id);
 
         static void createMissile(IScene &scene, long unsigned int id, Position pos, Missile::MissileType type);
 
@@ -105,7 +131,7 @@ namespace ecs
         void writeMsg(const Message &message);
 
     public slots:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, QUuid id, Position pos, bool isMe);
 
     private:
         /// @brief Read map file and generate all the game scene entities
@@ -114,16 +140,15 @@ namespace ecs
         /// @brief Choose what sprite choose for the entity
         /// @return Return the entity with the good sprite
         std::shared_ptr<Entity> whichWall(std::string mapAround, int x, int y);
-        /// @brief Choose what enemy generate
-        /// @return Return the good entity or Nullptr if no entity match
-        std::shared_ptr<Entity> whichEnemy(quint8 mobId, int x, int y);
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
         void createMusic(IScene &scene, std::string path);
         /// @brief Adds a entity with a sound component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
-        static void createSound(Scene &scene);
+        /// @param soundFile Filepath of the sound to be created
+        /// @param id ID of the new entity
+        static void createSound(IScene &scene, const std::string &soundFile, QUuid id);
         /// @brief Create an image entity
         /// @param path Path to the image to load
         /// @param position Position of the Image
@@ -145,7 +170,7 @@ namespace ecs
         void createSoundEvent(std::shared_ptr<Entity> &sound, std::string value);
         void createNumberEvent(std::shared_ptr<Entity> &entity, int nbr_player);
         void createSceneEvent(std::shared_ptr<Entity> &scene, SceneType sceneType);
-        void createBindingsEvent(std::shared_ptr<Entity> &entity, int id_player, int button);
+        void createBindingsEvent(std::shared_ptr<Entity> &entity, QUuid id_player, int button);
 
         /// @brief Create a MouseEvent that writes a msg through the NetworkSystem
         /// @param entity Entity to add the mouse event to
@@ -166,12 +191,17 @@ namespace ecs
         std::unique_ptr<IScene> createHelpMenu();
         std::unique_ptr<IScene> createEndMenu();
 
-        void changeBindings(SceneManager &SceneManager, int id_player, int button);
+        void changeBindings(SceneManager &SceneManager, QUuid id_player, int button);
         void replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
 
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
-        void updateEnemies(IScene &scene, uint64_t dt);
+        void updateEnemies(SceneManager &scene, uint64_t dt);
+        void updateProjectiles(SceneManager &scene, uint64_t dt);
+
+        void setAddNRmEntityCallbacks();
+        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityAddedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityRemovedCallbacks;
 
         int timeElasped = 0;
         static unsigned int nbr_player;
@@ -183,6 +213,8 @@ namespace ecs
         /// @brief Link a missile type to a pair of trajectories
         static std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> _missilesTrajectories;
         static std::map<std::string, int> _spriteFrameCounts;
+        static std::map<std::string, float> _spriteRotations;
+        static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;

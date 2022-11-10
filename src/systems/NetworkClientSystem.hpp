@@ -34,8 +34,7 @@ namespace ecs
         void destroy();
 
     signals:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
-        void createMissile(IScene &scene, long unsigned int id, Position pos);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, QUuid id, Position pos, bool isMe);
 
     public slots:
         /// @brief Sends msg to server
@@ -61,7 +60,8 @@ namespace ecs
         void handleMissileUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
         void handleEnemyUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
 
-        void removePlayer(std::string s, SceneManager &manager);
+        void removePlayer(QUuid id, SceneManager &manager);
+        void removeEntity(QUuid id, SceneManager &manager);
         void processEntityMessage(Message &msg, SceneManager &sceneManager, uint64_t deltaTime);
 
         std::vector<Message> _msgQueue;

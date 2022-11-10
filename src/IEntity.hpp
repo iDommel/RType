@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "components/IComponent.hpp"
+#include <QUuid>
 
 namespace ecs
 {
@@ -45,7 +46,9 @@ namespace ecs
             SOUND,
             TRAJECTORY,
             MISSILE,
-            ENEMY
+            ENEMY,
+            WALL,
+            NB_TAGS
         };
 
         virtual ~IEntity() = default;
@@ -89,7 +92,7 @@ namespace ecs
         virtual std::vector<std::shared_ptr<IComponent>> getFilteredComponents(std::vector<IComponent::Type> components) = 0;
 
         /// @brief Gets the entity identifier
-        virtual unsigned long int getId() const = 0;
+        virtual QUuid getId() const = 0;
 
         /**
          * @brief [] Operator overload that returns a pointer to a component or null

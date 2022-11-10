@@ -63,8 +63,6 @@ namespace ecs
         std::shared_ptr<Position> _targetSnap = nullptr;
         /// @brief _snapMode, set at true if you want to use extern value target to auto update it
         bool _snapMode = false;
-        /// @brief _id, used to identify the camera
-        int _id;
         std::shared_ptr<::Camera2D> _camera = nullptr;
     };
 }
