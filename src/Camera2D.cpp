@@ -50,11 +50,6 @@ namespace ecs
         _camera->target = pos;
     }
 
-    int Camera2D::getId(void) const
-    {
-        return _id;
-    }
-
     void Camera2D::update(void)
     {
         if (_snapMode) {

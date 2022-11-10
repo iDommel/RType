@@ -46,10 +46,7 @@
 #include "ParticleCloud.hpp"
 #include "ModelAnim.hpp"
 #include "Window.hpp"
-#include "Trajectory.hpp"
 #include "Animation2D.hpp"
-#include "Enemy.hpp"
-#include "Text.hpp"
 
 namespace ecs
 {
@@ -279,14 +276,6 @@ namespace ecs
                     animationComp->increment();
                 }
             }
-            updateEnemies(sceneManager.getCurrentScene(), dt);
-        }
-        for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
-            auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
-            auto pos = Component::castComponent<Position>((*camera)[IComponent::Type::POSITION]);
-            auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
-            *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
-            cameraComp->getCamera().update();
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
@@ -698,41 +687,6 @@ namespace ecs
         }
     }
 
-    void GameSystem::updateEnemies(IScene &scene, uint64_t dt)
-    {
-        auto enemies = scene[IEntity::Tags::ENEMY];
-
-        for (auto &enemy : enemies) {
-            auto enComp = Component::castComponent<Enemy>((*enemy)[IComponent::Type::ENEMY]);
-            auto enPos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
-            Position pos(enPos->x, enPos->y + (SCALE / 2));
-            if (enComp->isShootTime() && !enComp->isShooting()) {
-                // Shoot
-                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
-                emit writeMsg(msg);
-                if (enComp->getNbMissile() > 1) {
-                    enComp->setShooting(true);
-                    enComp->startSalvoTimer();
-                    enComp->getSalvo()++;
-                } else
-                    enComp->startShootTimer();
-            } else if (enComp->salvoTime() && enComp->isShooting()) {
-                // Shoot a salvo
-                GameSystem::createMissile(scene, Entity::idCounter, pos, Missile::MissileType::EN);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, pos.getVector2(), quint8(Missile::MissileType::EN));
-                emit writeMsg(msg);
-                enComp->getSalvo()++;
-                if (enComp->getSalvo() == enComp->getNbMissile()) {
-                    enComp->getSalvo() = 0;
-                    enComp->startShootTimer();
-                    enComp->setShooting(false);
-                } else
-                    enComp->startSalvoTimer();
-            }
-        }
-    }
-
     std::unique_ptr<IScene> GameSystem::createSplashScreenScene()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSplashScreenScene, this), SceneType::SPLASH);
@@ -752,7 +706,7 @@ namespace ecs
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
         std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
-        std::shared_ptr<Position> bgPos = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
+        std::shared_ptr<Position> bgPos = std::make_shared<Position>(::GetScreenWidth(), ::GetScreenHeight());
         std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/Play/Button Normal.png", Position(865, 407), 114, 38);
         std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/Icon/option.png", Position(0, 0), 32, 31);
         std::shared_ptr<Entity> manetteButtonEntity = createImage("assets/MainMenu/Icon/info.png", Position(15, 930), 5, 31);
@@ -773,7 +727,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createSettingMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSettingMenu, this), SceneType::OPTION);
-        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), 1920, 1080);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), ::GetScreenWidth(), ::GetScreenHeight());
         std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(0, 0), 25, 21);
         std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/Icon/minus.png", Position(820, 450), 24, 9);
         std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/Icon/plus.png", Position(1040, 450), 24, 24);
@@ -796,7 +750,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createHelpMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this), SceneType::HELP);
-        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), 1920, 1080);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), ::GetScreenWidth(), ::GetScreenHeight());
         std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(0, 0), 25, 21);
         std::shared_ptr<Entity> entity3 = createText("Welcome in our game: RType.", Position(650, 100), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity4 = createText("Commande", Position(850, 200), 40, "assets/Font/techno_hideo.ttf");
@@ -832,19 +786,6 @@ namespace ecs
         auto scene = ReadMap();
         scene->addEntity(create2DCamera(0, 0));
         return scene;
-    }
-
-    std::shared_ptr<IEntity> GameSystem::create2DCamera(int x, int y)
-    {
-        std::shared_ptr<Entity> cam = std::make_shared<Entity>();
-        std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
-        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
-        std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
-
-        cam->addComponent(camera)
-            .addComponent(pos)
-            .addComponent(vel);
-        return cam;
     }
 
     std::shared_ptr<IEntity> GameSystem::create2DCamera(int x, int y)

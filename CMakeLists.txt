@@ -15,8 +15,6 @@ set(CMAKE_AUTOMOC ON)
 # set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
 add_library(${LIBRARY_NAME}
     src/ModelAnimation.cpp
     src/Music.cpp

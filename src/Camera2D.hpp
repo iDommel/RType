@@ -48,8 +48,6 @@ namespace ecs
          */
         void setSnapedTarget(std::shared_ptr<Position> target);
 
-        int getId(void) const;
-
         /// @brief Update camera (target updated only if snap mode is on)
         void update(void);
         /// @brief Begin drawing scope (should be called before 2d drawing and after the clear)

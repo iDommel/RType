@@ -1,0 +1,24 @@
+name: Push to EPITECH repository
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: pandoc/latex
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pushes to another repository
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@devel
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: .
+          destination-github-username: 'EpitechPromo2025'
+          destination-repository-name: 'B-CPP-500-TLS-5-1-rtype-cyril.dehaese'
+          user-email: cyril.dehaese@epitech.eu
+          commit-message: See ORIGIN_COMMIT from $GITHUB_REF
+          target-branch: main

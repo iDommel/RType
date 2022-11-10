@@ -60,7 +60,7 @@ namespace ecs
          * @param spacing Spacing between characters
          * @param color Color of the text
          */
-        void drawEx(Vector2 pos, float fontSize = 10, float spacing = 1, Color tint = WHITE);
+        void drawEx(::Vector2 pos, float fontSize = 10, float spacing = 1, Color tint = WHITE);
 
         /**
          * @brief Draw text using Font and pro parameters (rotation)

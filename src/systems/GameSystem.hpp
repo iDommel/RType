@@ -125,8 +125,6 @@ namespace ecs
         /// @param id ID of the entity
         static void createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id);
 
-        static void createMissile(IScene &scene, long unsigned int id, Position pos, Missile::MissileType type);
-
     signals:
         void writeMsg(const Message &message);
 
@@ -185,7 +183,6 @@ namespace ecs
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();
-        std::unique_ptr<IScene> createMainMenuScene();
         std::unique_ptr<IScene> createLobbyScene();
         std::unique_ptr<IScene> createSettingMenu();
         std::unique_ptr<IScene> createHelpMenu();
