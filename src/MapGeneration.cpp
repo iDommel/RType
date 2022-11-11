@@ -64,28 +64,33 @@ namespace ecs
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
         std::shared_ptr<Enemy> enemyComponent = nullptr;
         std::shared_ptr<Sprite> sprite = nullptr;
+        std::shared_ptr<Animation2D> animation = nullptr;
         std::shared_ptr<Trajectory> trajectory = nullptr;
 
         if (mobId == Enemy::EnemyType::SCOUT) {
-            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1/RedEnemy1SS.png", 180.0f, 2.0f);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000);
+            animation = std::make_shared<Animation2D>(10, 12, Animation2D::AnimationType::LOOP);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return std::sin(a / 10) * 50; }),
                                                       position);
         } else if (mobId == Enemy::EnemyType::FIGHTER) {
-            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2/RedEnemy2SS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(10, 12, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_MISSILE, 5000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
         } else if (mobId == Enemy::EnemyType::TORPEDO) {
-            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3/RedEnemy3SS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(10, 12, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_SINUSOIDAL, 4000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
         } else if (mobId == Enemy::EnemyType::FRIGATE) {
-            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4/RedEnemy4SS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(12, 12, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000, 8);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
@@ -95,6 +100,7 @@ namespace ecs
             .addComponent(enemyComponent)
             .addComponent(hitbox)
             .addComponent(sprite)
+            .addComponent(animation)
             .addComponent(trajectory);
         scene.addEntity(entity);
     }
@@ -106,7 +112,7 @@ namespace ecs
         std::string path = Wall::getCorrespondingPath(mapAround);
 
         std::shared_ptr<Wall> wallComponent = std::make_shared<Wall>();
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 180.0f, 2.0f);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
         Rectangle rect = {position->x, position->y, SCALE, SCALE};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);

@@ -146,7 +146,13 @@ namespace ecs
         /// @param scene The scene to add the entity to
         /// @param soundFile Filepath of the sound to be created
         /// @param id ID of the new entity
-        static void createSound(IScene &scene, const std::string &soundFile, QUuid id);
+        static void createSound(IScene &scene, std::shared_ptr<IEntity>, const std::string &soundFile, QUuid id);
+        /// @brief Adds an entity with an Animation2D component to a scene
+        /// @param scene The scene to add the entity to
+        /// @param entity The entity that died
+        /// @param path Path to the animation
+        /// @param id ID of the new entity
+        static void createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, QUuid id);
         /// @brief Create an image entity
         /// @param path Path to the image to load
         /// @param position Position of the Image
@@ -197,8 +203,8 @@ namespace ecs
         void updateProjectiles(SceneManager &scene, uint64_t dt);
 
         void setAddNRmEntityCallbacks();
-        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityAddedCallbacks;
-        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityRemovedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityAddedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityRemovedCallbacks;
 
         int timeElasped = 0;
         static unsigned int nbr_player;
@@ -211,6 +217,8 @@ namespace ecs
         static std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> _missilesTrajectories;
         static std::map<std::string, int> _spriteFrameCounts;
         static std::map<std::string, float> _spriteRotations;
+        static std::map<std::string, std::string> _deathAnimations;
+        static std::map<std::string, int> _deathAnimationCount;
         static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
 
         CollideSystem _collideSystem;

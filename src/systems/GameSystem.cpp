@@ -124,23 +124,38 @@ namespace ecs
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4}};
 
-    std::map<std::string, float> GameSystem::_spriteRotations =
+    std::map<std::string, std::string> GameSystem::_deathAnimations =
         {
-            {"assets/Player/ChargedMissile.png", 0.0F},
-            {"assets/Player/BasicMissile.png", 0.0F},
-            {"assets/Player/MainShipSSP1.png", 0.0F},
-            {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 180.0F},
-            {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 180.0F},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F}};
+            {"assets/Enemies/RedEnemy1/RedEnemy1SS.png", "assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png"},
+            {"assets/Enemies/RedEnemy2/RedEnemy2SS.png", "assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png"},
+            {"assets/Enemies/RedEnemy3/RedEnemy3SS.png", "assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png"},
+            {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"}};
+
+    std::map<std::string, int> GameSystem::_deathAnimationCount =
+        {
+            {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
+            {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
+            {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9}};
+
+    std::map<std::string, float>
+
+        GameSystem::_spriteRotations =
+            {
+                {"assets/Player/ChargedMissile.png", 0.0F},
+                {"assets/Player/BasicMissile.png", 0.0F},
+                {"assets/Player/MainShipSSP1.png", 0.0F},
+                {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 180.0F},
+                {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 180.0F},
+                {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F}};
 
     std::map<std::string, Animation2D::AnimationType> GameSystem::_spriteAnimType = {
-            {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
-            {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
-            {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
-            {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
-            {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}
-    };
+        {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
+        {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
         {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
@@ -160,8 +175,7 @@ namespace ecs
         if (Core::networkRole == NetworkRole::CLIENT) {
             createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Game 2.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
-        }
-        else if (Core::networkRole == NetworkRole::SERVER)
+        } else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
         sceneManager.addScene(createEndMenu(), SceneType::END);
         _collideSystem.init(sceneManager);
@@ -171,7 +185,8 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/jump.wav", QUuid::createUuid());
+        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/jump.wav", QUuid::createUuid());
+        _onEntityRemovedCallbacks[IEntity::Tags::ENEMY] = std::bind(&GameSystem::createDeathAnimation, std::placeholders::_1, std::placeholders::_2, QUuid::createUuid());
     }
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
@@ -603,7 +618,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE ) {
+                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE) {
                         sceneManager.getCurrentScene().removeEntity(collider);
                         playersToDestroy.push_back(player);
                         Message playerMsg(EntityAction::DELETE, player->getId());
@@ -810,13 +825,29 @@ namespace ecs
         scene.addEntities({musicEntity});
     }
 
-    void GameSystem::createSound(IScene &scene, const std::string &file, QUuid id)
+    void GameSystem::createSound(IScene &scene, std::shared_ptr<IEntity>, const std::string &file, QUuid id)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(file);
 
         entity->addComponent(sound);
         scene.addEntity(entity);
+    }
+
+    void GameSystem::createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, QUuid id)
+    {
+        std::shared_ptr<Entity> deathEntity = std::make_shared<Entity>(id);
+
+        auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+        auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+        std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
+        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
+        std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_deathAnimationCount[_deathAnimations[sprite->getValue()]], 12, Animation2D::AnimationType::ONCE);
+
+        deathEntity->addComponent(deathAnimation)
+            .addComponent(deathSpriteSheet)
+            .addComponent(newPos);
+        scene.addEntity(deathEntity);
     }
 
     void GameSystem::activateNetwork()
@@ -1024,7 +1055,7 @@ namespace ecs
         sceneManager.getCurrentScene().addEntity(entity);
     }
 
-    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager& sceneManager, std::shared_ptr<Position> missilePos, IEntity::Tags targetType)
+    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> missilePos, IEntity::Tags targetType)
     {
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<Position> target = nullptr;
@@ -1045,10 +1076,9 @@ namespace ecs
         coeffDirX = (target->x + SCALE / 2 - missilePos->x) / distRef;
         coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
         trajectory = std::make_shared<Trajectory>(
-            [ coeffDirX ](float t) { return t * 4 * coeffDirX; },
-            [ coeffDirY ](float t) { return t * 4 * coeffDirY; },
-            missilePos
-        );
+            [coeffDirX](float t) { return t * 4 * coeffDirX; },
+            [coeffDirY](float t) { return t * 4 * coeffDirY; },
+            missilePos);
         return trajectory;
     }
 
@@ -1056,7 +1086,7 @@ namespace ecs
     {
         for (auto tag : entity->getTags()) {
             if (_onEntityAddedCallbacks.find(tag) != _onEntityAddedCallbacks.end()) {
-                _onEntityAddedCallbacks[tag](scene);
+                _onEntityAddedCallbacks[tag](scene, entity);
             }
         }
         _collideSystem.onEntityAdded(entity, scene);
@@ -1066,7 +1096,7 @@ namespace ecs
     {
         for (auto tag : entity->getTags()) {
             if (_onEntityRemovedCallbacks.find(tag) != _onEntityRemovedCallbacks.end()) {
-                _onEntityRemovedCallbacks[tag](scene);
+                _onEntityRemovedCallbacks[tag](scene, entity);
             }
         }
         _collideSystem.onEntityRemoved(entity, scene);
