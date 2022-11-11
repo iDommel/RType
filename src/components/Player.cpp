@@ -197,10 +197,12 @@ namespace ecs
             _isModuleBound = false;
             return;
         }
-        if (AVector::getDistance2D(posPlayerFront, *posModule) <= maxBoundingDist) {
+        float distFront = AVector::getDistance2D(posPlayerFront, *posModule);
+        float distBack = AVector::getDistance2D(posModuleFront, *posPlayer);
+        if (distFront <= maxBoundingDist && distFront <= distBack) {
             moduleComp->setBoundMode(SpaceModule::BoundMode::FRONT);
             _isModuleBound = true;
-        } else if (AVector::getDistance2D(posModuleFront, *posPlayer) <= maxBoundingDist) {
+        } else if (distBack <= maxBoundingDist) {
             moduleComp->setBoundMode(SpaceModule::BoundMode::BACK);
             _isModuleBound = true;
         }
