@@ -141,7 +141,7 @@ namespace ecs
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
-        static void createMusic(Scene &scene);
+        void createMusic(IScene &scene, std::string path);
         /// @brief Adds a entity with a sound component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to
         /// @param soundFile Filepath of the sound to be created
@@ -153,13 +153,13 @@ namespace ecs
         /// @param heigh Height of the Image
         /// @param width Width of the Image
         /// @return Returns a pointer to an entity with an Image Component with information on its position and size
-        std::shared_ptr<Entity> createImage(std::string path, Position position, int heigh, int width);
+        std::shared_ptr<Entity> createImage(std::string path, Position position, int heigh, int width, float rotation, float scale);
         /// @brief Create an Text entity
         /// @param text Text to display
         /// @param position Initial position of the text
         /// @param fontSize font size of the text
         /// @return Returns a pointer to an entity with an Text Component with information on its position and size
-        std::shared_ptr<Entity> createText(std::string text, Position position, float fontSize);
+        std::shared_ptr<Entity> createText(std::string text, Position position, float fontSize, std::string path);
         /// @brief Create a 3DCamera entity
         /// @param camPos Initial position of the camera
         /// @param camTarget Initial target of the camera
@@ -183,8 +183,10 @@ namespace ecs
         std::unique_ptr<IScene> createGameScene();
         std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();
-        std::unique_ptr<IScene> createMainMenuScene();
         std::unique_ptr<IScene> createLobbyScene();
+        std::unique_ptr<IScene> createSettingMenu();
+        std::unique_ptr<IScene> createHelpMenu();
+        std::unique_ptr<IScene> createEndMenu();
 
         void changeBindings(SceneManager &SceneManager, QUuid id_player, int button);
         void replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
