@@ -7,12 +7,15 @@
 files="./.files"
 dir_tmp="/tmp/install"
 
-login=$1
 defaultBuild="Release"
-user_build_type="${@:2}" # get all arguments after the first one
+if [ -z "$1" ]
+    then
+        build=$defaultBuild
+    else
+        build=$1
+fi
 
 ## fake install ?
-
 fake=0
 
 ## colors
@@ -133,6 +136,12 @@ function script_install
     sudo chmod 755 /usr/bin/$1
 }
 
+echo -ne $C_YELLOW
+line "-"
+echo "##> Using $build as build type"
+line "-"
+echo -ne $C_RST
+
 script_init
 
 script_header "MISE À JOUR DES PAQUETS DU SYSTÈME"
@@ -223,14 +232,14 @@ else
     sys_install pkg-config;
 fi;
 
-sudo -k
-
 script_header "LANCE CONAN"
 export CONAN_SYSREQUIRES_MODE=enabled
 sudo conan install . --install-folder cmake-build-release --build=missing -c tools.system.package_manager:mode=install
 
 script_header "CMAKE Build"
-sudo cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+sudo cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$build
 sudo cmake --build build
 
 script_header "VOTRE INSTALLATION EST FINI" $C_BWHITE
+
+sudo -k

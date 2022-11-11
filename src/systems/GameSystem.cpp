@@ -278,7 +278,7 @@ namespace ecs
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
             camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,//TODO: use cam or window size maybe
             camPos->y + 1080 + validBoundingZone);
 
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
@@ -323,7 +323,6 @@ namespace ecs
                     animationComp->increment();
                 }
             }
-            _collideSystem.update(sceneManager, dt);
         }
         for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
