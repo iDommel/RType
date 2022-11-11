@@ -152,16 +152,19 @@ namespace ecs
     {
         std::cerr << "GameSystem::init" << std::endl;
         sceneManager.addScene(createSplashScreenScene(), SceneType::SPLASH);
-        // sceneManager.addScene(createMainMenuScene(), SceneType::MAIN_MENU);
         sceneManager.addScene(createConnectionScene(), SceneType::CONNECTION);
         sceneManager.addScene(createLobbyScene(), SceneType::LOBBY);
+        sceneManager.addScene(createSettingMenu(), SceneType::SOUND);
+        sceneManager.addScene(createHelpMenu(), SceneType::HELP);
         sceneManager.addScene(createGameScene(), SceneType::GAME);
-        if (Core::networkRole == NetworkRole::CLIENT)
+        if (Core::networkRole == NetworkRole::CLIENT) {
+            createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Game 2.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
+        }
         else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
+        sceneManager.addScene(createEndMenu(), SceneType::END);
         _collideSystem.init(sceneManager);
-        AudioDevice::getMasterVolume() = 0.5;
         _aiSystem.init(sceneManager);
         setAddNRmEntityCallbacks();
     }
@@ -286,7 +289,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createConnectionScene()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createConnectionScene, this), SceneType::CONNECTION);
-        std::shared_ptr<Entity> entity = createText("Waiting for connection...", Position(200, 150), 30);
+        std::shared_ptr<Entity> entity = createText("Waiting for connection...", Position(200, 150), 30, "assets/Font/techno_hideo.ttf");
 
         scene->addEntity(entity);
         return scene;
@@ -298,10 +301,10 @@ namespace ecs
         _collideSystem.destroy();
     }
 
-    std::shared_ptr<Entity> GameSystem::createImage(std::string path, Position position, int heigh, int width)
+    std::shared_ptr<Entity> GameSystem::createImage(std::string path, Position position, int heigh, int width, float rotation = 0.0f, float scale = 1.0f)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>(path);
+        std::shared_ptr<Sprite> component = std::make_shared<Sprite>(path, rotation, scale);
         std::shared_ptr<Position> component2 = std::make_shared<Position>(position);
         std::shared_ptr<Rect> component3 = std::make_shared<Rect>(0, 0, heigh, width);
 
@@ -311,10 +314,10 @@ namespace ecs
         return (entity);
     }
 
-    std::shared_ptr<Entity> GameSystem::createText(std::string text, Position position, float fontSize)
+    std::shared_ptr<Entity> GameSystem::createText(std::string text, Position position, float fontSize, std::string path)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<String> component = std::make_shared<String>(text, "", fontSize);
+        std::shared_ptr<String> component = std::make_shared<String>(text, path, fontSize);
         std::shared_ptr<Position> component2 = std::make_shared<Position>(position);
 
         entity->addComponent(component2)
@@ -335,14 +338,24 @@ namespace ecs
                     auto comp2 = sceneManger.getCurrentScene()[IEntity::Tags::TEXT][2];
                     auto text = (*comp2)[IComponent::Type::TEXT];
                     auto value2 = Component::castComponent<String>(text);
-                    if (AudioDevice::getMasterVolume() < 1 && value == "+") {
-                        AudioDevice::getMasterVolume() += 0.1;
-                        AudioDevice::setVolume(AudioDevice::getMasterVolume());
-                        value2->getValue() = std::to_string(int(AudioDevice::getMasterVolume() * 100));
-                    } else if (AudioDevice::getMasterVolume() >= 0.1 && value == "-") {
-                        AudioDevice::getMasterVolume() -= 0.1;
-                        AudioDevice::setVolume(AudioDevice::getMasterVolume());
-                        value2->getValue() = std::to_string(int(AudioDevice::getMasterVolume() * 100));
+                    if ((value == "+" || value == "-") && AudioDevice::isMute) {
+                        AudioDevice::isMute = false;
+                        AudioDevice::setVolume(AudioDevice::oldVolume);
+                    }
+                    if (AudioDevice::masterVolume <= 1 && value == "+") {
+                        AudioDevice::setVolume(AudioDevice::masterVolume + 0.1);
+                        value2->getValue() = std::to_string(int(AudioDevice::masterVolume * 100));
+                    } else if (AudioDevice::masterVolume >= 0.1 && value == "-") {
+                        AudioDevice::setVolume(AudioDevice::masterVolume - 0.1);
+                        value2->getValue() = std::to_string(int(AudioDevice::masterVolume * 100));
+                    }
+                    if (value == "unmute" && AudioDevice::isMute == true) {
+                        std::cerr << "unmute: " << AudioDevice::oldVolume << std::endl;
+                        AudioDevice::isMute = false;
+                        AudioDevice::setVolume(AudioDevice::oldVolume > 1 ? 1 : AudioDevice::oldVolume);
+                    } else if (value == "mute" && AudioDevice::isMute == false) {
+                        AudioDevice::isMute = true;
+                        AudioDevice::setVolume(0);
                     }
                 } },
                                       [](SceneManager &, Vector2 /*mousePosition*/) {},
@@ -680,26 +693,11 @@ namespace ecs
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(550, 350);
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
-        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(200, 50), 50);
-        std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(250, 100), 30);
-        std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nLéo Maman\nCyril Dehaese\nRoxanne Baert", Position(10, 450), 15);
+        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(800, 50), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(700, 100), 25, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nCyril Dehaese\nRoxane Baert", Position(10, 450), 15, "assets/Font/techno_hideo.ttf");
 
         scene->addEntities({entity, entity2, entity3, entity4});
-        return scene;
-    }
-
-    std::unique_ptr<ecs::IScene> GameSystem::createMainMenuScene()
-    {
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createMainMenuScene, this), SceneType::MAIN_MENU);
-        std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
-        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>("assets/Background/Background1.png");
-        std::shared_ptr<Position> component2 = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
-
-        backgroundEntity->addComponent(component2)
-            .addComponent(component);
-        createSceneEvent(playButtonEntity, SceneType::GAME);
-        scene->addEntities({backgroundEntity, playButtonEntity});
         return scene;
     }
 
@@ -707,15 +705,80 @@ namespace ecs
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background1.png");
-        std::shared_ptr<Position> bgPos = std::make_shared<Position>(800 / 2 - 400, 600 / 2 - 300);
-        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/play_unpressed.png", Position(800 / 2 - 60, 500 / 2 - 18), 120, 28);
+        std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
+        std::shared_ptr<Position> bgPos = std::make_shared<Position>(960, 540);
+        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/Play/Button Normal.png", Position(843, 400), 274, 91, 0.0f, 2.4f);
+        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/Icon/option.png", Position(45, 45), 75, 75, 0.0f, 2.4f);
+        std::shared_ptr<Entity> manetteButtonEntity = createImage("assets/MainMenu/Icon/info.png", Position(15, 950), 20, 75, 0.0f, 2.4f);
+        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/Quit/Button Normal.png", Position(843, 550), 274, 91, 0.0f, 2.4f);
 
         backgroundEntity->addComponent(bg)
             .addComponent(bgPos);
+        createMusic(*scene, "assets/Music/Menu.ogg");
         createMsgEvent(playButtonEntity, NetworkMessageType::READY);
-        scene->addEntities({backgroundEntity, playButtonEntity});
+        createSceneEvent(optionButtonEntity, SceneType::SOUND);
+        createSceneEvent(manetteButtonEntity, SceneType::HELP);
+        createMsgEvent(quitButtonEntity, NetworkMessageType::DISCONNECTED);
+        createSceneEvent(quitButtonEntity, SceneType::NONE);
+        scene->addEntities({backgroundEntity, playButtonEntity, optionButtonEntity, manetteButtonEntity, quitButtonEntity});
         return scene;
+    }
+
+    std::unique_ptr<IScene> GameSystem::createSettingMenu()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSettingMenu, this), SceneType::OPTION);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/Icon/minus.png", Position(750, 490), 60, 24, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/Icon/plus.png", Position(1030, 480), 60, 60, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity5 = createImage("assets/MainMenu/Icon/sound off.png", Position(760, 580), 84, 60, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity6 = createImage("assets/MainMenu/Icon/sound on.png", Position(1035, 580), 84, 60, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity7 = createText("Option Menu", Position(600, 100), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity8 = createText("Volume", Position(700, 200), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity9 = createText("50", Position(820, 450), 80, "assets/Font/techno_hideo.ttf");
+
+        createMusic(*scene, "assets/Music/Menu.ogg");
+        createSceneEvent(entity2, SceneType::PREVIOUS);
+        createSoundEvent(entity3, "-");
+        createSoundEvent(entity4, "+");
+        createSoundEvent(entity5, "mute");
+        createSoundEvent(entity6, "unmute");
+        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        return scene;
+    }
+
+    std::unique_ptr<IScene> GameSystem::createHelpMenu()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this), SceneType::HELP);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity3 = createText("Welcome in our game: RType.", Position(100, 100), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity4 = createText("Commande", Position(150, 250), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity5 = createText("Left: Left", Position(150, 350), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity6 = createText("Right: Right", Position(150, 450), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity7 = createText("Up: Up", Position(150, 550), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity8 = createText("Down: Down", Position(150, 650), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(150, 750), 40, "assets/Font/techno_hideo.ttf");
+
+        createMusic(*scene, "assets/Music/Menu.ogg");
+        createSceneEvent(entity2, SceneType::PREVIOUS);
+
+        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        return scene;
+    }
+
+    std::unique_ptr<IScene> GameSystem::createEndMenu()
+    {
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndMenu, this), SceneType::END);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Background.png", Position(0, 0), 800, 600);
+        std::shared_ptr<Entity> entity2 = createText("End", Position(350, 25), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/Quit/Button Normal.png", Position(800 / 2 - 60, 800 / 2 - 18), 120, 28);
+
+        createMusic(*scene, "assets/Music/Menu.ogg");
+        createMsgEvent(quitButtonEntity, NetworkMessageType::DISCONNECTED);
+        createSceneEvent(quitButtonEntity, SceneType::NONE);
+        scene->addEntities({entity1, entity2, quitButtonEntity});
+        return (scene);
     }
 
     std::unique_ptr<IScene> GameSystem::createGameScene()
@@ -738,10 +801,10 @@ namespace ecs
         return cam;
     }
 
-    void GameSystem::createMusic(Scene &scene)
+    void GameSystem::createMusic(IScene &scene, std::string path)
     {
         std::shared_ptr<Entity> musicEntity = std::make_shared<Entity>();
-        std::shared_ptr<MusicComponent> musicComponent = std::make_shared<MusicComponent>("assets/music/exports/space-asteroids.ogg");
+        std::shared_ptr<MusicComponent> musicComponent = std::make_shared<MusicComponent>(path);
 
         musicEntity->addComponent(musicComponent);
         scene.addEntities({musicEntity});

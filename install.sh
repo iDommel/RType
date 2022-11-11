@@ -28,16 +28,16 @@ function line
     cols=$(tput cols)
     char=$1
     color=$2
-    
+
     if test "$color" != ""; then
         echo -ne $color
     fi
-    
+
     for i in $(eval echo "{1..$cols}"); do
         echo -n $char
     done
     echo
-    
+
     if test "$color" != ""; then
         echo -ne $C_RST
     fi
@@ -49,7 +49,7 @@ function script_header
     if test "$color" = ""; then
         color=$C_RED
     fi
-    
+
     echo -ne $color
     line "-"
     echo "##> "$1
@@ -67,14 +67,14 @@ function script_init
 {
     os="void"
     get_os_type
-    
+
     if test "$os" = "void"; then
         line "#" $C_YELLOW
         script_header "VOTRE DISTRIBUTION N'EST PAS SUPPORTÉE..."
         line "#" $C_YELLOW
         exit 42
     fi
-    
+
     rm -rf $dir_tmp
     mkdir $dir_tmp
 }
@@ -90,7 +90,7 @@ function sys_upgrade
             sudo dnf -y update
         ;;
         ubuntu)
-            sudo apt -y update; sudo apt -y upgrade
+            sudo apt -y update
         ;;
     esac
 }
@@ -98,7 +98,7 @@ function sys_upgrade
 function sys_install
 {
     package_name=$1
-    
+
     function get_cmd_install
     {
         case "$os" in
@@ -108,19 +108,18 @@ function sys_install
             ubuntu)
                 echo "apt -y install"
             ;;
-            
         esac
     }
-    
+
     if test -z "$cmd_install"; then
         cmd_install=$(get_cmd_install)
     fi
-    
+
     if test $fake -eq 1; then
         echo "Installing" $package_name "(command:" $cmd_install $package_name ")"
         return
     fi
-    
+
     sudo $cmd_install $package_name
 }
 
@@ -171,7 +170,9 @@ else
     sys_install git;
 fi;
 
-##which python marche pas
+script_header "INSTALLATION DE WHICH"
+sys_install which;
+
 script_header "INSTALLATION DE PYTHON"
 if (which python3); then
     echo "python already installed";
@@ -184,7 +185,7 @@ script_header "INSTALLATION DE PIP"
 if (which pip); then
     echo "pip already installed";
 else
-    echo "python not installed";
+    echo "pip not installed";
     sys_install pip python3-pip;
 fi;
 
@@ -206,6 +207,14 @@ else
     sys_install perl-FindBin;
 fi;
 
+script_header "INSTALLATION DE PERL"
+if (which perl); then
+    echo "perl already installed";
+else
+    echo "perl not installed";
+    sys_install perl;
+fi;
+
 script_header "INSTALLATION DE PKG"
 if (which pkg-config); then
     echo "pkg-config already installed";
@@ -213,12 +222,15 @@ else
     echo "pkg-config not installed";
     sys_install pkg-config;
 fi;
+
 sudo -k
+
 script_header "LANCE CONAN"
 export CONAN_SYSREQUIRES_MODE=enabled
 sudo conan install . --install-folder cmake-build-release --build=missing -c tools.system.package_manager:mode=install
+
 script_header "CMAKE Build"
-sudo cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE="${user_build_type:-$defaultBuild}"
+sudo cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 sudo cmake --build build
 
 script_header "VOTRE INSTALLATION EST FINI" $C_BWHITE

@@ -312,7 +312,7 @@ namespace ecs
         auto text = Component::castComponent<String>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
 
-        _texts.at(text->getValue()).first->draw(pos->x, pos->y, text->getFontSize(), BLACK);
+        _texts.at(text->getValue()).first->drawEx({pos->x, pos->y}, text->getFontSize(), 1, BLACK);
     }
 
     void GraphicSystem::loadText(std::shared_ptr<IEntity> &entity)
