@@ -57,10 +57,6 @@ namespace ecs
 
     void Player::handleBonus(const Bonus &bonus)
     {
-        if (bonus.getBonusType() == Bonus::Type::SPEED)
-            _speed += 10;
-        else if (bonus.getBonusType() == Bonus::Type::POWER)
-            _blastPower++;
     }
 
     void Player::moveRight(SceneManager &, std::shared_ptr<IEntity> entity, float)

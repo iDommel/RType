@@ -100,6 +100,8 @@ namespace ecs
                 GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
             } else if (message.getEntityType() == EntityType::MODULE)
                 GameSystem::createSpaceModule(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), message.getArg());
+            else if (message.getEntityType() == EntityType::BONUS)
+                sceneManager.getCurrentScene().addEntity(GameSystem::createBonus(message.getEntityId(), Position(message.getEntityPosition())));
             break;
         case EntityAction::UPDATE:
             if (message.getEntityType() == EntityType::PLAYER)

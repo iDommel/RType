@@ -638,6 +638,16 @@ namespace ecs
                         writeMsg(missileMsg);
                         writeMsg(playerMsg);
                     }
+                } else if (collider->hasTag(IEntity::Tags::BONUS)) {
+                    auto bonus = Component::castComponent<Bonus>((*collider)[IComponent::Type::BONUS]);
+                    if (bonus->getBonusType() == Bonus::Type::MODULE && playerComp->getSpaceModule() == nullptr) {
+                        QUuid modId = QUuid::createUuid();
+                        auto modPos = Component::castComponent<Position>((*collider)[IComponent::Type::POSITION]);
+                        playerComp->setSpaceModule(GameSystem::createSpaceModule(sceneManager, modId, *modPos, playerComp->getId(), player));
+                        writeMsg(Message(EntityAction::CREATE, modId, EntityType::MODULE, modPos->getVector2(), quint8(playerComp->getId())));
+                    }
+                    writeMsg(Message(EntityAction::DELETE, collider->getId()));
+                    sceneManager.getCurrentScene().removeEntity(collider);
                 }
             }
 
@@ -645,14 +655,6 @@ namespace ecs
             splitVel.x = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
-
-            if (playerComp->getSpaceModule() == nullptr) {
-                // create space module ! ONLY FOR TESTS !
-                QUuid modId = QUuid::createUuid();
-                Position modPos(pos->x + SCALE * 2, pos->y);
-                playerComp->setSpaceModule(GameSystem::createSpaceModule(sceneManager, modId, modPos, playerComp->getId(), player));
-                writeMsg(Message(EntityAction::CREATE, modId, EntityType::MODULE, modPos.getVector2(), quint8(playerComp->getId())));
-            }
         }
         for (auto &player : playersToDestroy) {
             sceneManager.getCurrentScene().removeEntity(player);
@@ -738,6 +740,11 @@ namespace ecs
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
                         missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                        auto bonus = enComp->lootBonus(*enPos);
+                        if (bonus != nullptr) {
+                            sceneManager.getCurrentScene().addEntity(bonus);
+                            writeMsg(Message(EntityAction::CREATE, bonus->getId(), EntityType::BONUS, enPos->getVector2(), 0));
+                        }
                         enemiesToDestroy.push_back(enemy);
                         sceneManager.getCurrentScene().removeEntity(collider);
                         Message enemyMsg(EntityAction::DELETE, enemy->getId());
@@ -1203,6 +1210,24 @@ namespace ecs
         }
         manager.getCurrentScene().addEntity(entity);
         return entity;
+    }
+
+    std::shared_ptr<IEntity> GameSystem::createBonus(QUuid id, Position pos)
+    {
+        std::shared_ptr<Entity> bonus = std::make_shared<Entity>(id);
+        std::shared_ptr<Bonus> bonusComp = std::make_shared<Bonus>(Bonus::Type::MODULE);
+        std::shared_ptr<Position> bonusPos = std::make_shared<Position>(pos);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Bonus/Bonus.png", 0.0f, 2.0f);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(6, 24);
+        Rectangle rect = {pos.x, pos.y, SCALE, SCALE};
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
+
+        bonus->addComponent(bonusComp)
+            .addComponent(anim)
+            .addComponent(sprite)
+            .addComponent(hitbox)
+            .addComponent(bonusPos);
+        return bonus;
     }
 
     void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene)

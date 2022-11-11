@@ -140,6 +140,8 @@ namespace ecs
         /// @return Returns the new space module entity
         static std::shared_ptr<IEntity> createSpaceModule(SceneManager &manager, QUuid id, Position position, uint8_t playerNb = 0, std::shared_ptr<IEntity> player = nullptr);
 
+        static std::shared_ptr<IEntity> createBonus(QUuid id, Position pos);
+
     signals:
         void writeMsg(const Message &message);
 
