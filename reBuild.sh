@@ -39,7 +39,8 @@ line "-"
 echo "##> Rebuild - Cmake"
 line "-"
 echo -ne $C_RST
-if [ $1 = "Re" ] ; then
+
+if [ "$1" = "Re" ] ; then
     echo -ne $C_YELLOW
     line "-"
     echo "##> Rebuild from scratch - Cmake"
