@@ -60,13 +60,13 @@ namespace ecs
          * @param entity Entity to load
          * @param scene Scene to add entity into
          */
-        void onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene);
+        void onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene);
 
         /**
          * @brief Call each onEntityRemoved system function, set as removeEntity callback
          * @param entity Entity to unload
          */
-        void onEntityRemoved(std::shared_ptr<IEntity> entity);
+        void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene);
 
         /// @brief Network role: Client or Server
         static NetworkRole networkRole;
@@ -83,7 +83,7 @@ namespace ecs
         std::map<SystemType, ISystem *> _systems;
         SceneManager _sceneManager;
         bool _end = false;
-        std::chrono::_V2::system_clock::time_point _clock;
+        std::chrono::high_resolution_clock::time_point _clock;
         bool _running = false;
         std::string _ip;
         int _port;

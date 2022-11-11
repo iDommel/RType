@@ -65,6 +65,14 @@ namespace ecs
             throw std::runtime_error("3d setter used on non-3d Hitbox");
     }
 
+    void Hitbox::setRect(Rectangle rect)
+    {
+        if (!_is3D)
+            _rect = std::make_unique<Rectangle>(rect);
+        else
+            throw std::runtime_error("2d setter used on non-2d Hitbox");
+    }
+
     Rectangle Hitbox::getRect(void) const
     {
         if (!_is3D)

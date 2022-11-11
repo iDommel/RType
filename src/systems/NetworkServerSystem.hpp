@@ -50,27 +50,27 @@ namespace ecs
 
     signals:
         void changeScene(SceneType scene);
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, long unsigned int id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int keyModule, QUuid id, Position pos, bool isMe);
 
     private:
         void connectClient(std::pair<QString, unsigned short> client);
         void deconnectClient(std::pair<QString, unsigned short> client);
         void setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &sceneManager);
-        void removePlayer(int id);
+        void removePlayer(QUuid id);
 
         /// @brief Gets a player event message and moves entities accordingly
         /// @param manager SceneManager reference
         /// @param msg The received message
         /// @param id Player ID
         /// @param deltaTime Time in milliseconds since last update
-        void handlePlayerEvent(SceneManager &manager, const Message &msg, int id, uint64_t deltaTime);
+        void handlePlayerEvent(SceneManager &manager, const Message &msg, QUuid id, uint64_t deltaTime);
 
         void sendServerUpdates(SceneManager &manager, uint64_t deltaTime);
         std::vector<Message> _msgQueue;
         std::vector<std::pair<QString /*addr*/, unsigned short /*port*/>> _senders;
         std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, ANetworkSystem::ClientState> _states;
         int _players = 0;
-        std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, unsigned long int> _playersId;
+        std::map<std::pair<QString /*addr*/, unsigned short /*port*/>, QUuid> _playersId;
         std::map<std::pair<QString, unsigned short> /* client */, QTimer> _timers;
 
         SceneManager &_sceneManager;

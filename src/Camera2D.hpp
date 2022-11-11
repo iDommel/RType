@@ -48,8 +48,6 @@ namespace ecs
          */
         void setSnapedTarget(std::shared_ptr<Position> target);
 
-        int getId(void) const;
-
         /// @brief Update camera (target updated only if snap mode is on)
         void update(void);
         /// @brief Begin drawing scope (should be called before 2d drawing and after the clear)
@@ -63,8 +61,6 @@ namespace ecs
         std::shared_ptr<Position> _targetSnap = nullptr;
         /// @brief _snapMode, set at true if you want to use extern value target to auto update it
         bool _snapMode = false;
-        /// @brief _id, used to identify the camera
-        int _id;
         std::shared_ptr<::Camera2D> _camera = nullptr;
     };
 }

@@ -1,6 +1,9 @@
 # RType
 Repository for the R-Type project
 
+# Open Port
+    firewall-cmd --add-port=4000/tcp --permanent
+
 # Compilation:
     sh install.sh [Optional build type arg=(Release/Debug/ect)]
 
@@ -32,6 +35,13 @@ Example to launch game on Localhost:8080
     ./r-type_server "127.0.0.1" 8080
     ./r-type_client "127.0.0.1" 8080
 
+To launch on multiple devices:
+1. have the two machines be connected on the same
+local network.
+2. The host needs to gets his ip with a command like ifconfig
+3. he needs to open up a port using: firewall-cmd --add-port=8080/udp
+4. The host then opens up the server using his ip and 8080 port, and every
+   connecting client uses these too.
 # Language:
 Use english EVERYWHERE !
 

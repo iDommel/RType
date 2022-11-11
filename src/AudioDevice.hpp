@@ -24,15 +24,12 @@ namespace ecs
         ///  @brief Set music volume
         static void setVolume(float volume);
 
-        static float &getMasterVolume()
-        {
-            static float masterVolume;
-            return masterVolume;
-        };
+        static float masterVolume;
+        static float oldVolume;
+        static bool isMute;
 
     protected:
     private:
-        static float masterVolume;
     };
 }
 

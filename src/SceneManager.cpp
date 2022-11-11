@@ -78,7 +78,7 @@ namespace ecs
         return _scenes;
     }
 
-    void SceneManager::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, SceneType)> callback)
+    void SceneManager::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback)
     {
         for (auto &scene : _scenes) {
             scene.second->setAddEntityCallback(callback);
@@ -95,7 +95,7 @@ namespace ecs
         return _shouldClose;
     }
 
-    void SceneManager::setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback)
+    void SceneManager::setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback)
     {
         for (auto &scene : _scenes) {
             scene.second->setRemoveEntityCallback(callback);

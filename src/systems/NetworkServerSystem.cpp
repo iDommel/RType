@@ -56,14 +56,26 @@ namespace ecs
 
         for (auto &player : players) {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
-            Message update(EntityAction::UPDATE, (uint64_t)player->getId(), EntityType::PLAYER, pos->getVector2());
+            Message update(EntityAction::UPDATE, player->getId(), EntityType::PLAYER, pos->getVector2());
             writeMsg(update);
+        }
+
+        for (auto &mod : manager.getCurrentScene()[IEntity::Tags::SPACE_MODULE]) {
+            auto pos = Component::castComponent<Position>((*mod)[IComponent::Type::POSITION]);
+            writeMsg(Message(EntityAction::UPDATE, mod->getId(), EntityType::MODULE, pos->getVector2()));
         }
 
         auto missiles = manager.getCurrentScene()[IEntity::Tags::MISSILE];
         for (auto &missile : missiles) {
             auto pos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
-            Message msg(EntityAction::UPDATE, (uint64_t)missile->getId(), EntityType::MISSILE, pos->getVector2());
+            Message msg(EntityAction::UPDATE, missile->getId(), EntityType::MISSILE, pos->getVector2());
+            writeMsg(msg);
+        }
+
+        auto enemies = manager.getCurrentScene()[IEntity::Tags::ENEMY];
+        for (auto enemy : enemies) {
+            auto pos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            Message msg(EntityAction::UPDATE, enemy->getId(), EntityType::ENEMY, pos->getVector2());
             writeMsg(msg);
         }
 
@@ -77,7 +89,7 @@ namespace ecs
         }
     }
 
-    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, int id, uint64_t dt)
+    void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, QUuid id, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
         KeyState keyState = message.getKeyState();
@@ -87,12 +99,14 @@ namespace ecs
 
         for (auto &player : players) {
             playerComp = Component::castComponent<Player>((*player)[IComponent::Type::PLAYER]);
-            if (playerComp->getId() == id) {
+            if (player->getId() == id) {
                 entity = player;
                 break;
             }
         }
 
+        if (!entity)
+            return;
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
 
         switch (key) {
@@ -124,15 +138,22 @@ namespace ecs
             if (keyState == KeyState::PRESSED)
                 playerComp->startClock();
             else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
-                playerComp->startShootCooldownTimer();
-                if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000)
-                    return;
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
-                GameSystem::createMissile(manager.getCurrentScene(), Entity::idCounter, Position(missilePos), Missile::MissileType::PL_SIMPLE);
-                Message msg(EntityAction::CREATE, Entity::idCounter++, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::PL_SIMPLE));
+                QUuid idMissile = QUuid::createUuid();
+                Missile::MissileType type = (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000 ? Missile::MissileType::P_CONDENSED : Missile::MissileType::P_SIMPLE);
+                Message msg(EntityAction::CREATE, idMissile, EntityType::MISSILE, missilePos, quint8(type));
+
+                GameSystem::createMissile(manager, idMissile, Position(missilePos), type);
                 writeMsg(msg);
+                if (playerComp->getSpaceModule() != nullptr)
+                    writeMsg(GameSystem::shootModuleMissile(manager, playerComp->getSpaceModule(), type));
+                playerComp->startShootCooldownTimer();
             }
             return;
+        case KEY_SPACE:
+            if (keyState == KeyState::RELEASED)
+                playerComp->bindModule(entity);
+            break;
         default:
             return;
         }
@@ -194,7 +215,6 @@ namespace ecs
                 _timers.erase(s);
                 if (_sceneManager.getCurrentSceneType() == SceneType::GAME)
                     removePlayer(_playersId[s]);
-                std::cerr << "Removed client" << std::endl;
                 break;
             }
             i++;
@@ -206,17 +226,20 @@ namespace ecs
         deconnectClient(client);
     }
 
-    void NetworkServerSystem::removePlayer(int id)
+    void NetworkServerSystem::removePlayer(QUuid id)
     {
         for (auto entity : _sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
-            auto player = Component::castComponent<Player>((*entity)[IComponent::Type::PLAYER]);
-            if (player->getId() == id) {
+            if (entity->getId() == id) {
+                auto playerComp = Component::castComponent<Player>((*entity)[IComponent::Type::PLAYER]);
+                if (playerComp->getSpaceModule() != nullptr) {
+                    _sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
+                    writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
+                }
                 _sceneManager.getCurrentScene().removeEntity(entity);
                 break;
             }
         }
-        for (auto &s : _senders)
-            writeMsg(Message(EntityAction::DELETE, (uint64_t)id));
+        writeMsg(Message(EntityAction::DELETE, id));
     }
 
     void NetworkServerSystem::setClientReady(std::pair<QString /*addr*/, unsigned short /*port*/> client, SceneManager &manager)
@@ -231,16 +254,23 @@ namespace ecs
                 return;
         }
 
-        // Create players inside clients
+        // Create players
         for (auto &client : _senders) {
-            _playersId[client] = Entity::idCounter++;
-            unsigned long int id = _playersId[client];
-            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::playerSpawns.front(), false);
+            _playersId[client] = QUuid::createUuid();
+            QUuid id = _playersId[client];
+            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, KEY_SPACE, id, GameSystem::playerSpawns.front(), false);
             for (auto &player : _senders) {
                 Message msg(EntityAction::CREATE, id, EntityType::PLAYER, GameSystem::playerSpawns.front().getVector2(), (client == player));
                 writeToClient(msg, player);
             }
             GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
+        }
+
+        // Create enemies
+        for (auto &enemy : GameSystem::enemies) {
+            QUuid id = QUuid::createUuid();
+            GameSystem::createEnemy(manager.getScene(SceneType::GAME), enemy.first, enemy.second.x, enemy.second.y, id);
+            writeMsg(Message(EntityAction::CREATE, id, EntityType::ENEMY, enemy.second.getVector2(), quint8(enemy.first)));
         }
 
         // notify clients game can start
