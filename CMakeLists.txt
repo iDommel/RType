@@ -75,6 +75,9 @@ add_library(${LIBRARY_NAME}
     src/components/UIComponent.cpp
     src/components/AIPlayer.cpp
     src/components/Trajectory.cpp
+    src/components/Animation2D.cpp
+    src/components/Wall.cpp
+    src/components/Missile.cpp
 
     test_functions/TestAnimations2D.cpp
     test_functions/TestCamera2D.cpp

@@ -38,28 +38,28 @@ namespace ecs
     {
     }
 
-    Message::Message(EntityAction action, uint64_t id, EntityType type, Vector2 pos)
+    Message::Message(EntityAction action, QUuid id, EntityType type, Vector2 pos)
         : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id), _pos(pos)
     {
         if (action != EntityAction::UPDATE && action != EntityAction::CREATE)
             throw std::runtime_error("Wrong constructor for this action");
     }
 
-    Message::Message(EntityAction action, uint64_t id, EntityType type)
+    Message::Message(EntityAction action, QUuid id, EntityType type)
         : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id)
     {
-        if (action != EntityAction::CREATE)
+        if (action != EntityAction::CREATE && action != EntityAction::DELETE)
             throw std::runtime_error("Wrong constructor for this action");
     }
 
-    Message::Message(EntityAction action, uint64_t id, EntityType type, Vector2 pos, quint8 arg)
+    Message::Message(EntityAction action, QUuid id, EntityType type, Vector2 pos, quint8 arg)
         : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _entityType(type), _id(id), _pos(pos), _arg(arg)
     {
         if (action != EntityAction::CREATE)
             throw std::runtime_error("Wrong constructor for this action");
     }
 
-    Message::Message(EntityAction action, uint64_t id)
+    Message::Message(EntityAction action, QUuid id)
         : _messageType(MessageType::ENTITYMESSAGE), _entityAction(action), _id(id)
     {
         if (action != EntityAction::DELETE)
@@ -110,7 +110,7 @@ namespace ecs
         return _keyboardKey;
     }
 
-    uint64_t Message::getEntityId() const
+    QUuid Message::getEntityId() const
     {
         return _id;
     }
@@ -248,21 +248,18 @@ namespace ecs
         case EntityAction::CREATE:
             out << toWrite._id;
             out << to_integral(toWrite._entityType);
-            if (toWrite._entityType == EntityType::PLAYER)
-                out << toWrite._arg;
-            else {
-                out << qint32(toWrite._pos.x);
-                out << qint32(toWrite._pos.y);
-            }
+            out << toWrite._arg;
+            out << qint32(toWrite._pos.x);
+            out << qint32(toWrite._pos.y);
             break;
         case EntityAction::UPDATE:
-            out << quint64(toWrite._id);
+            out << toWrite._id;
             out << to_integral(toWrite._entityType);
             out << qint32(toWrite._pos.x);
             out << qint32(toWrite._pos.y);
             break;
         case EntityAction::DELETE:
-            out << quint64(toWrite._id);
+            out << toWrite._id;
             break;
         default:
             break;
@@ -322,15 +319,15 @@ namespace ecs
             switch (_entityAction) {
             case EntityAction::CREATE:
                 ss << "Entity type: " << std::to_string(to_integral(_entityType)) << std::endl;
-                ss << "Entity Id: " << std::to_string(_id) << std::endl;
+                ss << "Entity Id: " << _id.toString().toStdString() << std::endl;
                 break;
             case EntityAction::UPDATE:
                 ss << "Entity type: " << std::to_string(to_integral(_entityType)) << std::endl;
-                ss << "Entity Id: " << std::to_string(_id) << std::endl;
+                ss << "Entity Id: " << _id.toString().toStdString() << std::endl;
                 ss << "Entity pos: " << _pos.x << ", " << _pos.y << std::endl;
                 break;
             case EntityAction::DELETE:
-                ss << "Entity Id: " << std::to_string(_id) << std::endl;
+                ss << "Entity Id: " << _id.toString().toStdString() << std::endl;
                 break;
             default:
                 break;
