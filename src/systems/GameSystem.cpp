@@ -810,7 +810,7 @@ namespace ecs
         return _networkActivated;
     }
 
-    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyMissile, QUuid id, Position pos, bool isMe)
+    void GameSystem::createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyMissile, int keyModule, QUuid id, Position pos, bool isMe)
     {
         static int idCounter = 0;
         std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>(id);
@@ -818,7 +818,7 @@ namespace ecs
         std::shared_ptr<Velocity> playerVel = std::make_shared<Velocity>(0, 0);
         Rectangle rect = {playerPos->x, playerPos->y, SCALE, SCALE};
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
-        std::shared_ptr<Player> player = std::make_shared<Player>(idCounter, keyUp, keyDown, keyLeft, keyRight, keyMissile);
+        std::shared_ptr<Player> player = std::make_shared<Player>(idCounter, keyUp, keyDown, keyLeft, keyRight, keyMissile, keyModule);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
         std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShipSSP1.png", 0.0f, 2.0f);
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(_spriteFrameCounts["assets/Player/MainShipSSP1.png"], 30, Animation2D::AnimationType::LOOP);
@@ -940,6 +940,23 @@ namespace ecs
                 else
                     player->stopDown(manager, playerEntity, 1);
             });
+            ButtonCallbacks moduleCallbacks(
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_SPACE));
+            },
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_SPACE));
+            },
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_SPACE));
+            },
+            [&, this, player, playerEntity](SceneManager &manager) {
+                if (this->isNetworkActivated())
+                    emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_SPACE));
+            });
 
         std::function<void(SceneManager &, float)> moveHorizontalStickCallback = [&, this, player, playerEntity](SceneManager &manager, float value) {
             if (this->isNetworkActivated())
@@ -960,6 +977,7 @@ namespace ecs
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagRight(), moveRightCallbacks);
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagDown(), moveDownCallbacks);
             playerListener->addKeyboardEvent((KeyboardKey)player->getTagBomb(), missileCallbacks);
+            playerListener->addKeyboardEvent((KeyboardKey)player->getTagModule(), moduleCallbacks);
             playerListener->addGamepadEvent(idCounter, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_UP, moveUpCallbacks);
             playerListener->addGamepadEvent(idCounter, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_RIGHT, moveRightCallbacks);
             playerListener->addGamepadEvent(idCounter, (GamepadButton)GAMEPAD_BUTTON_LEFT_FACE_DOWN, moveDownCallbacks);

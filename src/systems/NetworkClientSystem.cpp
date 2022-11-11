@@ -91,7 +91,7 @@ namespace ecs
         switch (message.getEntityAction()) {
         case EntityAction::CREATE:
             if (message.getEntityType() == EntityType::PLAYER) {
-                emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL,
+                emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, KEY_SPACE,
                                   id, Position(message.getEntityPosition()), bool(message.getArg()));
             } else if (message.getEntityType() == EntityType::MISSILE) {
                 GameSystem::createMissile(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));

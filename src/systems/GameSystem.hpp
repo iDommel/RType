@@ -143,7 +143,7 @@ namespace ecs
         void writeMsg(const Message &message);
 
     public slots:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, QUuid id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int keyModule, QUuid id, Position pos, bool isMe);
 
     private:
         /// @brief Read map file and generate all the game scene entities

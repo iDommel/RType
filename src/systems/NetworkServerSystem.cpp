@@ -140,6 +140,10 @@ namespace ecs
                 playerComp->startShootCooldownTimer();
             }
             return;
+        case KEY_SPACE:
+            if (keyState == KeyState::RELEASED)
+                playerComp->bindModule(entity);
+            break;
         default:
             return;
         }
@@ -244,7 +248,7 @@ namespace ecs
         for (auto &client : _senders) {
             _playersId[client] = QUuid::createUuid();
             QUuid id = _playersId[client];
-            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, id, GameSystem::playerSpawns.front(), false);
+            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, KEY_SPACE, id, GameSystem::playerSpawns.front(), false);
             for (auto &player : _senders) {
                 Message msg(EntityAction::CREATE, id, EntityType::PLAYER, GameSystem::playerSpawns.front().getVector2(), (client == player));
                 writeToClient(msg, player);

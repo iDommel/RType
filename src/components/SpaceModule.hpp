@@ -30,11 +30,11 @@ namespace ecs
         std::shared_ptr<IEntity> getPlayer() { return _player; };
 
         BoundMode getBoundMode() const { return _bound; }
-        void setAttached(BoundMode boundMode) { _bound = boundMode; }
+        void setBoundMode(BoundMode boundMode) { _bound = boundMode; }
 
     private:
         std::shared_ptr<IEntity> _player = nullptr;
-        BoundMode _bound = BoundMode::FRONT;
+        BoundMode _bound = BoundMode::NONE;
     };
 }
 
