@@ -34,7 +34,7 @@ namespace ecs
 
     private:
         std::shared_ptr<IEntity> _player = nullptr;
-        BoundMode _bound = BoundMode::BACK;
+        BoundMode _bound = BoundMode::FRONT;
     };
 }
 

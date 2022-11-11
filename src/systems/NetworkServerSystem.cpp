@@ -130,15 +130,13 @@ namespace ecs
             else if (keyState == KeyState::RELEASED && playerComp->hasCooldownTimedOut()) {
                 Vector2 missilePos = {pos->x + SCALE, pos->y + (SCALE / 2)};
                 QUuid idMissile = QUuid::createUuid();
-                if (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000) {
-                    GameSystem::createMissile(manager, idMissile, Position(missilePos), Missile::MissileType::P_CONDENSED);
-                    Message msg(EntityAction::CREATE, idMissile, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_CONDENSED));
-                    writeMsg(msg);
-                } else {
-                    GameSystem::createMissile(manager, idMissile, Position(missilePos), Missile::MissileType::P_SIMPLE);
-                    Message msg(EntityAction::CREATE, idMissile, EntityType::MISSILE, missilePos, quint8(Missile::MissileType::P_SIMPLE));
-                    writeMsg(msg);
-                }
+                Missile::MissileType type = (playerComp->getShootTimer().msecsTo(QTime::currentTime()) > 1000 ? Missile::MissileType::P_CONDENSED : Missile::MissileType::P_SIMPLE);
+                Message msg(EntityAction::CREATE, idMissile, EntityType::MISSILE, missilePos, quint8(type));
+
+                GameSystem::createMissile(manager, idMissile, Position(missilePos), type);
+                writeMsg(msg);
+                if (playerComp->getSpaceModule() != nullptr)
+                    writeMsg(GameSystem::shootModuleMissile(manager, playerComp->getSpaceModule(), type));
                 playerComp->startShootCooldownTimer();
             }
             return;
@@ -218,6 +216,11 @@ namespace ecs
     {
         for (auto entity : _sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
             if (entity->getId() == id) {
+                auto playerComp = Component::castComponent<Player>((*entity)[IComponent::Type::PLAYER]);
+                if (playerComp->getSpaceModule() != nullptr) {
+                    _sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
+                    writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
+                }
                 _sceneManager.getCurrentScene().removeEntity(entity);
                 break;
             }

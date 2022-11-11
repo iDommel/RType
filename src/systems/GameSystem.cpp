@@ -973,6 +973,24 @@ namespace ecs
         scene.addEntity(playerEntity);
     }
 
+    Message GameSystem::shootModuleMissile(SceneManager &manager, std::shared_ptr<IEntity> module, Missile::MissileType type)
+    {
+        if (module == nullptr)
+            throw std::invalid_argument("Shoot Module Missile: module entity null");
+        QUuid idMissile = QUuid::createUuid();
+        auto pos = Component::castComponent<Position>((*module)[IComponent::Type::POSITION]);
+        auto modComp = Component::castComponent<SpaceModule>((*module)[IComponent::Type::SPACE_MODULE]);
+        Vector2 missilePos = {pos->x, pos->y + (SCALE / 2)};
+
+        if (modComp->getBoundMode() == SpaceModule::BoundMode::FRONT)
+            missilePos.x += SCALE;
+        else if (modComp->getBoundMode() == SpaceModule::BoundMode::BACK)
+            missilePos.x -= SCALE / 2;
+        GameSystem::createMissile(manager, idMissile, Position(missilePos), type);
+        Message msg(EntityAction::CREATE, idMissile, EntityType::MISSILE, missilePos, quint8(type));
+        return msg;
+    }
+
     void GameSystem::createMissile(SceneManager &sceneManager, QUuid id, Position position, Missile::MissileType type, IEntity::Tags targetType)
     {
         if (quint8(type) >= quint8(Missile::MissileType::NB_MISSILE) || quint8(type) == quint8(Missile::MissileType::HOMING_MISSILE))
