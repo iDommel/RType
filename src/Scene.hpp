@@ -85,16 +85,12 @@ namespace ecs
 
         SceneType getSceneType() const { return _type; }
 
-        std::vector<std::shared_ptr<IEntity>> getAllEntities();
-
         std::shared_ptr<IEntity> getEntityById(QUuid id);
 
     protected:
         SceneType _type;
         /// @brief Entities sorted by tags
         std::map<IEntity::Tags, std::vector<std::shared_ptr<IEntity>>> _taggedEntities;
-        /// @brief All entities
-        std::vector<std::shared_ptr<IEntity>> _entities;
         /// @brief Scene's init function; called by GameSystem::init & Scene::reloadScene
         std::function<std::unique_ptr<IScene>()> _initFunc;
         /// @brief Callback when an entity is added to the scene

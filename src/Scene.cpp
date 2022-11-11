@@ -92,10 +92,6 @@ namespace ecs
         return _taggedEntities[tag];
     }
 
-    std::vector<std::shared_ptr<IEntity>> Scene::getAllEntities()
-    {
-        return _entities;
-    }
     std::shared_ptr<IEntity> Scene::getEntityById(QUuid id)
     {
         for (auto &entity : _entities) {
