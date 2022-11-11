@@ -687,10 +687,8 @@ namespace ecs
         }
         for (auto &player : playersToDestroy)
             sceneManager.getCurrentScene().removeEntity(player);
-        if ((sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]).size() == 0) {
+        if ((sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]).size() == 0)
             sceneManager.setCurrentScene(SceneType::END);
-            std::cerr << "No more players left" << std::endl;
-        }
     }
 
     void GameSystem::updateModules(SceneManager &sceneManager, uint64_t dt)

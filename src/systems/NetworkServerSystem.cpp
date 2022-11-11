@@ -82,7 +82,6 @@ namespace ecs
         if (manager.getPreviousSceneType() == SceneType::GAME && manager.getCurrentSceneType() == SceneType::END && !alreadyChangedScene) {
             Message sceneChangement(SceneType::END);
             writeMsg(sceneChangement);
-            std::cerr << "I shouldn't be here more than once per game launched." << std::endl;
             alreadyChangedScene = true;
         } else if (manager.getCurrentSceneType() == SceneType::GAME) {
             alreadyChangedScene = false;
