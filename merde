@@ -1,0 +1,81 @@
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:176:62: error: ‘AnimationType’ has not been declared
+  176 |         {"assets/Enemies/RedEnemy2/RedEnemy1 - Missile.png", AnimationType::LOOP},
+      |                                                              ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:177:62: error: ‘AnimationType’ has not been declared
+  177 |         {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", AnimationType::LOOP},
+      |                                                              ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:178:62: error: ‘AnimationType’ has not been declared
+  178 |         {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", AnimationType::ONCE},
+      |                                                              ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:179:62: error: ‘AnimationType’ has not been declared
+  179 |         {"assets/Enemies/RedEnemy2/RedEnemy4 - Missile.png", AnimationType::LOOP},
+      |                                                              ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:180:62: error: ‘AnimationType’ has not been declared
+  180 |         {"assets/Enemies/RedEnemy4/RedEnemy5 - Missile.png", AnimationType::LOOP},
+      |                                                              ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:181:66: error: ‘AnimationType’ has not been declared
+  181 |         {"assets/Enemies/BrownEnemy2/BrownEnemy1 - Missile.png", AnimationType::ONCE},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:182:66: error: ‘AnimationType’ has not been declared
+  182 |         {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", AnimationType::LOOP},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:183:66: error: ‘AnimationType’ has not been declared
+  183 |         {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", AnimationType::LOOP},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:184:66: error: ‘AnimationType’ has not been declared
+  184 |         {"assets/Enemies/BrownEnemy2/BrownEnemy4 - Missile.png", AnimationType::ONCE},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:185:66: error: ‘AnimationType’ has not been declared
+  185 |         {"assets/Enemies/BrownEnemy4/BrownEnemy5 - Missile.png", AnimationType::LOOP},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:186:66: error: ‘AnimationType’ has not been declared
+  186 |         {"assets/Enemies/GreenEnemy2/GreenEnemy1 - Missile.png", AnimationType::LOOP},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:187:66: error: ‘AnimationType’ has not been declared
+  187 |         {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", AnimationType::LOOP},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:188:66: error: ‘AnimationType’ has not been declared
+  188 |         {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", AnimationType::LOOP},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:189:66: error: ‘AnimationType’ has not been declared
+  189 |         {"assets/Enemies/GreenEnemy2/GreenEnemy4 - Missile.png", AnimationType::LOOP},
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:190:66: error: ‘AnimationType’ has not been declared
+  190 |         {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", AnimationType::LOOP}};
+      |                                                                  ^~~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:190:86: error: could not convert ‘{{"assets/Player/ChargedMissile.png", ecs::Animation2D::AnimationType::ONCE}, {"assets/Player/BasicMissile.png", ecs::Animation2D::AnimationType::ONCE}, {"assets/Player/MainShipSSP1.png", ecs::Animation2D::AnimationType::ONCE}, {"assets/Enemies/RedEnemy2/RedEnemy1 - Missile.png", <expression error>}, {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", <expression error>}, {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", <expression error>}, {"assets/Enemies/RedEnemy2/RedEnemy4 - Missile.png", <expression error>}, {"assets/Enemies/RedEnemy4/RedEnemy5 - Missile.png", <expression error>}, {"assets/Enemies/BrownEnemy2/BrownEnemy1 - Missile.png", <expression error>}, {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", <expression error>}, {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", <expression error>}, {"assets/Enemies/BrownEnemy2/BrownEnemy4 - Missile.png", <expression error>}, {"assets/Enemies/BrownEnemy4/BrownEnemy5 - Missile.png", <expression error>}, {"assets/Enemies/GreenEnemy2/GreenEnemy1 - Missile.png", <expression error>}, {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", <expression error>}, {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", <expression error>}, {"assets/Enemies/GreenEnemy2/GreenEnemy4 - Missile.png", <expression error>}, {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", <expression error>}}’ from ‘<brace-enclosed initializer list>’ to ‘std::map<std::basic_string<char>, ecs::Animation2D::AnimationType>’
+  190 |         {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", AnimationType::LOOP}};
+      |                                                                                      ^
+      |                                                                                      |
+      |                                                                                      <brace-enclosed initializer list>
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:201:32: error: ‘P_CHARGED’ is not a member of ‘ecs::Missile::MissileType’
+  201 |         {Missile::MissileType::P_CHARGED, {[](float dt)
+      |                                ^~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:225:5: error: could not convert ‘{{ecs::Missile::MissileType::P_SIMPLE, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}, {ecs::Missile::MissileType::P_CONDENSED, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}, {<expression error>, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}, {ecs::Missile::MissileType::E_RED2, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}, {ecs::Missile::MissileType::E_RED3, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}, {ecs::Missile::MissileType::E_BROWN1, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}, {ecs::Missile::MissileType::E_BROWN2, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}, {ecs::Missile::MissileType::E_BROWN4, {<lambda closure object>ecs::GameSystem::<lambda(float)>(), <lambda closure object>ecs::GameSystem::<lambda(float)>()}}}’ from ‘<brace-enclosed initializer list>’ to ‘std::map<ecs::Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)> > >’
+  225 |     };
+      |     ^
+      |     |
+      |     <brace-enclosed initializer list>
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp: In member function ‘void ecs::GameSystem::updatePlayers(ecs::SceneManager&, uint64_t)’:
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:748:76: error: ‘E_SINUSOIDAL’ is not a member of ‘ecs::Missile::MissileType’
+  748 |                     if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE)
+      |                                                                            ^~~~~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:748:143: error: ‘E_CLASSIC’ is not a member of ‘ecs::Missile::MissileType’
+  748 |                     if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE)
+      |                                                                                                                                               ^~~~~~~~~
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:748:207: error: ‘E_HOMING_MISSILE’ is not a member of ‘ecs::Missile::MissileType’; did you mean ‘HOMING_MISSILE’?
+  748 |                     if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE)
+      |                                                                                                                                                                                                               ^~~~~~~~~~~~~~~~
+      |                                                                                                                                                                                                               HOMING_MISSILE
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp: In member function ‘std::unique_ptr<ecs::IScene> ecs::GameSystem::createSplashScreenScene()’:
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:858:9: error: ‘entity1’ was not declared in this scope; did you mean ‘entity4’?
+  858 |         entity1->addComponent(component2);
+      |         ^~~~~~~
+      |         entity4
+/home/cyril/Documents/RType/src/systems/GameSystem.cpp:858:31: error: ‘component2’ was not declared in this scope; did you mean ‘Component’?
+  858 |         entity1->addComponent(component2);
+      |                               ^~~~~~~~~~
+      |                               Component
+gmake[2]: *** [CMakeFiles/r-type_library.dir/build.make:412: CMakeFiles/r-type_library.dir/src/systems/GameSystem.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/r-type_library.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

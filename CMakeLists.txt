@@ -8,15 +8,6 @@ set(LIBRARY_NAME "r-type_library")
 
 # Call the cmake that checks and pulls the raylib
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-find_package(raylib REQUIRED)
-target_link_libraries(${PROJECT_NAME} raylib)
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    target_link_libraries(${PROJECT_NAME} -lstdc++fs)
-endif(CMAKE_COMPILER_IS_GNUCXX)
-
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
