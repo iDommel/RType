@@ -158,7 +158,7 @@ namespace ecs
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
         sceneManager.addScene(createGameScene(), SceneType::GAME);
         if (Core::networkRole == NetworkRole::CLIENT) {
-            createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Game 2.ogg");
+            createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Level 1.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
         }
         else if (Core::networkRole == NetworkRole::SERVER)
@@ -171,7 +171,7 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/jump.wav", QUuid::createUuid());
+        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/player tir.ogg", QUuid::createUuid());
     }
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
