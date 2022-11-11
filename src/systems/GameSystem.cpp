@@ -121,6 +121,9 @@ namespace ecs
             {"assets/Player/ChargedMissile.png", 5},
             {"assets/Player/BasicMissile.png", 5},
             {"assets/Player/MainShipSSP1.png", 4},
+            {"assets/Player/MainShipSSP2.png", 4},
+            {"assets/Player/MainShipSSP3.png", 4},
+            {"assets/Player/MainShipSSP4.png", 4},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 4},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4}};
@@ -148,6 +151,20 @@ namespace ecs
         {Missile::MissileType::P_CONDENSED, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_CLASSIC, {[](float dt) { return -4 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_SINUSOIDAL, {[](float dt) { return -dt; }, [](float a) { return std::sin(a / 10) * 50; }}}};
+
+    std::vector<std::string> GameSystem::_playersSprite =  {
+        "assets/Player/MainShipSSP1.png",
+        "assets/Player/MainShipSSP2.png",
+        "assets/Player/MainShipSSP3.png",
+        "assets/Player/MainShipSSP4.png"
+    };
+
+    std::vector<std::string> GameSystem::_modulesSprite = {
+        "assets/Player/Module1.png",
+        "assets/Player/Module2.png",
+        "assets/Player/Module3.png",
+        "assets/Player/Module4.png"
+    };
 
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
@@ -620,8 +637,8 @@ namespace ecs
                 // create space module ! ONLY FOR TESTS !
                 QUuid modId = QUuid::createUuid();
                 Position modPos(pos->x + SCALE * 2, pos->y);
-                playerComp->setSpaceModule(GameSystem::createSpaceModule(sceneManager, modId, modPos, player));
-                writeMsg(Message(EntityAction::CREATE, modId, EntityType::MODULE, modPos.getVector2(), 0));
+                playerComp->setSpaceModule(GameSystem::createSpaceModule(sceneManager, modId, modPos, playerComp->getId(), player));
+                writeMsg(Message(EntityAction::CREATE, modId, EntityType::MODULE, modPos.getVector2(), quint8(playerComp->getId())));
             }
         }
         for (auto &player : playersToDestroy) {
@@ -851,8 +868,9 @@ namespace ecs
         std::shared_ptr<Hitbox> playerHitbox = std::make_shared<Hitbox>(rect);
         std::shared_ptr<Player> player = std::make_shared<Player>(idCounter, keyUp, keyDown, keyLeft, keyRight, keyMissile, keyModule);
         std::shared_ptr<EventListener> playerListener = std::make_shared<EventListener>();
-        std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>("assets/Player/MainShipSSP1.png", 0.0f, 2.0f);
-        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(_spriteFrameCounts["assets/Player/MainShipSSP1.png"], 30, Animation2D::AnimationType::LOOP);
+        std::string spriteFile = (idCounter >= GameSystem::_playersSprite.size() ? GameSystem::_playersSprite[0] : GameSystem::_playersSprite[idCounter]);
+        std::shared_ptr<Sprite> playerSprite = std::make_shared<Sprite>(spriteFile, 0.0f, 2.0f);
+        std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(_spriteFrameCounts[spriteFile], 30, Animation2D::AnimationType::LOOP);
         std::shared_ptr<Destructible> destruct = std::make_shared<Destructible>();
         ButtonCallbacks missileCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
@@ -1100,11 +1118,11 @@ namespace ecs
         return trajectory;
     }
 
-    std::shared_ptr<IEntity> GameSystem::createSpaceModule(SceneManager &manager, QUuid id, Position position, std::shared_ptr<IEntity> player)
+    std::shared_ptr<IEntity> GameSystem::createSpaceModule(SceneManager &manager, QUuid id, Position position, uint8_t playerNb, std::shared_ptr<IEntity> player)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Position> pos = std::make_shared<Position>(position);
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Player/Module.png", .0f, 2.0f);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(GameSystem::_modulesSprite[playerNb], .0f, 2.0f);
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(4, 24);
         std::shared_ptr<SpaceModule> mod = std::make_shared<SpaceModule>(player);
 

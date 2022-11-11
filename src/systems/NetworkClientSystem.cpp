@@ -99,7 +99,7 @@ namespace ecs
                 Vector2 pos = message.getEntityPosition();
                 GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
             } else if (message.getEntityType() == EntityType::MODULE)
-                GameSystem::createSpaceModule(sceneManager, message.getEntityId(), Position(message.getEntityPosition()));
+                GameSystem::createSpaceModule(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), message.getArg());
             break;
         case EntityAction::UPDATE:
             if (message.getEntityType() == EntityType::PLAYER)

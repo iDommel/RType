@@ -135,9 +135,10 @@ namespace ecs
         /// @param manager Scene manager
         /// @param id ID of the new entity
         /// @param position Position of the new space module
+        /// @param playerNb Number of the player associated
         /// @param player Player associated to the new space module
         /// @return Returns the new space module entity
-        static std::shared_ptr<IEntity> createSpaceModule(SceneManager &manager, QUuid id, Position position, std::shared_ptr<IEntity> player = nullptr);
+        static std::shared_ptr<IEntity> createSpaceModule(SceneManager &manager, QUuid id, Position position, uint8_t playerNb = 0, std::shared_ptr<IEntity> player = nullptr);
 
     signals:
         void writeMsg(const Message &message);
@@ -225,6 +226,8 @@ namespace ecs
         static std::map<std::string, int> _spriteFrameCounts;
         static std::map<std::string, float> _spriteRotations;
         static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
+        static std::vector<std::string> _playersSprite;
+        static std::vector<std::string> _modulesSprite;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;
