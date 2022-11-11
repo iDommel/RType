@@ -586,6 +586,10 @@ namespace ecs
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
             for (auto &collider : _collideSystem.getColliders(player)) {
                 if (collider->hasTag(IEntity::Tags::WALL) || collider->hasTag(IEntity::Tags::ENEMY)) {
+                    if (playerComp->getSpaceModule() != nullptr) {
+                        writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
+                        sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
+                    }
                     sceneManager.getCurrentScene().removeEntity(player);
                     Message msg(EntityAction::DELETE, player->getId());
                     writeMsg(msg);
@@ -593,6 +597,10 @@ namespace ecs
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
                     if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE ) {
+                        if (playerComp->getSpaceModule() != nullptr) {
+                            writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
+                            sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
+                        }
                         sceneManager.getCurrentScene().removeEntity(collider);
                         playersToDestroy.push_back(player);
                         Message playerMsg(EntityAction::DELETE, player->getId());

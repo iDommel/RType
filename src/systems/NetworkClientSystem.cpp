@@ -187,33 +187,4 @@ namespace ecs
             break;
         }
     }
-
-    void NetworkClientSystem::handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t dt)
-    {
-        auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
-
-        msg.erase(0, 7);
-        int playerId = std::stoi(msg.substr(0, msg.find(' ')));
-        msg.erase(0, msg.find(' ') + 1);
-        std::string comp = msg.substr(0, msg.find(' '));
-        msg.erase(0, msg.find(' ') + 1);
-        float x = std::stof(msg.substr(0, msg.find(' ')));
-        msg.erase(0, msg.find(' ') + 1);
-        float y = std::stof(msg);
-
-        if (comp == "POS") {
-            std::cerr << "POS: " << players.size() << std::endl;
-            for (auto &p : players) {
-                auto player = Component::castComponent<Player>((*p)[IComponent::Type::PLAYER]);
-                if (player->getId() != playerId)
-                    continue;
-                auto pos = Component::castComponent<Position>((*p)[IComponent::Type::POSITION]);
-                pos->x = x;
-                pos->y = y;
-                std::cerr << "Player pos: " << pos->x << ", " << pos->y << std::endl;
-                break;
-            }
-        }
-    }
-
 }
