@@ -581,6 +581,7 @@ namespace ecs
 
     void GameSystem::updateProjectiles(SceneManager &sceneManager, uint64_t dt)
     {
+        std::vector<std::shared_ptr<IEntity>> projectilesToDelete;
         for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
             auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
             auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
@@ -590,7 +591,18 @@ namespace ecs
             if (hitbox) {
                 Rectangle newRect = {position->x, position->y, hitbox->getRect().width, hitbox->getRect().height};
                 hitbox->setRect(newRect);
+                for (auto &collider : _collideSystem.getColliders(entity)) {
+                    if (collider->hasTag(IEntity::Tags::WALL)) {
+                        projectilesToDelete.push_back(entity);
+                        Message msg(EntityAction::DELETE, entity->getId());
+                        writeMsg(msg);
+                        break;
+                    }
+                }
             }
+        }
+        for (auto &entity : projectilesToDelete) {
+            sceneManager.getCurrentScene().removeEntity(entity);
         }
     }
 

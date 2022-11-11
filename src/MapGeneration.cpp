@@ -112,7 +112,7 @@ namespace ecs
         std::string path = Wall::getCorrespondingPath(mapAround);
 
         std::shared_ptr<Wall> wallComponent = std::make_shared<Wall>();
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 180.0f, 2.0f);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
         Rectangle rect = {position->x, position->y, SCALE, SCALE};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
