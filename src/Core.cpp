@@ -97,6 +97,7 @@ namespace ecs
             if (netSys == nullptr || game == nullptr)
                 return;
             connect(netSys, &NetworkServerSystem::createPlayer, game, &GameSystem::createPlayer);
+            connect(game, &GameSystem::writeMsg, netSys, &NetworkServerSystem::writeMsg);
         } else if (networkRole == NetworkRole::CLIENT) {
             auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
             auto game = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
@@ -118,7 +119,7 @@ namespace ecs
         for (auto &system : _systems)
             system.second->init(_sceneManager);
         _sceneManager.setAddEntityCallback(std::bind(&Core::onEntityAdded, this, std::placeholders::_1, std::placeholders::_2));
-        _sceneManager.setRemoveEntityCallback(std::bind(&Core::onEntityRemoved, this, std::placeholders::_1));
+        _sceneManager.setRemoveEntityCallback(std::bind(&Core::onEntityRemoved, this, std::placeholders::_1, std::placeholders::_2));
 
         emit doLoop();
     }
@@ -152,16 +153,16 @@ namespace ecs
         _systems[type]->update(manager, deltaTime);
     }
 
-    void Core::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene)
+    void Core::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene)
     {
         for (auto &system : _systems)
             system.second->onEntityAdded(entity, scene);
     }
 
-    void Core::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void Core::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene)
     {
         for (auto &system : _systems)
-            system.second->onEntityRemoved(entity);
+            system.second->onEntityRemoved(entity, scene);
     }
 
     void Core::setEventNetwork()

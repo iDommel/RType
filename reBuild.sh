@@ -1,8 +1,12 @@
 #! /bin/bash
 
-login=$1
 defaultBuild="Release"
-user_build_type="${@:2}" # get all arguments after the first one
+if [ -z "$2" ]
+    then
+        build=$defaultBuild
+    else
+        build=$2
+fi
 
 ESC="\033["
 C_GREEN=$ESC"0;32m"
@@ -35,9 +39,16 @@ line "-"
 echo "##> Rebuild - Cmake"
 line "-"
 echo -ne $C_RST
-if [ "$1" = "Re" ] ; then
+if [ $1 = "Re" ] ; then
+    echo -ne $C_YELLOW
+    line "-"
+    echo "##> Rebuild from scratch - Cmake"
+    echo "##> Forwarding arg : $build, as build type"
+    line "-"
+    echo -ne $C_RST
     sudo rm -rf build cmake-build-release r_type_server r_type_client CmakeUserPresets.json
-    sh ./install.sh "${user_build_type:-$defaultBuild}"
+    sh ./install.sh $build
 else
     sudo cmake --build build
 fi
+sudo -k
