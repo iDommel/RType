@@ -632,6 +632,7 @@ namespace ecs
     void GameSystem::updateModules(SceneManager &sceneManager, uint64_t dt)
     {
         auto modules = sceneManager.getCurrentScene()[IEntity::Tags::SPACE_MODULE];
+        std::vector<std::shared_ptr<IEntity>> modulesToDestroy;
 
         for (auto &module : modules) {
             auto pos = Component::castComponent<Position>((*module)[IComponent::Type::POSITION]);
@@ -660,6 +661,28 @@ namespace ecs
                 rect.y = pos->y;
                 hitbox->setRect(rect);
             }
+
+            for (auto &collider : _collideSystem.getColliders(module)) {
+                if (collider->hasTag(IEntity::Tags::WALL) || collider->hasTag(IEntity::Tags::ENEMY)) {
+                    auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
+                    player->setSpaceModule(nullptr);
+                    modulesToDestroy.push_back(module);
+                } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                    auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
+                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE ) {
+                        auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
+                        player->setSpaceModule(nullptr);
+                        sceneManager.getCurrentScene().removeEntity(collider);
+                        modulesToDestroy.push_back(module);
+                        writeMsg(Message(EntityAction::DELETE, collider->getId()));
+                    }
+                }
+            }
+        }
+        for (auto &module : modulesToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(module);
+            writeMsg(Message(EntityAction::DELETE, module->getId()));
         }
     }
 
