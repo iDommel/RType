@@ -51,7 +51,9 @@ namespace ecs
 
     void NetworkServerSystem::sendServerUpdates(SceneManager &manager, uint64_t dt)
     {
+        static bool alreadyChangedScene = false;
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
+
         for (auto &player : players) {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             Message update(EntityAction::UPDATE, (uint64_t)player->getId(), EntityType::PLAYER, pos->getVector2());
@@ -63,6 +65,15 @@ namespace ecs
             auto pos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
             Message msg(EntityAction::UPDATE, (uint64_t)missile->getId(), EntityType::MISSILE, pos->getVector2());
             writeMsg(msg);
+        }
+
+        if (manager.getPreviousSceneType() == SceneType::GAME && manager.getCurrentSceneType() == SceneType::END && !alreadyChangedScene) {
+            Message sceneChangement(SceneType::END);
+            writeMsg(sceneChangement);
+            std::cerr << "I shouldn't be here more than once per game launched." << std::endl;
+            alreadyChangedScene = true;
+        } else if (manager.getCurrentSceneType() == SceneType::GAME) {
+            alreadyChangedScene = false;
         }
     }
 

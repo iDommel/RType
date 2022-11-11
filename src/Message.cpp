@@ -28,6 +28,11 @@ namespace ecs
     {
     }
 
+    Message::Message(SceneType type)
+        : _messageType(MessageType::SCENE_CHANGE_MESSAGE), _sceneType((qint8)type)
+    {
+    }
+
     Message::Message(EventType eventType, KeyState keyState, KeyboardKey key)
         : _messageType(MessageType::GRAPHIC_EVENT_MESSAGE), _eventType(eventType), _keyState(keyState), _keyboardKey(key)
     {
@@ -347,6 +352,9 @@ namespace ecs
             break;
         case MessageType::TEXT_MESSAGE:
             ss << "Text: " << _textMessage.toStdString() << std::endl;
+            break;
+        case MessageType::SCENE_CHANGE_MESSAGE:
+            ss << "Scene type: " << std::to_string(_sceneType) << std::endl;
             break;
         default:
             break;
