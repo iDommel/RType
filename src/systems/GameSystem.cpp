@@ -759,11 +759,12 @@ namespace ecs
         std::shared_ptr<Entity> entity7 = createText("Up: Up", Position(150, 550), 40, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity8 = createText("Down: Down", Position(150, 650), 40, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(150, 750), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity10 = createText("Module: Space", Position(150, 850), 40, "assets/Font/techno_hideo.ttf");
 
         createMusic(*scene, "assets/Music/Menu.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);
 
-        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9, entity10});
         return scene;
     }
 
