@@ -111,6 +111,13 @@ namespace ecs
         /// @param type Missile type
         /// @param targetType The type of the target if is a homing missile
         static void createMissile(SceneManager &sceneManager, QUuid id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS);
+
+        /// @param manager Scene manager
+        /// @param module Pointer to the module entity
+        /// @param type Type of missile to shoot
+        /// @return Returns the message for missile creation
+        static Message shootModuleMissile(SceneManager &manager, std::shared_ptr<IEntity> module, Missile::MissileType type);
+
         /// @brief Generates missile trajectory functions for homing missile
         /// @param sceneManager Scene manager
         /// @param entityPos Position of the new missile
@@ -125,11 +132,21 @@ namespace ecs
         /// @param id ID of the entity
         static void createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id);
 
+        /// @param manager Scene manager
+        /// @param id ID of the new entity
+        /// @param position Position of the new space module
+        /// @param playerNb Number of the player associated
+        /// @param player Player associated to the new space module
+        /// @return Returns the new space module entity
+        static std::shared_ptr<IEntity> createSpaceModule(SceneManager &manager, QUuid id, Position position, uint8_t playerNb = 0, std::shared_ptr<IEntity> player = nullptr);
+
+        static std::shared_ptr<IEntity> createBonus(QUuid id, Position pos);
+
     signals:
         void writeMsg(const Message &message);
 
     public slots:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, QUuid id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int keyModule, QUuid id, Position pos, bool isMe);
 
     private:
         /// @brief Read map file and generate all the game scene entities
@@ -195,6 +212,7 @@ namespace ecs
         void updatePlayers(SceneManager &scene, uint64_t dt);
         void updateEnemies(SceneManager &scene, uint64_t dt);
         void updateProjectiles(SceneManager &scene, uint64_t dt);
+        void updateModules(SceneManager &scene, uint64_t dt);
 
         void setAddNRmEntityCallbacks();
         std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityAddedCallbacks;
@@ -212,6 +230,8 @@ namespace ecs
         static std::map<std::string, int> _spriteFrameCounts;
         static std::map<std::string, float> _spriteRotations;
         static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
+        static std::vector<std::string> _playersSprite;
+        static std::vector<std::string> _modulesSprite;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;

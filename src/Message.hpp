@@ -55,7 +55,8 @@ namespace ecs
         PLAYER,
         ENEMY,
         MISSILE,
-        SOUND
+        MODULE,
+        BONUS
     };
 
     enum class KeyState : qint8 {
