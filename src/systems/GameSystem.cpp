@@ -286,8 +286,10 @@ namespace ecs
             if (component == nullptr)
                 continue;
             auto pos = Component::castComponent<Position>(component);
-            if (pos && !(rect.contains(pos->x, pos->y)))
+            if (pos && !(rect.contains(pos->x, pos->y))) {
+                writeMsg(Message(EntityAction::DELETE, entity->getId()));
                 sceneManager.getCurrentScene().removeEntity(entity);
+            }
         }
     }
 
