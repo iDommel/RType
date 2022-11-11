@@ -176,7 +176,7 @@ namespace ecs
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
         sceneManager.addScene(createGameScene(), SceneType::GAME);
         if (Core::networkRole == NetworkRole::CLIENT) {
-            createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Game 2.ogg");
+            createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Level 1.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
         }
         else if (Core::networkRole == NetworkRole::SERVER)
@@ -189,7 +189,7 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/jump.wav", QUuid::createUuid());
+        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/player tir.ogg", QUuid::createUuid());
     }
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
@@ -858,11 +858,12 @@ namespace ecs
         std::shared_ptr<Entity> entity7 = createText("Up: Up", Position(150, 550), 40, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity8 = createText("Down: Down", Position(150, 650), 40, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(150, 750), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity10 = createText("Module: Space", Position(150, 850), 40, "assets/Font/techno_hideo.ttf");
 
         createMusic(*scene, "assets/Music/Menu.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);
 
-        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9, entity10});
         return scene;
     }
 
