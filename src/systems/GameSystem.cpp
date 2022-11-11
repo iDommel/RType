@@ -629,15 +629,29 @@ namespace ecs
             auto pos = Component::castComponent<Position>((*module)[IComponent::Type::POSITION]);
             auto vel = Component::castComponent<Velocity>((*module)[IComponent::Type::VELOCITY]);
             auto hitbox = Component::castComponent<Hitbox>((*module)[IComponent::Type::HITBOX]);
-            auto splitVel = *vel;
+            auto modComp = Component::castComponent<SpaceModule>((*module)[IComponent::Type::SPACE_MODULE]);
 
-            splitVel.y = 0;
-            (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
-            (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            splitVel.y = (*vel).y;
-            splitVel.x = 0;
-            (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
-            (*hitbox) += splitVel * (float)(dt / 1000.0f);
+            if (modComp->getBoundMode() == SpaceModule::BoundMode::NONE) {
+                auto splitVel = *vel;
+                splitVel.y = 0;
+                (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
+                (*hitbox) += splitVel * (float)(dt / 1000.0f);
+                splitVel.y = (*vel).y;
+                splitVel.x = 0;
+                (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
+                (*hitbox) += splitVel * (float)(dt / 1000.0f);
+            } else {
+                auto playerPos = Component::castComponent<Position>((*modComp->getPlayer())[IComponent::Type::POSITION]);
+                *pos = *playerPos;
+                if (modComp->getBoundMode() == SpaceModule::BoundMode::FRONT)
+                    pos->x += SCALE;
+                else
+                    pos->x -= SCALE / 2;
+                Rectangle rect = hitbox->getRect();
+                rect.x = pos->x;
+                rect.y = pos->y;
+                hitbox->setRect(rect);
+            }
         }
     }
 

@@ -16,6 +16,12 @@ namespace ecs
     class SpaceModule : public Component
     {
     public:
+        enum class BoundMode {
+            NONE,
+            FRONT,
+            BACK
+        };
+
         SpaceModule(std::shared_ptr<IEntity> player) : Component(Type::SPACE_MODULE), _player(player)
         {
             _isInitialized = true;
@@ -23,9 +29,12 @@ namespace ecs
 
         std::shared_ptr<IEntity> getPlayer() { return _player; };
 
+        BoundMode getBoundMode() const { return _bound; }
+        void setAttached(BoundMode boundMode) { _bound = boundMode; }
+
     private:
         std::shared_ptr<IEntity> _player = nullptr;
-        float _speed;
+        BoundMode _bound = BoundMode::BACK;
     };
 }
 
