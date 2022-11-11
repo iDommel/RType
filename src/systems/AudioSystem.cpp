@@ -69,11 +69,15 @@ namespace ecs
         std::cerr << "AudioSystem::destroy" << std::endl;
     }
 
-    void AudioSystem::onEntityAdded(std::shared_ptr<IEntity>)
+    void AudioSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &)
     {
+        if (entity->hasComponent(IComponent::Type::SOUND))
+            loadSound(entity);
+        else if (entity->hasComponent(IComponent::Type::MUSIC))
+            loadMusic(entity);
     }
 
-    void AudioSystem::onEntityRemoved(std::shared_ptr<IEntity>)
+    void AudioSystem::onEntityRemoved(std::shared_ptr<IEntity>, IScene &)
     {
     }
 

@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio [WSL : Ubuntu]
+** R-Type [WSL : Ubuntu]
 ** File description:
 ** window
 */
@@ -22,9 +22,9 @@ namespace ecs
     {
     public:
         /// @brief Construct a new window:: window object with the size of the screen
-        Window(int screenWidth, int screenHeight, const std::string& name = "Indie Studio");
+        Window(int screenWidth, int screenHeight, const std::string& name = "R-Type");
         /// @brief Construct a new window:: window object with the size of the screen, pass configuration flags as parameter
-        Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name = "Indie Studio");
+        Window(int screenWidth, int screenHeight, unsigned int flags, const std::string& name = "R-Type");
         /// @brief Destruct the window:: close the windows
         ~Window();
         /**
@@ -61,6 +61,9 @@ namespace ecs
         static void endMode3D();
         /// @brief End 2D mode.
         static void endMode2D();
+        /// @brief get the screen width
+        /// @brief Toggle window state: fullscreen/windowed
+        static void toggleFullscreen();
         /// @brief Check if a mouse button has been pressed once
         static bool isMouseButtonPressed(int button);
         /// @brief Check if a mouse button is being pressed
@@ -100,9 +103,9 @@ namespace ecs
         ///  @brief Set a custom key to exit program(default is ESC)
         static void setExitKey(int key);
         /// @brief Get the screen width
-        static int getScreenWidth();
+        static const int getScreenWidth();
         /// @brief Get the screen height
-        static int getScreenHeight();
+        static const int getScreenHeight();
 
     private:
     };

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "components/IComponent.hpp"
+#include <QUuid>
 
 namespace ecs
 {
@@ -33,6 +34,7 @@ namespace ecs
             BONUS,
             CAMERA_2D,
             CAMERA_3D,
+            ANIMATED_2D,
             BOMB,
             TIMED,
             DESTRUCTIBLE,
@@ -41,7 +43,12 @@ namespace ecs
             AI,
             RADAR,
             MUSIC,
-            SOUND
+            SOUND,
+            TRAJECTORY,
+            MISSILE,
+            ENEMY,
+            WALL,
+            NB_TAGS
         };
 
         virtual ~IEntity() = default;
@@ -83,6 +90,10 @@ namespace ecs
          * @return Returns a vector of components of the given types in the same order
          */
         virtual std::vector<std::shared_ptr<IComponent>> getFilteredComponents(std::vector<IComponent::Type> components) = 0;
+
+        /// @brief Gets the entity identifier
+        virtual QUuid getId() const = 0;
+
         /**
          * @brief [] Operator overload that returns a pointer to a component or null
          *

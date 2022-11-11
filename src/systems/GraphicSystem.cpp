@@ -11,6 +11,7 @@
 
 #include "GraphicSystem.hpp"
 #include "Camera3DComponent.hpp"
+#include "Camera2DComponent.hpp"
 #include "Cube.hpp"
 #include "Grid.hpp"
 #include "Model3D.hpp"
@@ -25,9 +26,12 @@
 #include "ModelAnim.hpp"
 #include "ModelAnimation.hpp"
 #include "ParticleCloud.hpp"
+#include "Animation2D.hpp"
 
 namespace ecs
 {
+    float GraphicSystem::horizontalScale;
+    float GraphicSystem::verticalScale;
 
     GraphicSystem::GraphicSystem()
     {
@@ -35,10 +39,9 @@ namespace ecs
     void GraphicSystem::init(SceneManager &sceneManager)
     {
         std::cerr << "GraphicSystem::init" << std::endl;
-        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "Indie Studio");
+        _window = std::make_unique<Window>(::GetScreenWidth(), ::GetScreenHeight(), FLAG_WINDOW_RESIZABLE, "R-Type");
 
-        for (auto &scene : sceneManager.getScenes())
-        {
+        for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
                 loadSprite(entity);
             for (auto &e : (*scene.second)[IEntity::Tags::RENDERABLE_3D])
@@ -50,20 +53,20 @@ namespace ecs
 
     void GraphicSystem::update(SceneManager &sceneManager, uint64_t)
     {
+        horizontalScale = _window->getScreenWidth() / 1920.0f;
+        verticalScale = _window->getScreenHeight() / 1080.0f;
         for (auto &scene : sceneManager.getScenes())
             for (auto &e : (*scene.second)[IEntity::Tags::TEXT])
                 loadText(e);
-        if (_window->shouldClose())
-        {
+        if (_window->shouldClose()) {
             sceneManager.setShouldClose(true);
             return;
         }
         _window->beginDraw();
         _window->clearBackground(RAYWHITE);
-        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_3D])
-        {
+        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_3D]) {
             auto camComponent = (*e)[IComponent::Type::CAMERA_3D];
-            auto cam = Component::castComponent<CameraComponent>(camComponent);
+            auto cam = Component::castComponent<Camera3DComponent>(camComponent);
 
             cam->getCamera().beginDrawScope();
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::RENDERABLE_3D])
@@ -76,14 +79,28 @@ namespace ecs
                 displayCube(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::AESTHETIC])
                 displayParticles(e);
-            /* for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-                displayCollidable(e); */
             cam->getCamera().endDrawScope();
         }
-        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
-            displaySprite(e);
-        for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
-            displayText(e);
+        if (sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D].size() == 1) {
+            for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
+                auto camComponent = (*camera)[IComponent::Type::CAMERA_2D];
+                auto cam = Component::castComponent<Camera2DComponent>(camComponent);
+                cam->getCamera().beginDrawScope();
+
+                for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
+                    displaySprite(e);
+                for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
+                    displayText(e);
+                // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                //     displayCollidable(e);
+                cam->getCamera().endDrawScope();
+            }
+        } else {
+            for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
+                displaySprite(e);
+            for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
+                displayText(e);
+        }
         _window->endDraw();
     }
 
@@ -92,26 +109,23 @@ namespace ecs
         std::cerr << "GraphicSystem::destroy" << std::endl;
     }
 
-    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &)
     {
-        if (entity->hasTag(IEntity::Tags::SPRITE_2D))
-        {
+        if (entity->hasTag(IEntity::Tags::SPRITE_2D)) {
             std::cerr << "loadSprite" << std::endl;
             loadSprite(entity);
         }
-        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D))
-        {
+        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
             std::cerr << "loadModel" << std::endl;
             loadModel(entity);
         }
     }
 
-    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D))
             unloadSprite(entity);
-        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D))
-        {
+        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
             unloadModel(entity);
         }
     }
@@ -124,13 +138,13 @@ namespace ecs
             _textures[sprite->getValue()].second++;
         else
             _textures[sprite->getValue()] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
-        if (sprite->getNbFrame() == 0)
-            return;
+        // if (sprite->getNbFrame() == 0)
+        //     return;
 
-        auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
+        // auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
 
-        spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
-        spriteRect->height = _textures[sprite->getValue()].first->getHeight();
+        // spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
+        // spriteRect->height = _textures[sprite->getValue()].first->getHeight();
     }
 
     void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
@@ -148,19 +162,34 @@ namespace ecs
         auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
         auto sprite = Component::castComponent<Sprite>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
-        Vector2 p = {pos->x, pos->y};
+        Vector2 p = {pos->x * horizontalScale, pos->y * verticalScale};
 
-        try
-        {
-            auto rect = (*entity)[IComponent::Type::RECT];
-            auto r = Component::castComponent<Rect>(rect);
+        // try {
+        //     auto rect = (*entity)[IComponent::Type::RECT];
+        //     auto r = Component::castComponent<Rect>(rect);
 
-            _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
-            _textures.at(sprite->getValue()).first->drawRec(p);
-        }
-        catch (std::runtime_error &)
-        {
-            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
+        //     _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
+        //     _textures.at(sprite->getValue()).first->drawRec(p);
+        // } catch (std::runtime_error &) {
+        //     _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
+        // }
+        if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
+            auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
+            float width = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
+            float height = _textures.at(sprite->getValue()).first->getHeight();
+
+            Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
+            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
+
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
+        } else {
+            float width = _textures.at(sprite->getValue()).first->getWidth();
+            float height = _textures.at(sprite->getValue()).first->getHeight();
+
+            Rectangle sourceRec = {0, 0, width, height};
+            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
+
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
         }
     }
 
@@ -184,16 +213,13 @@ namespace ecs
         auto pos = Component::castComponent<Position>(components[1]);
         Vector3 position = {pos->x, pos->y, pos->z};
 
-        if ((*entity)[IComponent::Type::ANIMATION] != nullptr)
-        {
-            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr) {
+            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
             Vector3 size = {model->getSize(), model->getSize(), model->getSize()};
             _animations[anim->getAnimPath()].first->updateModelAnimation(*_models[model->getModelPath()].first, anim->getCurrentFrame());
             Vector3 x = {1.0f, 0.0f, 0.0f};
             _models[model->getModelPath()].first->drawRotate(position, x, -90.0f, size, WHITE);
-        }
-        else
-        {
+        } else {
             Vector3 x = {0.0f, 1.0f, 0.0f};
             Vector3 size = {model->getSize(), model->getSize(), model->getSize()};
             _models.at(model->getModelPath()).first->drawRotate(position, x, model->getRotation(), size, WHITE);
@@ -207,6 +233,8 @@ namespace ecs
 
         if (hitbox->is3D())
             ::DrawBoundingBox(hitbox->getBBox(), RED);
+        else
+            ::DrawRectangleLinesEx(hitbox->getRect(), 1, RED);
     }
 
     void GraphicSystem::loadModel(std::shared_ptr<IEntity> &entity)
@@ -219,13 +247,12 @@ namespace ecs
             _models[model->getModelPath()].second++;
         else
             _models[model->getModelPath()] = std::make_pair(std::make_unique<Model>(model->getModelPath(), model->getTexturePath()), 1);
-        if ((*entity)[IComponent::Type::ANIMATION] != nullptr)
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr)
             loadModelAnimation(entity);
         if (boxComponent == nullptr)
             return;
         hitbox = Component::castComponent<Hitbox>(boxComponent);
-        if (hitbox->is3D() && !hitbox->isInitialized())
-        {
+        if (hitbox->is3D() && !hitbox->isInitialized()) {
             auto box = _models[model->getModelPath()].first->getBoundingBox();
             auto pos = hitbox->getBBox().max;
             box.max.x += pos.x;
@@ -310,21 +337,20 @@ namespace ecs
 
     void GraphicSystem::loadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations.find(anim->getAnimPath()) != _animations.end())
             _animations[anim->getAnimPath()].second++;
         else
             _animations[anim->getAnimPath()] = std::make_pair(std::make_unique<ModelAnimation>(anim->getAnimPath()), 1);
-        if (anim->getNbFrames() < 0)
-        {
+        if (anim->getNbFrames() < 0) {
             anim->getNbFrames() = _animations[anim->getAnimPath()].first->getFrameCount();
         }
     }
 
     void GraphicSystem::unloadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations[anim->getAnimPath()].second < 1)
             _animations[anim->getAnimPath()].second--;

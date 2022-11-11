@@ -11,7 +11,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
+
+# set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(${LIBRARY_NAME}
@@ -34,6 +35,8 @@ add_library(${LIBRARY_NAME}
     src/GamepadStickCallbacks.cpp
     src/Sound.cpp
     src/UdpSocket.cpp
+    src/Message.cpp
+    src/MapGeneration.cpp
 
     src/systems/AudioSystem.cpp
     src/systems/GraphicSystem.cpp
@@ -42,7 +45,9 @@ add_library(${LIBRARY_NAME}
     src/systems/CollideSystem.cpp
     src/systems/ParticlesSystem.cpp
     src/systems/AISystem.cpp
-    src/systems/NetworkSystem.cpp
+    src/systems/ANetworkSystem.cpp
+    src/systems/NetworkServerSystem.cpp
+    src/systems/NetworkClientSystem.cpp
 
     src/components/Component.cpp
     src/components/EventListener.cpp
@@ -60,6 +65,10 @@ add_library(${LIBRARY_NAME}
     src/components/Bomb.cpp
     src/components/UIComponent.cpp
     src/components/AIPlayer.cpp
+    src/components/Trajectory.cpp
+    src/components/Animation2D.cpp
+    src/components/Wall.cpp
+    src/components/Missile.cpp
 
     test_functions/TestAnimations2D.cpp
     test_functions/TestCamera2D.cpp
@@ -79,15 +88,23 @@ target_include_directories(${LIBRARY_NAME}
     src/systems
     src
 )
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
+SET(CMAKE_AUTORCC ON)
 
 if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
 endif()
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt5 COMPONENTS Network REQUIRED)
+target_compile_definitions(${LIBRARY_NAME} PUBLIC)
+
+# find_package(raylib CONFIG REQUIRED)
 find_package(raylib REQUIRED)
-target_link_libraries(${LIBRARY_NAME} raylib Qt5::Core Qt5::Network)
+find_package(Qt5 COMPONENTS Core Network CONFIG REQUIRED)
+
+target_include_directories(${LIBRARY_NAME} PUBLIC ${raylib_INCLUDE_DIRS})
+
+target_link_libraries(${LIBRARY_NAME} raylib; Qt5::Core; Qt5::Network)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(${LIBRARY_NAME} -lstdc++fs)

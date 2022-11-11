@@ -73,12 +73,12 @@ namespace ecs
         }
     }
 
-    std::map<SceneManager::SceneType, std::unique_ptr<IScene>> &SceneManager::getScenes()
+    std::map<SceneType, std::unique_ptr<IScene>> &SceneManager::getScenes()
     {
         return _scenes;
     }
 
-    void SceneManager::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback)
+    void SceneManager::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback)
     {
         for (auto &scene : _scenes) {
             scene.second->setAddEntityCallback(callback);
@@ -95,21 +95,21 @@ namespace ecs
         return _shouldClose;
     }
 
-    void SceneManager::setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback)
+    void SceneManager::setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback)
     {
         for (auto &scene : _scenes) {
             scene.second->setRemoveEntityCallback(callback);
         }
     }
 
-    SceneManager::SceneType &SceneManager::getCurrentSceneType()
+    SceneType &SceneManager::getCurrentSceneType()
     {
         static SceneType currentSceneType = SceneType::NONE;
 
         return currentSceneType;
     }
 
-    SceneManager::SceneType &SceneManager::getPreviousSceneType()
+    SceneType &SceneManager::getPreviousSceneType()
     {
         static SceneType previousSceneType = SceneType::NONE;
 
@@ -123,7 +123,7 @@ namespace ecs
         return *_scenes[sceneType];
     }
 
-    std::vector<SceneManager::SceneType> SceneManager::getSceneTypeList()
+    std::vector<SceneType> SceneManager::getSceneTypeList()
     {
         std::vector<SceneType> sceneTypeList;
 

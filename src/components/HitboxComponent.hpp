@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** Hitbox
 */
@@ -86,7 +86,10 @@ namespace ecs
         BoundingBox getBBox(void) const;
         /// @brief Get the 2D Rectangle (WARNING-> use 2d funtions on 2d hitbox only)
         Rectangle getRect(void) const;
+
         void setBBox(BoundingBox box);
+
+        void setRect(Rectangle rect);
 
     protected:
     private:

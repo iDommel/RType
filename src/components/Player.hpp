@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** Indie
+** R-Type
 ** File description:
 ** player
 */
@@ -11,6 +11,7 @@
 #include "Component.hpp"
 #include "EventListener.hpp"
 #include "SceneManager.hpp"
+#include <QtCore>
 
 namespace ecs
 {
@@ -36,24 +37,12 @@ namespace ecs
          * @param bonus The Bonus that was given to the player
          */
         void handleBonus(const Bonus &bonus);
-        /**
-         * @brief Generate a bomb and add it to the entities list
-         * @param manager The scene manager
-         * @param entity Player
-         */
-        void generateBomb(SceneManager &manager, std::shared_ptr<IEntity> entity);
-        void updateBombsVec();
 
         ///@brief gets the player ID
         int getId() const;
 
         ///@brief gets the current player speed
         int getSpeed() const;
-
-        ///@brief gets the current maximum number of bomb a player can drop
-        int getNbBomb() const;
-        ///@brief Sets the current maximum number of bomb a player can drop
-        void setNbBomb(int newNbBomb);
 
         ///@brief gets the current blast power
         int getBlastPower() const;
@@ -78,6 +67,17 @@ namespace ecs
         void moveHorizontal(SceneManager &manager, std::shared_ptr<IEntity> entity, float value);
         /// @brief verticcal movement for gamepad sticks
         void moveVertical(SceneManager &manager, std::shared_ptr<IEntity> entity, float value);
+        /// @brief Set internal clock to now
+        void startClock();
+        /// @return Returns a reference to the internal clock, if not previously started clock will be null
+        QTime &getShootTimer();
+        /// @return Returns a reference to the cooldown timer
+        QTimer &getShootCooldownTimer();
+        /// @return Returns true if the timer has timed out or has not started, false otherwise
+        bool hasCooldownTimedOut() const;
+        /// @brief Starts (or restarts) the shoot cooldown timer
+        /// @param msecs Cooldown time in milliseconds
+        void startShootCooldownTimer(std::chrono::milliseconds msecs = std::chrono::milliseconds(250));
 
         void kill();
         bool isDead() const;
@@ -102,28 +102,27 @@ namespace ecs
         int changeLeft;
         int changeRight;
         int changeBomb;
+        static const int _defaultSpeed;
 
     protected:
     private:
         void move(std::shared_ptr<Velocity> vel);
 
-        int _nbBomb;
         int _blastPower;
         int _speed;
         int _id;
+        QTime _shootTimer;
+        QTimer _shootCooldownTimer;
         bool _isDead = false;
         bool _isUp = false;
         bool _isDown = false;
         bool _isLeft = false;
         bool _isRight = false;
-        static const int _defaultNbBomb = 1;
-        static const int _defaultSpeed = 60;
         static const int _defaultBlastPower = 3;
         std::string UP;
         std::string DOWN;
         std::string LEFT;
         std::string RIGHT;
-        std::vector<std::shared_ptr<IEntity>> _bombs;
         std::string BOMB;
     };
 

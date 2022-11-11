@@ -9,6 +9,7 @@
 #define SYSTEM_HPP
 
 #include <memory>
+#include "SceneManager.hpp"
 
 namespace ecs
 {
@@ -38,13 +39,14 @@ namespace ecs
         /**
          * @brief The callback to be called when an entity is added to a scene
          * @param entity The Entity that was added
+         * @param scene Scene to add entity into
          */
-        virtual void onEntityAdded(std::shared_ptr<IEntity> entity) = 0;
+        virtual void onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene) = 0;
         /**
          * @brief The callback to be called when an entity is removed from a scene
          * @param entity The Entity that was removed
          */
-        virtual void onEntityRemoved(std::shared_ptr<IEntity> entity) = 0;
+        virtual void onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene) = 0;
     };
 
 }

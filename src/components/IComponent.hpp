@@ -35,7 +35,8 @@ namespace ecs
             SPHERE,
             CUBE,
             GRID,
-            ANIMATION,
+            ANIMATION_3D,
+            ANIMATION_2D,
             PARTICLES,
             BOMB,
             TIMER,
@@ -43,6 +44,10 @@ namespace ecs
             UI,
             AI,
             RADAR,
+            TRAJECTORY,
+            MISSILE,
+            ENEMY,
+            WALL,
             TYPE_NB
         };
         virtual const Type &getType() const = 0;

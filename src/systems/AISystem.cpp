@@ -253,11 +253,11 @@ namespace ecs
     {
     }
 
-    void AISystem::onEntityAdded(std::shared_ptr<IEntity>)
+    void AISystem::onEntityAdded(std::shared_ptr<IEntity>, IScene &)
     {
     }
 
-    void AISystem::onEntityRemoved(std::shared_ptr<IEntity>)
+    void AISystem::onEntityRemoved(std::shared_ptr<IEntity>, IScene &)
     {
     }
 

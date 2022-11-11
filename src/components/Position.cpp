@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** Position
 */
@@ -20,6 +20,11 @@ namespace ecs
     }
 
     Position::Position(const Position &&other) : AVector(Component::Type::POSITION, other.x, other.y, other.z)
+    {
+        _isInitialized = true;
+    }
+
+    Position::Position(const Vector2 &other) : AVector(Component::Type::POSITION, other.x, other.y, 0)
     {
         _isInitialized = true;
     }

@@ -20,7 +20,7 @@ namespace ecs
          * @brief Construct a new Camera Component
          * @param target Vector the camera point to
          */
-        Camera2DComponent(Vector2 target);
+        Camera2DComponent(std::shared_ptr<Position> target);
 
         /**
          * @brief Get camera object

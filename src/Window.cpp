@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio [WSL : Ubuntu]
+** R-Type [WSL : Ubuntu]
 ** File description:
 ** window
 */
@@ -90,6 +90,11 @@ namespace ecs
     void Window::endMode2D()
     {
         EndMode2D();
+    }
+
+    void Window::toggleFullscreen()
+    {
+        ToggleFullscreen();
     }
 
     bool Window::isMouseButtonPressed(int button)
@@ -183,17 +188,19 @@ namespace ecs
         SetExitKey(key);
     }
 
-    int Window::getScreenWidth()
+    const int Window::getScreenWidth()
     {
         int position = GetScreenWidth();
 
         return (position);
     }
 
-    int Window::getScreenHeight()
+    const int Window::getScreenHeight()
     {
         int position = GetScreenHeight();
 
+        if (position <= 0)
+            throw std::runtime_error("Invalid Screen Height");
         return (position);
     }
 }

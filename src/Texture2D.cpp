@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** Texture2D
 */
@@ -137,6 +137,13 @@ namespace ecs
         _texture = std::make_unique<Texture2D>(other);
         if (_texture->id == 0)
             throw TextureError("Texture::operator=: Texture failed to load");
+    }
+
+    void Texture::drawPro(Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
+    {
+        if (!_isLoaded)
+            throw TextureError("Texture drawPro: Texture not loaded");
+        DrawTexturePro(*_texture, source, dest, origin, rotation, tint);
     }
 
 }

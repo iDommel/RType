@@ -1,5 +1,6 @@
 Map are composed of up to 170 lines of 11 caracters.
 The last line define the end of the Map.
+YOU NEED TO HAVE AN EMPTY LINE AT THE END OF THE FILE !
 
 List off caracters:
 Base:

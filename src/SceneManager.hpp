@@ -17,25 +17,27 @@
 
 namespace ecs
 {
+    enum class SceneType {
+        NONE = -1,
+        GAME,
+        MAIN_MENU,
+        CONNECTION,
+        LOBBY,
+        CONTROLLER,
+        HELP,
+        PAUSE,
+        OPTION,
+        SPLASH,
+        SOUND,
+        NB_SCENES,
+        PREGAME,
+        PREVIOUS,
+        END
+    };
+
     class SceneManager
     {
     public:
-        enum class SceneType {
-            NONE = -1,
-            GAME,
-            MAIN_MENU,
-            CONNECTION,
-            CONTROLLER,
-            HELP,
-            PAUSE,
-            OPTION,
-            SPLASH,
-            SOUND,
-            NB_SCENES,
-            PREGAME,
-            PREVIOUS,
-            END
-        };
 
         /**
          * @brief Add a scene to the scene manager
@@ -67,7 +69,7 @@ namespace ecs
          * @brief Set callback as addEntityCallback for all scene
          * @param callback Callback to set as addEntityCallback
          */
-        void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback);
+        void setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback);
         /// @brief this will be read by the core to stop the main loop and close the program
         void setShouldClose(bool shouldClose);
         /// @brief Tells you if you should close the window
@@ -77,7 +79,7 @@ namespace ecs
          * @brief Set callback as removeEntityCallback for all scene
          * @param callback Callback to set as removeEntityCallback
          */
-        void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>)> callback);
+        void setRemoveEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback);
 
         /**
          * @brief Get the Current Scene Type object

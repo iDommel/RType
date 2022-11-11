@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <thread>
+#include <regex>
 
 #include "Core.hpp"
 #include "systems/AudioSystem.hpp"
@@ -17,13 +18,41 @@
 #include "systems/GraphicSystem.hpp"
 #include "systems/CollideSystem.hpp"
 #include "systems/ParticlesSystem.hpp"
-#include "systems/NetworkSystem.hpp"
+#include "systems/NetworkClientSystem.hpp"
+#include "systems/NetworkServerSystem.hpp"
+#include "ArgumentError.hpp"
 
 namespace ecs
 {
-
-    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av), _role(role)
+    char **checkArguments(int ac, char **av)
     {
+        std::regex ipRegex("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
+        std::regex portRegex("^[0-9]{1,5}$");
+        if (ac == 1) {
+            return nullptr;
+        }
+        if (ac == 3) {
+            try {
+                if (std::regex_match(av[1], ipRegex) && std::regex_match(av[2], portRegex)) {
+                    std::stoi(av[2]);
+                    return av;
+                }
+            } catch (std::invalid_argument &e) {
+                std::cerr << "Invalid port" << std::endl;
+                return nullptr;
+            } catch (std::exception &e) {
+                return nullptr;
+            }
+        }
+        std::cerr << "Invalid arguments" << std::endl;
+        return nullptr;
+    }
+
+    Core::Core(int ac, char **av, std::vector<SystemType> activeSystems, NetworkRole role) : QCoreApplication(ac, av)
+    {
+        networkRole = role;
+        _ip = av[1];
+        _port = std::stoi(av[2]);
         // Connect signal doLoop to loop function
         connect(this, &Core::doLoop, this, &Core::loop, Qt::QueuedConnection);
         connect(this, &Core::exitApp, this, &QCoreApplication::quit, Qt::QueuedConnection);
@@ -31,7 +60,7 @@ namespace ecs
         for (auto &system : activeSystems) {
             switch (system) {
             case SystemType::GAME:
-                _systems[system] = new GameSystem(role);
+                _systems[system] = new GameSystem();
                 break;
             case SystemType::EVENT:
                 _systems[system] = new EventSystem();
@@ -46,31 +75,41 @@ namespace ecs
                 _systems[system] = new ParticlesSystem();
                 break;
             case SystemType::NETWORK:
-                _systems[system] = new NetworkSystem(role);
+                if (role == NetworkRole::CLIENT) {
+                    auto client = new NetworkClientSystem(_ip, _port);
+                    _systems[system] = client;
+                    connect(this, &QCoreApplication::aboutToQuit, client, &NetworkClientSystem::destroy);
+                } else if (role == NetworkRole::SERVER) {
+                    auto server = new NetworkServerSystem(_ip, _port, _sceneManager);
+                    _systems[system] = server;
+                    connect(server, &NetworkServerSystem::changeScene, this, &Core::onChangeScene);
+                }
                 break;
             default:
                 break;
             }
         }
 
-        if (_role == NetworkRole::CLIENT) {
-            auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
-            connect(netSys, &NetworkSystem::clientConnection, this, &Core::onClientConnection);
+        if (networkRole == NetworkRole::SERVER) {
+            auto netSys = dynamic_cast<NetworkServerSystem *>(_systems[SystemType::NETWORK]);
+            auto game = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
+
+            if (netSys == nullptr || game == nullptr)
+                return;
+            connect(netSys, &NetworkServerSystem::createPlayer, game, &GameSystem::createPlayer);
+            connect(game, &GameSystem::writeMsg, netSys, &NetworkServerSystem::writeMsg);
+        } else if (networkRole == NetworkRole::CLIENT) {
+            auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
+            auto game = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
+
+            if (netSys == nullptr || game == nullptr)
+                return;
+            connect(netSys, &NetworkClientSystem::createPlayer, game, &GameSystem::createPlayer);
+            // connect(netSys, &NetworkClientSystem::createMissile, game, &GameSystem::createSimpleMissile);
         }
-        // _systems[SystemType::AUDIO] = std::make_unique<AudioSystem>();
-        // _systems[SystemType::GAME] = std::make_unique<GameSystem>();
-        // _systems[SystemType::EVENT] = std::make_unique<EventSystem>();
-        // _systems[SystemType::PARTICLE] = std::make_unique<ParticlesSystem>();
-        // _systems[SystemType::GRAPHIC] = std::make_unique<GraphicSystem>();
     }
 
-    Core::~Core()
-    {
-        // if (_systems.find(SystemType::NETWORK) != _systems.end())
-        //     _systems[SystemType::NETWORK].release();
-        // if (_systems.find(SystemType::EVENT) != _systems.end())
-        //     _systems[SystemType::EVENT].release();
-    }
+    Core::~Core() {}
 
     void Core::run()
     {
@@ -79,8 +118,8 @@ namespace ecs
 
         for (auto &system : _systems)
             system.second->init(_sceneManager);
-        _sceneManager.setAddEntityCallback(std::bind(&Core::onEntityAdded, this, std::placeholders::_1));
-        _sceneManager.setRemoveEntityCallback(std::bind(&Core::onEntityRemoved, this, std::placeholders::_1));
+        _sceneManager.setAddEntityCallback(std::bind(&Core::onEntityAdded, this, std::placeholders::_1, std::placeholders::_2));
+        _sceneManager.setRemoveEntityCallback(std::bind(&Core::onEntityRemoved, this, std::placeholders::_1, std::placeholders::_2));
 
         emit doLoop();
     }
@@ -114,16 +153,16 @@ namespace ecs
         _systems[type]->update(manager, deltaTime);
     }
 
-    void Core::onEntityAdded(std::shared_ptr<IEntity> entity)
+    void Core::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene)
     {
         for (auto &system : _systems)
-            system.second->onEntityAdded(entity);
+            system.second->onEntityAdded(entity, scene);
     }
 
-    void Core::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void Core::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene)
     {
         for (auto &system : _systems)
-            system.second->onEntityRemoved(entity);
+            system.second->onEntityRemoved(entity, scene);
     }
 
     void Core::setEventNetwork()
@@ -133,18 +172,18 @@ namespace ecs
         else if (_running)
             throw std::runtime_error("Can't set event network while running");
 
-        auto netSys = dynamic_cast<NetworkSystem *>(_systems[SystemType::NETWORK]);
+        auto netSys = dynamic_cast<NetworkClientSystem *>(_systems[SystemType::NETWORK]);
         auto evtSys = dynamic_cast<EventSystem *>(_systems[SystemType::EVENT]);
         auto gameSys = dynamic_cast<GameSystem *>(_systems[SystemType::GAME]);
 
-        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        connect(evtSys, &EventSystem::writeMsg, netSys, &NetworkClientSystem::writeMsg);
         evtSys->setNetworkedEvents();
-        connect(gameSys, &GameSystem::writeMsg, netSys, &NetworkSystem::writeMsg);
+        connect(gameSys, &GameSystem::writeMsg, netSys, &NetworkClientSystem::writeMsg);
         gameSys->activateNetwork();
     }
 
-    void Core::onClientConnection()
+    void Core::onChangeScene(SceneType scene)
     {
-        _sceneManager.setCurrentScene(SceneManager::SceneType::GAME);
+        _sceneManager.setCurrentScene(scene);
     }
 }

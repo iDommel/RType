@@ -1,10 +1,11 @@
 /*
 ** EPITECH PROJECT, 2022
-** indieStudio
+** R-Type
 ** File description:
 ** AVector
 */
 
+#include <cmath>
 #include "AVector.hpp"
 
 namespace ecs
@@ -21,12 +22,22 @@ namespace ecs
     {
     }
 
+    float AVector::getDistance2D(const AVector &a, const AVector &b)
+    {
+        return std::sqrt(std::pow(b.x - a.x, 2.0f) + std::pow(b.y - a.y, 2.0f));
+    }
+
     void AVector::operator=(const AVector &other)
     {
         _type = other.getType();
         x = other.x;
         y = other.y;
         z = other.z;
+    }
+
+    Vector2 AVector::getVector2() const
+    {
+        return {x, y};
     }
 
     std::tuple<float, float, float> AVector::getVector() const
