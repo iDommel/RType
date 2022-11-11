@@ -260,11 +260,14 @@ namespace ecs
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
             camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,//TODO: use cam or window size maybe
             camPos->y + 1080 + validBoundingZone);
 
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
-            auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            auto component = (*entity)[IComponent::Type::POSITION];
+            if (!component)
+                continue;
+            auto pos = Component::castComponent<Position>(component);
             if (pos && !(rect.contains(pos->x, pos->y)))
                 sceneManager.getCurrentScene().removeEntity(entity);
         }
