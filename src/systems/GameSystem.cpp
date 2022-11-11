@@ -301,28 +301,43 @@ namespace ecs
         _collideSystem.destroy();
     }
 
-    std::shared_ptr<Entity> GameSystem::createImage(std::string path, Position position, int heigh, int width, float rotation = 0.0f, float scale = 1.0f)
+    std::shared_ptr<Entity> GameSystem::createImage(std::string path, Position position, int height, int width, float rotation = 0.0f, float scale = 1.0f)
     {
-        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>(path, rotation, scale);
-        std::shared_ptr<Position> component2 = std::make_shared<Position>(position);
-        std::shared_ptr<Rect> component3 = std::make_shared<Rect>(0, 0, heigh, width);
+        std::shared_ptr<Entity> image = std::make_shared<Entity>();
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, rotation, scale);
+        std::shared_ptr<Position> pos = std::make_shared<Position>(position);
+        std::shared_ptr<Rect> rect = std::make_shared<Rect>(0, 0, height, width);
 
-        entity->addComponent(component2)
-            .addComponent(component)
-            .addComponent(component3);
-        return (entity);
+        image->addComponent(sprite)
+            .addComponent(pos)
+            .addComponent(rect);
+        return (image);
+    }
+
+    std::shared_ptr<Entity> GameSystem::createButton(std::string path, Position position, int height, int width, int nbFrame, Animation2D::AnimationType type, float rotation = 0.0f, float scale = 1.0f)
+    {
+        std::shared_ptr<Entity> button = std::make_shared<Entity>();
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, rotation, scale);
+        std::shared_ptr<Position> pos = std::make_shared<Position>(position);
+        std::shared_ptr<Rect> rect = std::make_shared<Rect>(0, 0, height, width);
+        std::shared_ptr<Animation2D> animation = std::make_shared<Animation2D>(nbFrame, 1, type);
+
+        button->addComponent(sprite)
+            .addComponent(pos)
+            .addComponent(rect)
+            .addComponent(animation);
+        return (button);
     }
 
     std::shared_ptr<Entity> GameSystem::createText(std::string text, Position position, float fontSize, std::string path)
     {
-        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<String> component = std::make_shared<String>(text, path, fontSize);
-        std::shared_ptr<Position> component2 = std::make_shared<Position>(position);
+        std::shared_ptr<Entity> textEntity = std::make_shared<Entity>();
+        std::shared_ptr<String> str = std::make_shared<String>(text, path, fontSize);
+        std::shared_ptr<Position> pos = std::make_shared<Position>(position);
 
-        entity->addComponent(component2)
-            .addComponent(component);
-        return (entity);
+        textEntity->addComponent(str)
+            .addComponent(pos);
+        return (textEntity);
     }
 
     void GameSystem::createSoundEvent(std::shared_ptr<Entity> &entity, std::string value)
@@ -372,13 +387,18 @@ namespace ecs
     {
         MouseCallbacks mouseCallbacks(
             [scenetype, entity, this](SceneManager &sceneManager, Vector2 mousePosition) {
-                auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
+                auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[1]);
                 auto sprite = Component::castComponent<Sprite>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[2]);
+                auto animation = Component::castComponent<Animation2D>(comp[3]);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
+                    if (animation->getNbFrames() >= 3) {
+                        std::cout << "ça marche ?" << std::endl;
+                        animation->setCurrentFrame(3);
+                    }
                     if (scenetype == SceneType::PREVIOUS)
                         sceneManager.setCurrentScene(SceneManager::getPreviousSceneType());
                     else if (scenetype == SceneType::NONE) {
@@ -707,20 +727,20 @@ namespace ecs
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
         std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
         std::shared_ptr<Position> bgPos = std::make_shared<Position>(960, 540);
-        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/Play/Button Normal.png", Position(843, 400), 274, 91, 0.0f, 2.4f);
-        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/Icon/option.png", Position(45, 45), 75, 75, 0.0f, 2.4f);
-        std::shared_ptr<Entity> manetteButtonEntity = createImage("assets/MainMenu/Icon/info.png", Position(15, 950), 20, 75, 0.0f, 2.4f);
-        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/Quit/Button Normal.png", Position(843, 550), 274, 91, 0.0f, 2.4f);
+        std::shared_ptr<Entity> playButton = createButton("assets/MainMenu/Play/playButton.png", Position(843, 400), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> optionButton = createButton("assets/MainMenu/Icon/option.png", Position(45, 45), 75, 75, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> controllerButton = createButton("assets/MainMenu/Icon/info.png", Position(15, 950), 20, 75, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(843, 550), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
 
         backgroundEntity->addComponent(bg)
             .addComponent(bgPos);
         createMusic(*scene, "assets/Music/Menu.ogg");
-        createMsgEvent(playButtonEntity, NetworkMessageType::READY);
-        createSceneEvent(optionButtonEntity, SceneType::SOUND);
-        createSceneEvent(manetteButtonEntity, SceneType::HELP);
-        createMsgEvent(quitButtonEntity, NetworkMessageType::DISCONNECTED);
-        createSceneEvent(quitButtonEntity, SceneType::NONE);
-        scene->addEntities({backgroundEntity, playButtonEntity, optionButtonEntity, manetteButtonEntity, quitButtonEntity});
+        createMsgEvent(playButton, NetworkMessageType::READY);
+        createSceneEvent(optionButton, SceneType::SOUND);
+        createSceneEvent(controllerButton, SceneType::HELP);
+        createMsgEvent(quitButton, NetworkMessageType::DISCONNECTED);
+        createSceneEvent(quitButton, SceneType::NONE);
+        scene->addEntities({backgroundEntity, playButton, optionButton, controllerButton, quitButton});
         return scene;
     }
 
@@ -728,22 +748,22 @@ namespace ecs
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSettingMenu, this), SceneType::OPTION);
         std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
-        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
-        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/Icon/minus.png", Position(750, 490), 60, 24, 0.0f, 2.4f);
-        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/Icon/plus.png", Position(1030, 480), 60, 60, 0.0f, 2.4f);
-        std::shared_ptr<Entity> entity5 = createImage("assets/MainMenu/Icon/sound off.png", Position(760, 580), 84, 60, 0.0f, 2.4f);
-        std::shared_ptr<Entity> entity6 = createImage("assets/MainMenu/Icon/sound on.png", Position(1035, 580), 84, 60, 0.0f, 2.4f);
+        std::shared_ptr<Entity> backButton = createButton("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> minusButton = createButton("assets/MainMenu/Icon/minus.png", Position(750, 490), 60, 24, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> plusButton = createButton("assets/MainMenu/Icon/plus.png", Position(1030, 480), 60, 60, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> soundOffButton = createButton("assets/MainMenu/Icon/sound off.png", Position(760, 580), 84, 60, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> soundOnButton = createButton("assets/MainMenu/Icon/sound on.png", Position(1035, 580), 84, 60, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> entity7 = createText("Option Menu", Position(600, 100), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity8 = createText("Volume", Position(700, 200), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity9 = createText("50", Position(820, 450), 80, "assets/Font/techno_hideo.ttf");
 
         createMusic(*scene, "assets/Music/Menu.ogg");
-        createSceneEvent(entity2, SceneType::PREVIOUS);
-        createSoundEvent(entity3, "-");
-        createSoundEvent(entity4, "+");
-        createSoundEvent(entity5, "mute");
-        createSoundEvent(entity6, "unmute");
-        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        createSceneEvent(backButton, SceneType::PREVIOUS);
+        createSoundEvent(minusButton, "-");
+        createSoundEvent(plusButton, "+");
+        createSoundEvent(soundOffButton, "mute");
+        createSoundEvent(soundOnButton, "unmute");
+        scene->addEntities({entity1, backButton, minusButton, plusButton, soundOffButton, soundOnButton, entity7, entity8, entity9});
         return scene;
     }
 
@@ -751,7 +771,7 @@ namespace ecs
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this), SceneType::HELP);
         std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
-        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
+        std::shared_ptr<Entity> backButton = createButton("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> entity3 = createText("Welcome in our game: RType.", Position(100, 100), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity4 = createText("Commande", Position(150, 250), 40, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity5 = createText("Left: Left", Position(150, 350), 40, "assets/Font/techno_hideo.ttf");
@@ -761,9 +781,9 @@ namespace ecs
         std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(150, 750), 40, "assets/Font/techno_hideo.ttf");
 
         createMusic(*scene, "assets/Music/Menu.ogg");
-        createSceneEvent(entity2, SceneType::PREVIOUS);
+        createSceneEvent(backButton, SceneType::PREVIOUS);
 
-        scene->addEntities({entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
+        scene->addEntities({entity1, backButton, entity3, entity4, entity5, entity6, entity7, entity8, entity9});
         return scene;
     }
 
@@ -772,12 +792,12 @@ namespace ecs
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndMenu, this), SceneType::END);
         std::shared_ptr<Entity> entity1 = createImage("assets/Background/Background.png", Position(0, 0), 800, 600);
         std::shared_ptr<Entity> entity2 = createText("End", Position(350, 25), 50, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/Quit/Button Normal.png", Position(800 / 2 - 60, 800 / 2 - 18), 120, 28);
+        std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(800 / 2 - 60, 800 / 2 - 18), 120, 28, 4, Animation2D::AnimationType::FIXED);
 
         createMusic(*scene, "assets/Music/Menu.ogg");
-        createMsgEvent(quitButtonEntity, NetworkMessageType::DISCONNECTED);
-        createSceneEvent(quitButtonEntity, SceneType::NONE);
-        scene->addEntities({entity1, entity2, quitButtonEntity});
+        createMsgEvent(quitButton, NetworkMessageType::DISCONNECTED);
+        createSceneEvent(quitButton, SceneType::NONE);
+        scene->addEntities({entity1, entity2, quitButton});
         return (scene);
     }
 
