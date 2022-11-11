@@ -301,10 +301,10 @@ namespace ecs
         _collideSystem.destroy();
     }
 
-    std::shared_ptr<Entity> GameSystem::createImage(std::string path, Position position, int heigh, int width)
+    std::shared_ptr<Entity> GameSystem::createImage(std::string path, Position position, int heigh, int width, float rotation = 0.0f, float scale = 1.0f)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> component = std::make_shared<Sprite>(path);
+        std::shared_ptr<Sprite> component = std::make_shared<Sprite>(path, rotation, scale);
         std::shared_ptr<Position> component2 = std::make_shared<Position>(position);
         std::shared_ptr<Rect> component3 = std::make_shared<Rect>(0, 0, heigh, width);
 
@@ -693,8 +693,8 @@ namespace ecs
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(550, 350);
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/enemy/sprites/enemy1.png");
-        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(900, 50), 50, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(850, 100), 30, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity2 = createText("R-Type", Position(800, 50), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity3 = createText("Clearly made by us", Position(700, 100), 25, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity4 = createText("Iona Dommel-Prioux\nAntoine Penot\nCamille Maux\nIzaac Carcenac-Sautron\nCyril Dehaese\nRoxane Baert", Position(10, 450), 15, "assets/Font/techno_hideo.ttf");
 
         scene->addEntities({entity, entity2, entity3, entity4});
@@ -706,11 +706,11 @@ namespace ecs
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
         std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
-        std::shared_ptr<Position> bgPos = std::make_shared<Position>(::GetScreenWidth(), ::GetScreenHeight());
-        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/Play/Button Normal.png", Position(865, 407), 114, 38);
-        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/Icon/option.png", Position(0, 0), 32, 31);
-        std::shared_ptr<Entity> manetteButtonEntity = createImage("assets/MainMenu/Icon/info.png", Position(15, 930), 5, 31);
-        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/Quit/Button Normal.png", Position(865, 537), 114, 38);
+        std::shared_ptr<Position> bgPos = std::make_shared<Position>(960, 540);
+        std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/Play/Button Normal.png", Position(843, 400), 274, 91, 0.0f, 2.4f);
+        std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/Icon/option.png", Position(45, 45), 75, 75, 0.0f, 2.4f);
+        std::shared_ptr<Entity> manetteButtonEntity = createImage("assets/MainMenu/Icon/info.png", Position(15, 950), 20, 75, 0.0f, 2.4f);
+        std::shared_ptr<Entity> quitButtonEntity = createImage("assets/MainMenu/Quit/Button Normal.png", Position(843, 550), 274, 91, 0.0f, 2.4f);
 
         backgroundEntity->addComponent(bg)
             .addComponent(bgPos);
@@ -727,15 +727,15 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createSettingMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSettingMenu, this), SceneType::OPTION);
-        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), ::GetScreenWidth(), ::GetScreenHeight());
-        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(0, 0), 25, 21);
-        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/Icon/minus.png", Position(820, 450), 24, 9);
-        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/Icon/plus.png", Position(1040, 450), 24, 24);
-        std::shared_ptr<Entity> entity5 = createImage("assets/MainMenu/Icon/sound off.png", Position(820, 550), 35, 24);
-        std::shared_ptr<Entity> entity6 = createImage("assets/MainMenu/Icon/sound on.png", Position(1040, 550), 35, 24);
-        std::shared_ptr<Entity> entity7 = createText("Option Menu", Position(800, 100), 50, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity8 = createText("Volume", Position(870, 200), 50, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity9 = createText("50", Position(925, 450), 80, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/Icon/minus.png", Position(750, 490), 60, 24, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/Icon/plus.png", Position(1030, 480), 60, 60, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity5 = createImage("assets/MainMenu/Icon/sound off.png", Position(760, 580), 84, 60, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity6 = createImage("assets/MainMenu/Icon/sound on.png", Position(1035, 580), 84, 60, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity7 = createText("Option Menu", Position(600, 100), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity8 = createText("Volume", Position(700, 200), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity9 = createText("50", Position(820, 450), 80, "assets/Font/techno_hideo.ttf");
 
         createMusic(*scene, "assets/Music/Menu.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);
@@ -750,15 +750,15 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createHelpMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this), SceneType::HELP);
-        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), ::GetScreenWidth(), ::GetScreenHeight());
-        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(0, 0), 25, 21);
-        std::shared_ptr<Entity> entity3 = createText("Welcome in our game: RType.", Position(650, 100), 50, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity4 = createText("Commande", Position(850, 200), 40, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity5 = createText("Left: Left", Position(850, 300), 40, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity6 = createText("Right: Right", Position(850, 350), 40, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity7 = createText("Up: Up", Position(850, 400), 40, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity8 = createText("Down: Down", Position(850, 450), 40, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(850, 500), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
+        std::shared_ptr<Entity> entity3 = createText("Welcome in our game: RType.", Position(100, 100), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity4 = createText("Commande", Position(150, 250), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity5 = createText("Left: Left", Position(150, 350), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity6 = createText("Right: Right", Position(150, 450), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity7 = createText("Up: Up", Position(150, 550), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity8 = createText("Down: Down", Position(150, 650), 40, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> entity9 = createText("Shoot: Right CTRL", Position(150, 750), 40, "assets/Font/techno_hideo.ttf");
 
         createMusic(*scene, "assets/Music/Menu.ogg");
         createSceneEvent(entity2, SceneType::PREVIOUS);

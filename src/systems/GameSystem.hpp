@@ -153,7 +153,7 @@ namespace ecs
         /// @param heigh Height of the Image
         /// @param width Width of the Image
         /// @return Returns a pointer to an entity with an Image Component with information on its position and size
-        std::shared_ptr<Entity> createImage(std::string path, Position position, int heigh, int width);
+        std::shared_ptr<Entity> createImage(std::string path, Position position, int heigh, int width, float rotation, float scale);
         /// @brief Create an Text entity
         /// @param text Text to display
         /// @param position Initial position of the text
