@@ -816,7 +816,7 @@ namespace ecs
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
         std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
-        std::shared_ptr<Position> bgPos = std::make_shared<Position>(960, 540);
+        std::shared_ptr<Position> bgPos = std::make_shared<Position>(0, 0);
         std::shared_ptr<Entity> playButtonEntity = createImage("assets/MainMenu/Play/Button Normal.png", Position(843, 400), 274, 91, 0.0f, 2.4f);
         std::shared_ptr<Entity> optionButtonEntity = createImage("assets/MainMenu/Icon/option.png", Position(45, 45), 75, 75, 0.0f, 2.4f);
         std::shared_ptr<Entity> manetteButtonEntity = createImage("assets/MainMenu/Icon/info.png", Position(15, 950), 20, 75, 0.0f, 2.4f);
@@ -837,7 +837,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createSettingMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSettingMenu, this), SceneType::OPTION);
-        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), 0, 0);
         std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
         std::shared_ptr<Entity> entity3 = createImage("assets/MainMenu/Icon/minus.png", Position(750, 490), 60, 24, 0.0f, 2.4f);
         std::shared_ptr<Entity> entity4 = createImage("assets/MainMenu/Icon/plus.png", Position(1030, 480), 60, 60, 0.0f, 2.4f);
@@ -860,7 +860,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createHelpMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this), SceneType::HELP);
-        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> entity1 = createImage("assets/Background/Option_Background.png", Position(0, 0), 0, 0);
         std::shared_ptr<Entity> entity2 = createImage("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 0.0f, 2.4f);
         std::shared_ptr<Entity> entity3 = createText("Welcome in our game: RType.", Position(100, 100), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> entity4 = createText("Commande", Position(150, 250), 40, "assets/Font/techno_hideo.ttf");
