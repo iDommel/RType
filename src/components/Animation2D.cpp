@@ -41,6 +41,8 @@ namespace ecs
 
     void Animation2D::increment()
     {
+        if (_animationType == AnimationType::FIXED)
+                return;
         if (_frameCounter >= _frameSpeed) {
             _currentFrame++;
             _frameCounter = 0;
