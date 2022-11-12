@@ -385,20 +385,28 @@ namespace ecs
 
     void GameSystem::createSceneEvent(std::shared_ptr<Entity> &entity, SceneType scenetype)
     {
+        std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
+
         MouseCallbacks mouseCallbacks(
-            [scenetype, entity, this](SceneManager &sceneManager, Vector2 mousePosition) {
-                auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+            [entity](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[1]);
-                auto sprite = Component::castComponent<Sprite>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[2]);
+                auto animation = Component::castComponent<Animation2D>(comp[3]);
+
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(3);
+            },
+            [scenetype, entity, this](SceneManager &sceneManager, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[1]);
                 auto rect = Component::castComponent<Rect>(comp[2]);
                 auto animation = Component::castComponent<Animation2D>(comp[3]);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
-                    if (animation->getNbFrames() >= 3) {
-                        std::cout << "ça marche ?" << std::endl;
-                        animation->setCurrentFrame(3);
-                    }
                     if (scenetype == SceneType::PREVIOUS)
                         sceneManager.setCurrentScene(SceneManager::getPreviousSceneType());
                     else if (scenetype == SceneType::NONE) {
@@ -409,13 +417,25 @@ namespace ecs
                         EventSystem::reloadScene(sceneManager, SceneType::GAME);
                     } else
                         sceneManager.setCurrentScene(scenetype);
-                }
+                } else 
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(1);
             },
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {});
+            [](SceneManager &, Vector2) {},
+            [entity](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[1]);
+                auto animation = Component::castComponent<Animation2D>(comp[2]);
 
-        std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(2);
+                else
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(1);
+            });
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -424,21 +444,47 @@ namespace ecs
     void GameSystem::createMsgEvent(std::shared_ptr<Entity> &entity, const std::string &msg)
     {
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
+
         MouseCallbacks mouseCallbacks(
-            [entity, this, msg](SceneManager &sceneManager, Vector2 mousePosition) {
-                auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
-                auto pos = Component::castComponent<Position>(comp[1]);
-                auto sprite = Component::castComponent<Sprite>(comp[0]);
-                auto rect = Component::castComponent<Rect>(comp[2]);
+            [entity](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[1]);
+                auto animation = Component::castComponent<Animation2D>(comp[2]);
+
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(3);
+            },
+            [entity, this, msg](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[1]);
+                auto animation = Component::castComponent<Animation2D>(comp[2]);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
                     emit writeMsg(Message(msg));
-                }
+                } else 
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(1);
             },
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {});
+            [](SceneManager &, Vector2) {},
+            [entity](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[1]);
+                auto animation = Component::castComponent<Animation2D>(comp[2]);
+
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(2);
+                else
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(1);
+            });
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -447,21 +493,47 @@ namespace ecs
     void GameSystem::createMsgEvent(std::shared_ptr<Entity> &entity, const NetworkMessageType &msg)
     {
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
+
         MouseCallbacks mouseCallbacks(
-            [entity, this, msg](SceneManager &sceneManager, Vector2 mousePosition) {
-                auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
-                auto pos = Component::castComponent<Position>(comp[1]);
-                auto sprite = Component::castComponent<Sprite>(comp[0]);
-                auto rect = Component::castComponent<Rect>(comp[2]);
+            [entity](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[1]);
+                auto animation = Component::castComponent<Animation2D>(comp[2]);
+                
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(3);
+            },
+            [entity, this, msg](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[1]);
+                auto animation = Component::castComponent<Animation2D>(comp[2]);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
                     emit writeMsg(Message(msg));
-                }
+                } else 
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(1);
             },
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {},
-            [](SceneManager &, Vector2 /*mousePosition*/) {});
+            [](SceneManager &, Vector2) {},
+            [entity](SceneManager &, Vector2 mousePosition) {
+                auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
+                auto pos = Component::castComponent<Position>(comp[0]);
+                auto rect = Component::castComponent<Rect>(comp[1]);
+                auto animation = Component::castComponent<Animation2D>(comp[2]);
+
+                if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(2);
+                else
+                    if (animation->getNbFrames() == 4)
+                        animation->setCurrentFrame(1);
+            });
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
