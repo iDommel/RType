@@ -31,7 +31,7 @@ namespace ecs
         /// @brief Get the total number of frames
         int getNbFrames() const;
 
-        /// @brief Get number of frames, the first frame is 1
+        /// @brief Get the number of the current frame, the first frame is 1
         int getCurrentFrame() const;
 
         /// @brief Get the interval between each animation update, in frames

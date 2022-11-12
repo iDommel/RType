@@ -51,5 +51,10 @@ if [ "$1" = "Re" ] ; then
     sh ./install.sh $build
 else
     sudo cmake --build build
+    echo -ne $C_YELLOW
+    line "-"
+    echo "##> Rebuild - Done"
+    line "-"
+    echo -ne $C_RST
 fi
 sudo -k

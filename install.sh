@@ -195,7 +195,8 @@ if (which pip); then
     echo "pip already installed";
 else
     echo "pip not installed";
-    sys_install pip python3-pip;
+    sys_install pip;
+    sys_install python3-pip;
 fi;
 
 script_header "INSTALLATION DE CONAN"
@@ -210,9 +211,9 @@ script_header "INSTALLATION DE PERL-FINDBIN"
 # unfortunately which doesn't work for this package
 if (find /usr/local -name FindBin.pm | wc -l != 0);
 then
-    echo "perl already installed";
+    echo "perl findbin already installed";
 else
-    echo "perl not installed";
+    echo "perl findbin not installed";
     sys_install perl-FindBin;
 fi;
 
