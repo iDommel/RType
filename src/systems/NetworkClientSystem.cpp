@@ -47,9 +47,9 @@ namespace ecs
         }
 
         for (auto &msg : _msgQueue) {
-            if (msg.getMessageType() == MessageType::ENTITYMESSAGE)
+            if (msg.getMessageType() == MessageType::ENTITY_MESSAGE)
                 processEntityMessage(msg, manager, dt);
-            else if (msg.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+            else if (msg.getMessageType() == MessageType::NETWORK_EVENT_MESSAGE) {
                 if (waitCo && !_connected && msg.getNetworkMessageType() == NetworkMessageType::CONNECTION_OK) {
                     manager.setCurrentScene(SceneType::LOBBY);
                     waitCo = false;
@@ -58,6 +58,9 @@ namespace ecs
                 } else if (msg.getNetworkMessageType() == NetworkMessageType::READY) {
                     manager.setCurrentScene(SceneType::GAME);
                 }
+                
+            } else if (msg.getMessageType() == MessageType::SCENE_CHANGE_MESSAGE && msg.getSceneType() != -1) {
+                    manager.setCurrentScene((SceneType)msg.getSceneType());
             }
         }
         _msgQueue.clear();

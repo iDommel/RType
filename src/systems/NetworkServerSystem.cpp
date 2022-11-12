@@ -31,9 +31,9 @@ namespace ecs
     void NetworkServerSystem::update(SceneManager &manager, uint64_t dt)
     {
         for (auto &s : _msgQueue) {
-            if (s.getMessageType() == MessageType::TEXTMESSAGE)
+            if (s.getMessageType() == MessageType::TEXT_MESSAGE)
                 std::cout << s.getText() << std::endl;
-            if (s.getMessageType() == MessageType::NETWORKEVENTMESSAGE) {
+            if (s.getMessageType() == MessageType::NETWORK_EVENT_MESSAGE) {
                 if (s.getNetworkMessageType() == NetworkMessageType::DISCONNECTED)
                     deconnectClient(s.getSender());
                 else if (s.getNetworkMessageType() == NetworkMessageType::WAIT_CONNECTION && manager.getCurrentSceneType() == SceneType::LOBBY) {
@@ -51,7 +51,9 @@ namespace ecs
 
     void NetworkServerSystem::sendServerUpdates(SceneManager &manager, uint64_t dt)
     {
+        static bool alreadyChangedScene = false;
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
+
         for (auto &player : players) {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             Message update(EntityAction::UPDATE, player->getId(), EntityType::PLAYER, pos->getVector2());
@@ -76,12 +78,19 @@ namespace ecs
             Message msg(EntityAction::UPDATE, enemy->getId(), EntityType::ENEMY, pos->getVector2());
             writeMsg(msg);
         }
+
+        if (manager.getPreviousSceneType() == SceneType::GAME && manager.getCurrentSceneType() == SceneType::END && !alreadyChangedScene) {
+            Message sceneChangement(SceneType::END);
+            writeMsg(sceneChangement);
+            alreadyChangedScene = true;
+        } else if (manager.getCurrentSceneType() == SceneType::GAME) {
+            alreadyChangedScene = false;
+        }
     }
 
     void NetworkServerSystem::handlePlayerEvent(SceneManager &manager, const Message &message, QUuid id, uint64_t dt)
     {
         auto players = manager.getCurrentScene()[IEntity::Tags::PLAYER];
-        EventType msgType = message.getEventType();
         KeyState keyState = message.getKeyState();
         KeyboardKey key = message.getKeyboardKey();
         std::shared_ptr<IEntity> entity = nullptr;
@@ -229,6 +238,7 @@ namespace ecs
                 break;
             }
         }
+        //TODO: check if id is valid
         writeMsg(Message(EntityAction::DELETE, id));
     }
 

@@ -26,6 +26,7 @@ namespace ecs
         _entities.push_back(entity);
         if (_addEntityCallback)
             _addEntityCallback(entity, *this);
+        _entities.push_back(entity);
         return *this;
     }
 
@@ -71,6 +72,11 @@ namespace ecs
         return taggedEntities;
     }
 
+    std::vector<std::shared_ptr<IEntity>> Scene::getAllEntities()
+    {
+        return _entities;
+    }
+
     void Scene::setAddEntityCallback(std::function<void(std::shared_ptr<IEntity>, IScene &)> callback)
     {
         _addEntityCallback = callback;
@@ -86,10 +92,6 @@ namespace ecs
         return _taggedEntities[tag];
     }
 
-    std::vector<std::shared_ptr<IEntity>> Scene::getAllEntities()
-    {
-        return _entities;
-    }
     std::shared_ptr<IEntity> Scene::getEntityById(QUuid id)
     {
         for (auto &entity : _entities) {

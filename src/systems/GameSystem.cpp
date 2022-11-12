@@ -54,6 +54,11 @@ namespace ecs
     std::vector<Position> GameSystem::playerSpawns;
     std::vector<std::pair<Enemy::EnemyType, Position>> GameSystem::enemies;
 
+    // Purge of out of bounds entities frequency in ms
+    #define PURGE_FREQUENCY 200
+    // Size of valib area around camera in px
+    #define VALID_BORDER_SIZE 100
+
     const std::string GameSystem::getBinding(int keyboard)
     {
         return (_bindings.find(keyboard)->second);
@@ -186,12 +191,12 @@ namespace ecs
         sceneManager.addScene(createSettingMenu(), SceneType::SOUND);
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
         sceneManager.addScene(createGameScene(), SceneType::GAME);
+        sceneManager.addScene(createEndMenu(), SceneType::END);
         if (Core::networkRole == NetworkRole::CLIENT) {
             createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Level 1.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
         } else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
-        sceneManager.addScene(createEndMenu(), SceneType::END);
         _collideSystem.init(sceneManager);
         _aiSystem.init(sceneManager);
         setAddNRmEntityCallbacks();
@@ -273,8 +278,35 @@ namespace ecs
         }
     }
 
+    void GameSystem::purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> camPos)
+    {
+        const int validBoundingZone = VALID_BORDER_SIZE;
+        static uint64_t lastPurge = 0;
+        if ((lastPurge += dt) < PURGE_FREQUENCY)
+            return;
+        else
+            lastPurge = 0;
+        auto rect = Rect(camPos->x - validBoundingZone,
+            camPos->y - validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,//TODO: use cam or window size maybe
+            camPos->y + 1080 + validBoundingZone);
+
+        for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
+            auto component = (*entity)[IComponent::Type::POSITION];
+            if (component == nullptr)
+                continue;
+            auto pos = Component::castComponent<Position>(component);
+            if (pos && !(rect.contains(pos->x, pos->y))) {
+                writeMsg(Message(EntityAction::DELETE, entity->getId()));
+                sceneManager.getCurrentScene().removeEntity(entity);
+            }
+        }
+    }
+
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
+        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)//TODO: improve ending of the server
+            sceneManager.setShouldClose(true);
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
             timeElasped += dt;
             if (timeElasped > SPLASH_TIMEOUT) {
@@ -312,6 +344,8 @@ namespace ecs
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
             *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
             cameraComp->getCamera().update();
+            if (Core::networkRole == NetworkRole::SERVER)
+                purgeAroundCameraEntities(sceneManager, dt, pos);
         }
     }
 
@@ -700,10 +734,9 @@ namespace ecs
 
     void GameSystem::updatePlayers(SceneManager &sceneManager, uint64_t dt)
     {
-        auto players = sceneManager.getCurrentScene()[IEntity::Tags::PLAYER];
         std::vector<std::shared_ptr<IEntity>> playersToDestroy;
 
-        for (auto &player : players) {
+        for (auto &player : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             auto lastPos = *pos;
             auto vel = Component::castComponent<Velocity>((*player)[IComponent::Type::VELOCITY]);
@@ -756,9 +789,10 @@ namespace ecs
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
         }
-        for (auto &player : playersToDestroy) {
+        for (auto &player : playersToDestroy)
             sceneManager.getCurrentScene().removeEntity(player);
-        }
+        if ((sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]).size() == 0)
+            sceneManager.setCurrentScene(SceneType::END);
     }
 
     void GameSystem::updateModules(SceneManager &sceneManager, uint64_t dt)
@@ -973,14 +1007,14 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createEndMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndMenu, this), SceneType::END);
-        std::shared_ptr<Entity> background = createImage("assets/Background/Background.png", Position(0, 0), 800, 600);
-        std::shared_ptr<Entity> endText = createText("End", Position(350, 25), 50, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(800 / 2 - 60, 800 / 2 - 18), 120, 28, 4, Animation2D::AnimationType::FIXED);
+        std::shared_ptr<Entity> background = createImage("assets/Background/Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> endText = createText("End", Position(800, 50), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(843, 550), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
 
         createMusic(*scene, "assets/Music/Menu.ogg");
         createMsgEvent(quitButton, NetworkMessageType::DISCONNECTED);
         createSceneEvent(quitButton, SceneType::NONE);
-        scene->addEntities({background, endText, quitButton});
+        scene->addEntities({ background, endText, quitButton });
         return (scene);
     }
 

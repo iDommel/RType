@@ -113,23 +113,20 @@ namespace ecs
 
     void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &)
     {
-        if (entity->hasTag(IEntity::Tags::SPRITE_2D)) {
-            std::cerr << "loadSprite" << std::endl;
+        if (entity->hasTag(IEntity::Tags::SPRITE_2D))
             loadSprite(entity);
-        }
-        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
-            std::cerr << "loadModel" << std::endl;
+        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D))
             loadModel(entity);
-        }
     }
 
     void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &)
     {
-        if (entity->hasTag(IEntity::Tags::SPRITE_2D))
-            unloadSprite(entity);
-        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
-            unloadModel(entity);
-        }
+        // if (entity->hasTag(IEntity::Tags::SPRITE_2D))
+        //     unloadSprite(entity);
+        // if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
+        //     unloadModel(entity);
+        // }
+        //TODO: clear chache elements at a lower rate, unloading everything each time a missile is destroyed is not efficient
     }
 
     void GraphicSystem::loadSprite(std::shared_ptr<IEntity> &entity)
