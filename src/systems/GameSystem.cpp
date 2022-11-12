@@ -1003,14 +1003,14 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createEndMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndMenu, this), SceneType::END);
-        std::shared_ptr<Entity> background = createImage("assets/Background/Background.png", Position(0, 0), 800, 600);
-        std::shared_ptr<Entity> endText = createText("End", Position(350, 25), 50, "assets/Font/techno_hideo.ttf");
-        std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(800 / 2 - 60, 800 / 2 - 18), 120, 28, 4, Animation2D::AnimationType::FIXED);
+        std::shared_ptr<Entity> background = createImage("assets/Background/Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> endText = createText("End", Position(800, 50), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(843, 550), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
 
         createMusic(*scene, "assets/Music/Menu.ogg");
         createMsgEvent(quitButton, NetworkMessageType::DISCONNECTED);
         createSceneEvent(quitButton, SceneType::NONE);
-        scene->addEntities({background, endText, quitButton});
+        scene->addEntities({ background, endText, quitButton });
         return (scene);
     }
 
