@@ -137,13 +137,6 @@ namespace ecs
             _textures[sprite->getValue()].second++;
         else
             _textures[sprite->getValue()] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
-        // if (sprite->getNbFrame() == 0)
-        //     return;
-
-        // auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
-
-        // spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
-        // spriteRect->height = _textures[sprite->getValue()].first->getHeight();
     }
 
     void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
@@ -172,15 +165,18 @@ namespace ecs
             Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
             Rectangle destRec = {p.x, p.y, scaledWidth, scaledHeight};
             if (sprite->getRotation() == 180.0f || entity->hasTag(IEntity::Tags::MISSILE))
-                destRec = {p.x + scaledWidth / 2, p.y + scaledWidth / 2, scaledWidth, scaledHeight};
+                destRec = {p.x + scaledWidth / 2, p.y + scaledHeight / 2, scaledWidth, scaledHeight};
+            Vector2 origin = {width * horizontalScale / 2, height * verticalScale / 2};
+            if (sprite->getOrigin().x != -1) {
+                origin.x = sprite->getOrigin().x;
+                origin.y = sprite->getOrigin().y;
+            }
 
-            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, origin, sprite->getRotation(), WHITE);
         } else {
             float width = _textures.at(sprite->getValue()).first->getWidth();
             float height = _textures.at(sprite->getValue()).first->getHeight();
-
-            Rectangle sourceRec = {0, 0, width, height};
-            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
+            p = {pos->x * horizontalScale, pos->y * verticalScale};
             _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
         }
     }

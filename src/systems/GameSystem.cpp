@@ -380,7 +380,8 @@ namespace ecs
     std::shared_ptr<Entity> GameSystem::createButton(std::string path, Position position, int height, int width, int nbFrame, Animation2D::AnimationType type, float rotation = 0.0f, float scale = 1.0f)
     {
         std::shared_ptr<Entity> button = std::make_shared<Entity>();
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, rotation, scale);
+        Vector2 origin = {0, 0};
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, rotation, scale, origin);
         std::shared_ptr<Position> pos = std::make_shared<Position>(position);
         std::shared_ptr<Rect> rect = std::make_shared<Rect>(0, 0, height, width);
         std::shared_ptr<Animation2D> animation = std::make_shared<Animation2D>(nbFrame, 1, type);
@@ -943,7 +944,7 @@ namespace ecs
         std::shared_ptr<Position> bgPos = std::make_shared<Position>(0, 0);
         std::shared_ptr<Entity> playButton = createButton("assets/MainMenu/Play/playButton.png", Position(843, 400), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> optionButton = createButton("assets/MainMenu/Icon/option.png", Position(45, 45), 75, 75, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
-        std::shared_ptr<Entity> controllerButton = createButton("assets/MainMenu/Icon/info.png", Position(15, 950), 20, 75, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
+        std::shared_ptr<Entity> controllerButton = createButton("assets/MainMenu/Icon/info.png", Position(45, 950), 75, 75, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(843, 550), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
 
         backgroundEntity->addComponent(bg)
@@ -962,7 +963,7 @@ namespace ecs
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSettingMenu, this), SceneType::OPTION);
 
-        std::shared_ptr<Entity> background = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> background = createImage("assets/Background/Option_Background.png", Position(0, 0), 0, 0);
         std::shared_ptr<Entity> backButton = createButton("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> minusButton = createButton("assets/MainMenu/Icon/minus.png", Position(750, 490), 60, 24, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> plusButton = createButton("assets/MainMenu/Icon/plus.png", Position(1030, 480), 60, 60, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
@@ -986,7 +987,7 @@ namespace ecs
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this), SceneType::HELP);
 
-        std::shared_ptr<Entity> background = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> background = createImage("assets/Background/Option_Background.png", Position(0, 0), 0, 0);
         std::shared_ptr<Entity> backButton = createButton("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> welcome = createText("Welcome in our game: RType.", Position(100, 100), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> controls = createText("Controls", Position(150, 250), 40, "assets/Font/techno_hideo.ttf");
