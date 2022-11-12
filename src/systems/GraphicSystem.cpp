@@ -91,8 +91,10 @@ namespace ecs
                     displaySprite(e);
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                     displayText(e);
-                // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-                //     displayCollidable(e);
+                if (DISPLAY_HITBOXES) {
+                    for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                        displayCollidable(e);
+                }
                 cam->getCamera().endDrawScope();
             }
         } else {
@@ -162,24 +164,18 @@ namespace ecs
         auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
         auto sprite = Component::castComponent<Sprite>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
-        Vector2 p = {pos->x * horizontalScale, pos->y * verticalScale};
+        Vector2 p = {pos->x, pos->y};
 
-        // try {
-        //     auto rect = (*entity)[IComponent::Type::RECT];
-        //     auto r = Component::castComponent<Rect>(rect);
-
-        //     _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
-        //     _textures.at(sprite->getValue()).first->drawRec(p);
-        // } catch (std::runtime_error &) {
-        //     _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
-        // }
         if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
             auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
             float width = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
             float height = _textures.at(sprite->getValue()).first->getHeight();
-
+            float scaledWidth = width * sprite->getScale() * horizontalScale;
+            float scaledHeight = height * sprite->getScale() * verticalScale;
             Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
-            Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
+            Rectangle destRec = {p.x, p.y, scaledWidth, scaledHeight};
+            if (sprite->getRotation() == 180.0f || entity->hasTag(IEntity::Tags::MISSILE))
+                destRec = {p.x + scaledWidth / 2, p.y + scaledWidth / 2, scaledWidth, scaledHeight};
 
             _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
         } else {
@@ -188,8 +184,7 @@ namespace ecs
 
             Rectangle sourceRec = {0, 0, width, height};
             Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
-
-            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
+            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
         }
     }
 
@@ -231,6 +226,11 @@ namespace ecs
         auto components = entity->getFilteredComponents({IComponent::Type::HITBOX});
         auto hitbox = Component::castComponent<Hitbox>(components[0]);
 
+        if (entity->hasComponent(IComponent::Type::POSITION)) {
+            auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            Rectangle newRect = {pos->x, pos->y, hitbox->getRect().width, hitbox->getRect().height};
+            hitbox->setRect(newRect);
+        }
         if (hitbox->is3D())
             ::DrawBoundingBox(hitbox->getBBox(), RED);
         else

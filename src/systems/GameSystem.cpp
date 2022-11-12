@@ -116,6 +116,20 @@ namespace ecs
         {Missile::MissileType::E_CLASSIC, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"},
         {Missile::MissileType::E_SINUSOIDAL, "assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png"},
         {Missile::MissileType::E_HOMING_MISSILE, "assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png"}};
+    std::map<std::string, std::string> GameSystem::_deathAnimations =
+        {
+            {"assets/Enemies/RedEnemy1/RedEnemy1SS.png", "assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png"},
+            {"assets/Enemies/RedEnemy2/RedEnemy2SS.png", "assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png"},
+            {"assets/Enemies/RedEnemy3/RedEnemy3SS.png", "assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png"},
+            {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"}};
+
+    std::map<std::string, int> GameSystem::_deathAnimationCount =
+        {
+            {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
+            {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
+            {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9}};
+
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
         {
             {"assets/Player/ChargedMissile.png", 5},
@@ -138,13 +152,12 @@ namespace ecs
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F}};
 
     std::map<std::string, Animation2D::AnimationType> GameSystem::_spriteAnimType = {
-            {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
-            {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
-            {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
-            {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
-            {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}
-    };
+        {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
+        {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
         {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
@@ -152,19 +165,17 @@ namespace ecs
         {Missile::MissileType::E_CLASSIC, {[](float dt) { return -4 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_SINUSOIDAL, {[](float dt) { return -dt; }, [](float a) { return std::sin(a / 10) * 50; }}}};
 
-    std::vector<std::string> GameSystem::_playersSprite =  {
+    std::vector<std::string> GameSystem::_playersSprite = {
         "assets/Player/MainShipSSP1.png",
         "assets/Player/MainShipSSP2.png",
         "assets/Player/MainShipSSP3.png",
-        "assets/Player/MainShipSSP4.png"
-    };
+        "assets/Player/MainShipSSP4.png"};
 
     std::vector<std::string> GameSystem::_modulesSprite = {
         "assets/Player/Module1.png",
         "assets/Player/Module2.png",
         "assets/Player/Module3.png",
-        "assets/Player/Module4.png"
-    };
+        "assets/Player/Module4.png"};
 
     void GameSystem::init(ecs::SceneManager &sceneManager)
     {
@@ -178,8 +189,7 @@ namespace ecs
         if (Core::networkRole == NetworkRole::CLIENT) {
             createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Level 1.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
-        }
-        else if (Core::networkRole == NetworkRole::SERVER)
+        } else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
         sceneManager.addScene(createEndMenu(), SceneType::END);
         _collideSystem.init(sceneManager);
@@ -189,7 +199,7 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, "assets/Sounds/tir.ogg", QUuid::createUuid());
+        _onEntityRemovedCallbacks[IEntity::Tags::ENEMY] = std::bind(&GameSystem::createDeathAnimation, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/bomb.mp3", QUuid::createUuid());
     }
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
@@ -375,7 +385,7 @@ namespace ecs
                     auto comp2 = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][2];
                     auto text = (*comp2)[IComponent::Type::TEXT];
                     auto value2 = Component::castComponent<String>(text);
-                    
+
                     if ((value == "+" || value == "-") && AudioDevice::isMute) {
                         AudioDevice::isMute = false;
                         AudioDevice::setVolume(AudioDevice::oldVolume);
@@ -399,8 +409,7 @@ namespace ecs
             },
             [](SceneManager &, Vector2) {},
             [](SceneManager &, Vector2) {},
-            [](SceneManager &, Vector2) {}
-        );
+            [](SceneManager &, Vector2) {});
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -440,9 +449,8 @@ namespace ecs
                         EventSystem::reloadScene(sceneManager, SceneType::GAME);
                     } else
                         sceneManager.setCurrentScene(scenetype);
-                } else 
-                    if (animation->getNbFrames() == 4)
-                        animation->setCurrentFrame(1);
+                } else if (animation->getNbFrames() == 4)
+                    animation->setCurrentFrame(1);
             },
             [](SceneManager &, Vector2) {},
             [entity](SceneManager &, Vector2 mousePosition) {
@@ -457,8 +465,7 @@ namespace ecs
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
                     if (animation->getNbFrames() == 4)
                         animation->setCurrentFrame(2);
-            }
-        );
+            });
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -489,9 +496,8 @@ namespace ecs
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
                     emit writeMsg(Message(msg));
-                } else 
-                    if (animation->getNbFrames() == 4)
-                        animation->setCurrentFrame(1);
+                } else if (animation->getNbFrames() == 4)
+                    animation->setCurrentFrame(1);
             },
             [](SceneManager &, Vector2) {},
             [entity](SceneManager &, Vector2 mousePosition) {
@@ -506,8 +512,7 @@ namespace ecs
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
                     if (animation->getNbFrames() == 4)
                         animation->setCurrentFrame(2);
-            }
-        );
+            });
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -523,7 +528,7 @@ namespace ecs
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
                 auto animation = Component::castComponent<Animation2D>(comp[2]);
-                
+
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
                     if (animation->getNbFrames() == 4)
@@ -538,9 +543,8 @@ namespace ecs
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
                     emit writeMsg(Message(msg));
-                } else 
-                    if (animation->getNbFrames() == 4)
-                        animation->setCurrentFrame(1);
+                } else if (animation->getNbFrames() == 4)
+                    animation->setCurrentFrame(1);
             },
             [](SceneManager &, Vector2) {},
             [entity](SceneManager &, Vector2 mousePosition) {
@@ -555,8 +559,7 @@ namespace ecs
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
                     if (animation->getNbFrames() == 4)
                         animation->setCurrentFrame(2);
-            }
-        );
+            });
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -636,8 +639,7 @@ namespace ecs
                         player->changeBomb = 2;
                     }
                 }
-            }
-        );
+            });
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, mouseCallbacks);
         entity->addComponent(eventListener);
@@ -666,8 +668,7 @@ namespace ecs
             },
             [](SceneManager &, Vector2) {},
             [](SceneManager &, Vector2) {},
-            [](SceneManager &, Vector2) {}
-        );
+            [](SceneManager &, Vector2) {});
 
         eventListener->addMouseEvent(MOUSE_BUTTON_LEFT, selector);
         entity->addComponent(eventListener);
@@ -725,7 +726,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE ) {
+                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE) {
                         if (playerComp->getSpaceModule() != nullptr) {
                             writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
                             sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
@@ -801,7 +802,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE ) {
+                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE) {
                         auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
                         player->setSpaceModule(nullptr);
                         sceneManager.getCurrentScene().removeEntity(collider);
@@ -829,7 +830,7 @@ namespace ecs
 
             Rectangle newRect = {enPos->x, enPos->y, hitbox->getRect().width, hitbox->getRect().height};
             hitbox->setRect(newRect);
-            Position pos(enPos->x - SCALE, enPos->y + (SCALE / 2));
+            Position pos(enPos->x - SCALE, enPos->y + (SCALE / 4));
             for (auto &collider : _collideSystem.getColliders(enemy)) {
                 if (collider->hasTag(IEntity::Tags::WALL)) {
                     enemiesToDestroy.push_back(enemy);
@@ -904,7 +905,8 @@ namespace ecs
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLobbyScene, this), SceneType::LOBBY);
         std::shared_ptr<Entity> backgroundEntity = std::make_shared<Entity>();
         std::shared_ptr<Sprite> bg = std::make_shared<Sprite>("assets/Background/Background.png");
-        std::shared_ptr<Position> bgPos = std::make_shared<Position>(960, 540);
+
+        std::shared_ptr<Position> bgPos = std::make_shared<Position>(0, 0);
         std::shared_ptr<Entity> playButton = createButton("assets/MainMenu/Play/playButton.png", Position(843, 400), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> optionButton = createButton("assets/MainMenu/Icon/option.png", Position(45, 45), 75, 75, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> controllerButton = createButton("assets/MainMenu/Icon/info.png", Position(15, 950), 20, 75, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
@@ -925,6 +927,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createSettingMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createSettingMenu, this), SceneType::OPTION);
+
         std::shared_ptr<Entity> background = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
         std::shared_ptr<Entity> backButton = createButton("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> minusButton = createButton("assets/MainMenu/Icon/minus.png", Position(750, 490), 60, 24, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
@@ -948,6 +951,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createHelpMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createHelpMenu, this), SceneType::HELP);
+
         std::shared_ptr<Entity> background = createImage("assets/Background/Option_Background.png", Position(960, 540), 0, 0);
         std::shared_ptr<Entity> backButton = createButton("assets/MainMenu/Icon/back.png", Position(35, 30), 60, 50, 1, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
         std::shared_ptr<Entity> welcome = createText("Welcome in our game: RType.", Position(100, 100), 50, "assets/Font/techno_hideo.ttf");
@@ -1009,13 +1013,30 @@ namespace ecs
         scene.addEntities({musicEntity});
     }
 
-    void GameSystem::createSound(IScene &scene, const std::string &file, QUuid id)
+    void GameSystem::createSound(IScene &scene, std::shared_ptr<IEntity>, const std::string &file, QUuid id)
     {
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(file);
 
         entity->addComponent(sound);
         scene.addEntity(entity);
+    }
+    void GameSystem::createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id)
+    {
+        std::shared_ptr<Entity> deathEntity = std::make_shared<Entity>(id);
+
+        auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+        auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+        std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
+        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
+        std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_deathAnimationCount[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
+        std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(soundFile);
+
+        deathEntity->addComponent(deathAnimation)
+            .addComponent(deathSpriteSheet)
+            .addComponent(sound)
+            .addComponent(newPos);
+        scene.addEntity(deathEntity);
     }
 
     void GameSystem::activateNetwork()
@@ -1159,7 +1180,7 @@ namespace ecs
                 else
                     player->stopDown(manager, playerEntity, 1);
             });
-            ButtonCallbacks moduleCallbacks(
+        ButtonCallbacks moduleCallbacks(
             [&, this, player, playerEntity](SceneManager &manager) {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_SPACE));
@@ -1243,7 +1264,7 @@ namespace ecs
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], rotation, 1.0f);
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, animType);
         std::shared_ptr<Trajectory> trajectory = nullptr;
-
+        std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>("assets/Sounds/laser.mp3");
         if (Core::networkRole == NetworkRole::SERVER) {
             if (quint8(type) < quint8(Missile::MissileType::HOMING_MISSILE))
                 trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);
@@ -1255,12 +1276,13 @@ namespace ecs
         entity->addComponent(missile)
             .addComponent(sprite)
             .addComponent(anim)
+            .addComponent(sound)
             .addComponent(hitbox)
             .addComponent(pos);
         sceneManager.getCurrentScene().addEntity(entity);
     }
 
-    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager& sceneManager, std::shared_ptr<Position> missilePos, IEntity::Tags targetType)
+    std::shared_ptr<Trajectory> GameSystem::generateMissileTrajectory(SceneManager &sceneManager, std::shared_ptr<Position> missilePos, IEntity::Tags targetType)
     {
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<Position> target = nullptr;
@@ -1281,10 +1303,9 @@ namespace ecs
         coeffDirX = (target->x + SCALE / 2 - missilePos->x) / distRef;
         coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
         trajectory = std::make_shared<Trajectory>(
-            [ coeffDirX ](float t) { return t * 4 * coeffDirX; },
-            [ coeffDirY ](float t) { return t * 4 * coeffDirY; },
-            missilePos
-        );
+            [coeffDirX](float t) { return t * 4 * coeffDirX; },
+            [coeffDirY](float t) { return t * 4 * coeffDirY; },
+            missilePos);
         return trajectory;
     }
 
@@ -1334,7 +1355,7 @@ namespace ecs
     {
         for (auto tag : entity->getTags()) {
             if (_onEntityAddedCallbacks.find(tag) != _onEntityAddedCallbacks.end()) {
-                _onEntityAddedCallbacks[tag](scene);
+                _onEntityAddedCallbacks[tag](scene, entity);
             }
         }
         _collideSystem.onEntityAdded(entity, scene);
@@ -1344,7 +1365,7 @@ namespace ecs
     {
         for (auto tag : entity->getTags()) {
             if (_onEntityRemovedCallbacks.find(tag) != _onEntityRemovedCallbacks.end()) {
-                _onEntityRemovedCallbacks[tag](scene);
+                _onEntityRemovedCallbacks[tag](scene, entity);
             }
         }
         _collideSystem.onEntityRemoved(entity, scene);
