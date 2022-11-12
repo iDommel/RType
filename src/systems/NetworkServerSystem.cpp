@@ -238,6 +238,7 @@ namespace ecs
                 break;
             }
         }
+        //TODO: check if id is valid
         writeMsg(Message(EntityAction::DELETE, id));
     }
 
