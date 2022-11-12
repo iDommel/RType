@@ -165,26 +165,6 @@ namespace ecs
         auto sprite = Component::castComponent<Sprite>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
         Vector2 p = {pos->x, pos->y};
-        // Vector2 p = {pos->x * horizontalScale, pos->y * verticalScale};
-
-        // if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
-        //     auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
-        //     float width = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
-        //     float height = _textures.at(sprite->getValue()).first->getHeight();
-
-        //     Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
-        //     Rectangle destRec = {p.x, p.y, width * sprite->getScale(), height * sprite->getScale()};
-
-        //     _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2, height / 2}, sprite->getRotation(), WHITE);
-        // } else {
-        //     float width = _textures.at(sprite->getValue()).first->getWidth();
-        //     float height = _textures.at(sprite->getValue()).first->getHeight();
-
-        //     Rectangle sourceRec = {0, 0, width, height};
-        //     Rectangle destRec = {p.x, p.y, width * sprite->getScale(), height * sprite->getScale()};
-
-        //     _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
-        // }
 
         if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
             auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
@@ -205,10 +185,6 @@ namespace ecs
             Rectangle sourceRec = {0, 0, width, height};
             Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
             _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
-            // if (entity->hasTag(IEntity::Tags::WALL)) {
-            // } else {
-            //     _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
-            // }
         }
     }
 

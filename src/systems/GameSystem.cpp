@@ -199,7 +199,6 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        // _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/laser.mp3", QUuid::createUuid());
         _onEntityRemovedCallbacks[IEntity::Tags::ENEMY] = std::bind(&GameSystem::createDeathAnimation, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/bomb.mp3", QUuid::createUuid());
     }
 
