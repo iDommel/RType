@@ -936,7 +936,7 @@ namespace ecs
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
         auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
         std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
-        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 0.0f, 2.0f);
+        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
         std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_deathAnimationCount[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
 
         deathEntity->addComponent(deathAnimation)
