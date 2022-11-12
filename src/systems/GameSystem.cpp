@@ -199,8 +199,8 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/player tir.ogg", QUuid::createUuid());
-        _onEntityRemovedCallbacks[IEntity::Tags::ENEMY] = std::bind(&GameSystem::createDeathAnimation, std::placeholders::_1, std::placeholders::_2, QUuid::createUuid());
+        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/laser.mp3", QUuid::createUuid());
+        _onEntityRemovedCallbacks[IEntity::Tags::ENEMY] = std::bind(&GameSystem::createDeathAnimation, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/bomb.mp3", QUuid::createUuid());
     }
 
     void GameSystem::replaceTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText)
@@ -929,7 +929,7 @@ namespace ecs
         entity->addComponent(sound);
         scene.addEntity(entity);
     }
-    void GameSystem::createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, QUuid id)
+    void GameSystem::createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id)
     {
         std::shared_ptr<Entity> deathEntity = std::make_shared<Entity>(id);
 
@@ -938,9 +938,11 @@ namespace ecs
         std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
         std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
         std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_deathAnimationCount[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
+        std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(soundFile);
 
         deathEntity->addComponent(deathAnimation)
             .addComponent(deathSpriteSheet)
+            .addComponent(sound)
             .addComponent(newPos);
         scene.addEntity(deathEntity);
     }

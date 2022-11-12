@@ -169,7 +169,7 @@ namespace ecs
         /// @param scene The scene to add the entity to
         /// @param id ID of the new entity
         /// @param pos Position of the new entity
-        static void createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, QUuid id);
+        static void createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id);
         /// @brief Create an image entity
         /// @param path Path to the image to load
         /// @param position Position of the Image
