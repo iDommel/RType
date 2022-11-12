@@ -41,3 +41,9 @@ if [ "$1" = "Re" ] ; then
 else
     sudo cmake --build build
 fi
+
+echo -ne $C_GREEN
+line "-"
+echo "##> Le script est fini"
+line "-"
+echo -ne $C_RST
