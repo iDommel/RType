@@ -295,6 +295,8 @@ namespace ecs
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
+        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)//TODO: improve ending of the server
+            sceneManager.setShouldClose(true);
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
             timeElasped += dt;
             if (timeElasped > SPLASH_TIMEOUT) {
