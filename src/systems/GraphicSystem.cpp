@@ -138,13 +138,13 @@ namespace ecs
             _textures[sprite->getValue()].second++;
         else
             _textures[sprite->getValue()] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
-        // if (sprite->getNbFrame() == 0)
-        //     return;
-
-        // auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
-
-        // spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
-        // spriteRect->height = _textures[sprite->getValue()].first->getHeight();
+        if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
+            auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
+            sprite->setWidth(_textures[sprite->getValue()].first->getWidth() / anim->getNbFrames());
+        } else {
+            sprite->setWidth(_textures[sprite->getValue()].first->getWidth());
+        }
+        sprite->setHeight(_textures[sprite->getValue()].first->getHeight());
     }
 
     void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
@@ -177,19 +177,27 @@ namespace ecs
             auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
             float width = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
             float height = _textures.at(sprite->getValue()).first->getHeight();
-
+            Vector2 origin = {sprite->getOrigin().x, sprite->getOrigin().y};
+            if (sprite->getOrigin().x == -1) {
+                origin.x = width / 2 * sprite->getScale() * horizontalScale;
+                origin.y = height / 2 * sprite->getScale() * verticalScale;
+            }
             Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
             Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
 
-            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, origin, sprite->getRotation(), WHITE);
         } else {
             float width = _textures.at(sprite->getValue()).first->getWidth();
             float height = _textures.at(sprite->getValue()).first->getHeight();
-
+            Vector2 origin = {sprite->getOrigin().x, sprite->getOrigin().y};
+            if (sprite->getOrigin().x == -1) {
+                origin.x = width / 2 * sprite->getScale() * horizontalScale;
+                origin.y = height / 2 * sprite->getScale() * verticalScale;
+            }
             Rectangle sourceRec = {0, 0, width, height};
             Rectangle destRec = {p.x, p.y, width * sprite->getScale() * horizontalScale, height * sprite->getScale() * verticalScale};
 
-            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, {width / 2 * horizontalScale, height / 2 * verticalScale}, sprite->getRotation(), WHITE);
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, origin, sprite->getRotation(), WHITE);
         }
     }
 

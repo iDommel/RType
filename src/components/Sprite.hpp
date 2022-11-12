@@ -24,12 +24,14 @@ namespace ecs
          * @param rotation rotation in degrees
          * @param nbFrame number of frames in the picture, default is 0 (means no rect update)
          */
-        Sprite(std::string str, float rotation = 0, float scale = 1.0, int nbFrame = 0)
-            : Component(Type::SPRITE), _value(str), _nbFrame(nbFrame)
+        Sprite(std::string str, float rotation = 0, float scale = 1.0, Vector2 origin = {-1, -1})
+            : Component(Type::SPRITE), _value(str), _origin(origin)
         {
             _isInitialized = true;
             _rotation = rotation;
             _scale = scale;
+            _height = -1;
+            _width = -1;
         }
 
         /// @brief Returns component texture filepath
@@ -44,12 +46,22 @@ namespace ecs
         void setRotation(float rotation) { _rotation = rotation; }
         /// @brief Set component scale value
         void getRotation(float scale) { _scale = scale; }
+        /// @brief Returns the  origin value
+        Vector2 getOrigin() { return _origin; }
+
+        void setWidth(int width) { _width = width; }
+        void setHeight(int height) { _height = height; }
+        int getWidth() { return _width; }
+        int getHeight() { return _height; }
 
     private:
         std::string _value;
         int _nbFrame;
         float _rotation;
         float _scale;
+        float _width;
+        float _height;
+        Vector2 _origin;
     };
 
 }
