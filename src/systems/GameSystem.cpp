@@ -199,7 +199,7 @@ namespace ecs
 
     void GameSystem::setAddNRmEntityCallbacks()
     {
-        _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/laser.mp3", QUuid::createUuid());
+        // _onEntityAddedCallbacks[IEntity::Tags::MISSILE] = std::bind(&GameSystem::createSound, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/laser.mp3", QUuid::createUuid());
         _onEntityRemovedCallbacks[IEntity::Tags::ENEMY] = std::bind(&GameSystem::createDeathAnimation, std::placeholders::_1, std::placeholders::_2, "assets/Sounds/bomb.mp3", QUuid::createUuid());
     }
 
@@ -741,7 +741,7 @@ namespace ecs
 
             Rectangle newRect = {enPos->x, enPos->y, hitbox->getRect().width, hitbox->getRect().height};
             hitbox->setRect(newRect);
-            Position pos(enPos->x - SCALE, enPos->y + (SCALE / 2));
+            Position pos(enPos->x - SCALE, enPos->y + (SCALE / 4));
             for (auto &collider : _collideSystem.getColliders(enemy)) {
                 if (collider->hasTag(IEntity::Tags::WALL)) {
                     enemiesToDestroy.push_back(enemy);
@@ -1172,7 +1172,7 @@ namespace ecs
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], rotation, 1.0f);
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, animType);
         std::shared_ptr<Trajectory> trajectory = nullptr;
-
+        std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>("assets/Sounds/laser.mp3");
         if (Core::networkRole == NetworkRole::SERVER) {
             if (quint8(type) < quint8(Missile::MissileType::HOMING_MISSILE))
                 trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);
@@ -1184,6 +1184,7 @@ namespace ecs
         entity->addComponent(missile)
             .addComponent(sprite)
             .addComponent(anim)
+            .addComponent(sound)
             .addComponent(hitbox)
             .addComponent(pos);
         sceneManager.getCurrentScene().addEntity(entity);
