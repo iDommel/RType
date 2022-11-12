@@ -91,8 +91,10 @@ namespace ecs
                     displaySprite(e);
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                     displayText(e);
-                for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-                    displayCollidable(e);
+                if (DISPLAY_HITBOXES) {
+                    for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                        displayCollidable(e);
+                }
                 cam->getCamera().endDrawScope();
             }
         } else {
