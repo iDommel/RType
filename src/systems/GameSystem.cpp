@@ -278,7 +278,7 @@ namespace ecs
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
             camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,//TODO: use cam or window size maybe
+            camPos->x + 1920 + validBoundingZone,
             camPos->y + 1080 + validBoundingZone);
 
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
@@ -291,6 +291,36 @@ namespace ecs
                 sceneManager.getCurrentScene().removeEntity(entity);
             }
         }
+    }
+
+    void GameSystem::activateInboundsEntities(ecs::SceneManager &manager, std::shared_ptr<ecs::Position> camPos)
+    {
+        const int validBoundingZone = VALID_BORDER_SIZE;
+
+        std::cerr << "activateInboundsEntities = " << GameSystem::enemies.size() << std::endl;
+        if (GameSystem::enemies.size() == 0)
+            return;
+        auto rect = Rect(camPos->x - validBoundingZone,
+            camPos->y - validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,
+            camPos->y + 1080 + validBoundingZone);
+        std::vector<ecs::Position> toErasePos;
+        for (auto &enemy : GameSystem::enemies) {
+            Position pos(enemy.second.x, enemy.second.y, 0);
+            if (rect.contains(pos.x, pos.y)) {
+                QUuid id = QUuid::createUuid();
+                GameSystem::createEnemy(manager.getScene(SceneType::GAME), enemy.first, pos.x, pos.y, id);
+                writeMsg(Message(EntityAction::CREATE, id, EntityType::ENEMY, enemy.second.getVector2(), quint8(enemy.first)));
+                toErasePos.push_back(pos);
+            }
+        }
+        std::cerr << "to erase nbr = " << toErasePos.size() << std::endl;
+        for (auto &pos : toErasePos)
+            for (auto it = GameSystem::enemies.begin(); it != GameSystem::enemies.end(); ++it)
+                if (it->second.x == pos.x && it->second.y == pos.y) {
+                    GameSystem::enemies.erase(it);
+                    break;
+                }
     }
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
@@ -334,8 +364,10 @@ namespace ecs
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
             *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
             cameraComp->getCamera().update();
-            if (Core::networkRole == NetworkRole::SERVER)
+            if (Core::networkRole == NetworkRole::SERVER) {
                 purgeAroundCameraEntities(sceneManager, dt, pos);
+                activateInboundsEntities(sceneManager, pos);
+            }
         }
     }
 
@@ -1004,7 +1036,7 @@ namespace ecs
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndMenu, this), SceneType::END);
         std::shared_ptr<Entity> background = createImage("assets/Background/Background.png", Position(960, 540), 0, 0);
-        std::shared_ptr<Entity> endText = createText("End", Position(800, 50), 50, "assets/Font/techno_hideo.ttf");
+        std::shared_ptr<Entity> endText = createText("GAME OVER (loser)", Position(800, 50), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(843, 550), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
 
         createMusic(*scene, "assets/Music/Menu.ogg");
@@ -1013,6 +1045,8 @@ namespace ecs
         scene->addEntities({ background, endText, quitButton });
         return (scene);
     }
+
+    //TODO: create playAnotherLevel menu
 
     std::unique_ptr<IScene> GameSystem::createGameScene()
     {
