@@ -84,6 +84,28 @@ namespace ecs
             boss->addMissileSalvo(Missile::MissileType::E_HOMING_REDBOSS, 4000, 3, 200)
                 .addMissileSalvo(Missile::MissileType::E_REDRAND, 10000, 10, 200)
                 .addMissileSalvo(Missile::MissileType::E_RED2, 900, 1, 0);
+        } else if (type == Boss::BossType::BOSS_2) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/BrownBoss/BrownBossSS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
+            boss = std::make_shared<Boss>(type, 50);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+
+            boss->addMissileSalvo(Missile::MissileType::E_BROWNBOSS1, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_BROWNBOSS, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_BROWNBOSS2, 900, 1, 0);
+        } else if (type == Boss::BossType::BOSS_3) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/GreenBoss/GreenBossSS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
+            boss = std::make_shared<Boss>(type, 50);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+
+            boss->addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS1, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS2, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS3, 900, 1, 0);
         } else
             return;
 
@@ -140,6 +162,7 @@ namespace ecs
                                                       position);
         } else if (mobId == Enemy::EnemyType::REDTURRET) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy5/RedEnemy5.png", 0.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(1, 6, Animation2D::AnimationType::FIXED);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_RED5, 5000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
@@ -174,6 +197,7 @@ namespace ecs
                                                       position);
         } else if (mobId == Enemy::EnemyType::BROWNTURRET) {
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownEnemy5/BrownEnemy5.png", 0.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(1, 6, Animation2D::AnimationType::FIXED);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_BROWN5, 5000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
@@ -208,6 +232,7 @@ namespace ecs
                                                       position);
         } else if (mobId == Enemy::EnemyType::GREENTURRET) {
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenEnemy5/GreenEnemy5.png", 0.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(1, 6, Animation2D::AnimationType::FIXED);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_GREEN5, 5000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
@@ -298,9 +323,12 @@ namespace ecs
             for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++) {
                 if (lineTwo[line] == '*')
                     ;
-                else if (line != firstLine && line != lastLine && lineTwo[line] == 'a') {
+                else if (lineTwo[line] == 'a') {
                     strCube.clear();
-                    strCube.push_back(lineTwo[line - 1]);
+                    if (line > 0)
+                        strCube.push_back(lineTwo[line - 1]);
+                    else
+                        strCube.push_back('*');
                     strCube.push_back(lineOne[line]);
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
@@ -310,7 +338,7 @@ namespace ecs
                 else if (lineTwo[line] >= '0' && lineTwo[line] <= '9') {
                     GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - '0'), Position(row * SCALE, (lastLine - line) * SCALE)));
                 } else if (lineTwo[line] == 'B')
-                    GameSystem::bosses.push_back(std::make_pair(Boss::BossType::BOSS_1, Position(row * SCALE, (lastLine - line) * SCALE)));
+                    GameSystem::bosses.push_back(std::make_pair(Boss::BossType::BOSS_3, Position(row * SCALE, (lastLine - line) * SCALE)));
             }
             lineOne = lineTwo;
             lineTwo = lineThree;
