@@ -162,7 +162,7 @@ namespace ecs
             {"assets/Enemies/BrownEnemy2/BrownEnemy2SS.png", "assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png"},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3SS.png", "assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png"},
             {"assets/Enemies/BrownEnemy4/BrownEnemy4SS.png", "assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png"},
-            {"assets/Enemies/BrownEnemy4/BrownEnemy5.png", "assets/Enemies/BrownEnemy4/BrownEnemy5 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5.png", "assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png"},
             {"assets/Enemies/BrownEnemy5/BrownEnemy5SS.png", "assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png"}};
 
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
@@ -260,8 +260,8 @@ namespace ecs
         {"assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
-        {"assets/Enemies/GreenEnemy2/GreenEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
-        {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", Animation2D::AnimationType::LOOP},
