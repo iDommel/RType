@@ -83,7 +83,7 @@ namespace ecs
         bool hasCooldownTimedOut() const;
         /// @brief Starts (or restarts) the shoot cooldown timer
         /// @param msecs Cooldown time in milliseconds
-        void startShootCooldownTimer(std::chrono::milliseconds msecs = std::chrono::milliseconds(700));
+        void startShootCooldownTimer(std::chrono::milliseconds msecs = std::chrono::milliseconds(400));
 
         void kill();
         bool isDead() const;
