@@ -329,10 +329,14 @@ namespace ecs
                     scene->addEntity(whichWall(strCube, row, line));
                 } else if (lineTwo[line] == 'P')
                     playerSpawns.push_back({(float)row * (float)SCALE, (lastLine - line) * (float)SCALE, 0});
-                else if (lineTwo[line] >= '0' && lineTwo[line] <= '9') {
+                else if (lineTwo[line] >= '1' && lineTwo[line] <= '5') {
                     GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - '0'), Position(row * SCALE, (lastLine - line) * SCALE)));
-                } else if (lineTwo[line] == 'B')
-                    GameSystem::bosses.push_back(std::make_pair(Boss::BossType::BOSS_3, Position(row * SCALE, (lastLine - line) * SCALE)));
+                } else if (lineTwo[line] >= 'f' && lineTwo[line] <= 'j') {
+                    GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - 'f' + 6), Position(row * SCALE, (lastLine - line) * SCALE)));
+                } else if (lineTwo[line] >= 'k' && lineTwo[line] <= 'o') {
+                    GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - 'k' + 11), Position(row * SCALE, (lastLine - line) * SCALE)));
+                } else if (lineTwo[line] >= 'A' && lineTwo[line] <= 'C')
+                    GameSystem::bosses.push_back(std::make_pair(Boss::BossType(lineTwo[line] - 'A'), Position(row * SCALE, (lastLine - line) * SCALE)));
             }
             lineOne = lineTwo;
             lineTwo = lineThree;

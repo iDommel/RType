@@ -12,6 +12,11 @@ a:  borderBlue Ground
 1:  Basic Enemy
 2:  Second Enemy
 3:  Bonus Enemy
-4: Strong Enemy
+4:  Strong Enemy
+5:  Turret
 
-B:  Boss
+f-j: Same for Brown mobs
+
+k-o: Same for Green
+
+A-B:  Boss Red Brown Green
