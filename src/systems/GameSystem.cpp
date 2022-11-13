@@ -138,14 +138,38 @@ namespace ecs
             {"assets/Enemies/RedEnemy1/RedEnemy1SS.png", "assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png"},
             {"assets/Enemies/RedEnemy2/RedEnemy2SS.png", "assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png"},
             {"assets/Enemies/RedEnemy3/RedEnemy3SS.png", "assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png"},
-            {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"}};
+            {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"},
+            {"assets/Enemies/RedEnemy5/RedEnemy5SS.png", "assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy1/GreenEnemy1SS.png", "assets/Enemies/GreenEnemy1/GreenEnemy1 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy2/GreenEnemy2SS.png", "assets/Enemies/GreenEnemy2/GreenEnemy2 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy3/GreenEnemy3SS.png", "assets/Enemies/GreenEnemy3/GreenEnemy3 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy4/GreenEnemy4SS.png", "assets/Enemies/GreenEnemy4/GreenEnemy4 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5SS.png", "assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy1/BrownEnemy1SS.png", "assets/Enemies/BrownEnemy1/BrownEnemy1 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy2/BrownEnemy2SS.png", "assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy3/BrownEnemy3SS.png", "assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy4SS.png", "assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5SS.png", "assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png"}
+            };
 
     std::map<std::string, int> GameSystem::_deathAnimationCount =
         {
             {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9}};
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9},
+            {"assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png", 10},
+            {"assets/Enemies/GreenEnemy1/GreenEnemy1 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png", 16},
+            {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Destruction.png", 9},
+            {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png", 9},
+            {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png", 10},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png", 9},
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png", 8}
+            };
 
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
         {
@@ -180,7 +204,7 @@ namespace ecs
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F},
-            {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 90.0F},
+            {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 0.0F},
             {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", 180.0F},
             {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", 180.0F},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", 180.0F},
@@ -214,31 +238,31 @@ namespace ecs
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
         {Missile::MissileType::P_SIMPLE, {[](float dt)
-                                          { return 4 * dt; },
+                                          { return 7 * dt; },
                                           [](float)
                                           { return 0; }}},
         {Missile::MissileType::P_CONDENSED, {[](float dt)
-                                             { return 4 * dt; },
+                                             { return 7 * dt; },
                                              [](float)
                                              { return 0; }}},
         {Missile::MissileType::E_RED2, {[](float dt)
-                                        { return -4 * dt; },
+                                        { return -8 * dt; },
                                         [](float)
                                         { return 0; }}},
         {Missile::MissileType::E_RED3, {[](float dt)
-                                        { return -4 * dt; },
+                                        { return -7 * dt; },
                                         [](float dt)
-                                        { return 20 * sin(dt / 10); }}},
+                                        { return sin(dt / 10) * (50 + dt); }}},
         {Missile::MissileType::E_BROWN1, {[](float dt)
-                                          { return -4 * dt; },
+                                          { return -7 * dt; },
                                           [](float)
                                           { return 0; }}},
         {Missile::MissileType::E_BROWN2, {[](float dt)
-                                          { return -4 * dt; },
+                                          { return -7 * dt; },
                                           [](float)
                                           { return 0; }}},
         {Missile::MissileType::E_BROWN4, {[](float dt)
-                                          { return -4 * dt; },
+                                          { return -7 * dt; },
                                           [](float)
                                           { return 0; }}},
     };
@@ -1559,9 +1583,9 @@ namespace ecs
         coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
         trajectory = std::make_shared<Trajectory>(
             [coeffDirX](float t)
-            { return t * 4 * coeffDirX; },
+            { return t * 7 * coeffDirX; },
             [coeffDirY](float t)
-            { return t * 4 * coeffDirY; },
+            { return t * 7 * coeffDirY; },
             missilePos);
         return trajectory;
     }
