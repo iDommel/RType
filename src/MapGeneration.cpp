@@ -199,16 +199,17 @@ namespace ecs
         return entity;
     }
 
-    std::unique_ptr<IScene> GameSystem::ReadMap(int level)
+    std::unique_ptr<IScene> GameSystem::ReadMap(SceneType type)
     {
         std::regex enemyRegex("[0-9]");
         int firstRow = 0;
         int lastRow = 169;
         int firstLine = 0;
         int lastLine = 16;
+        int level = static_cast<int>(type) - static_cast<int>(SceneType::LEVEL_1) + 1;
 
         std::string mapPath = "map/Level_" + std::to_string(level) + ".txt";
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this), SceneType::LEVEL_1);
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createLevel, this, type), type);
 
         std::shared_ptr<Entity> BGentity1 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite1 = std::make_shared<Sprite>("assets/Background/Background1.png", 0.0f, 3.0f);

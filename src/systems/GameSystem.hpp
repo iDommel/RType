@@ -151,7 +151,7 @@ namespace ecs
     private:
         /// @brief Read map file and generate all the game scene entities
         /// @return Return the scene with all the map entities
-        std::unique_ptr<IScene> ReadMap(int level);
+        std::unique_ptr<IScene> ReadMap(SceneType type);
         /// @brief Choose what sprite choose for the entity
         /// @return Return the entity with the good sprite
         std::shared_ptr<Entity> whichWall(std::string mapAround, int x, int y, int level);
@@ -210,7 +210,7 @@ namespace ecs
         void createMsgEvent(std::shared_ptr<Entity> &entity, const NetworkMessageType &msg);
 
         std::shared_ptr<IEntity> create2DCamera(int x, int y);
-        std::unique_ptr<IScene> createGameScene();
+        std::unique_ptr<IScene> createLevel(SceneType sceneType);
         std::unique_ptr<IScene> createConnectionScene();
         std::unique_ptr<IScene> createSplashScreenScene();
         std::unique_ptr<IScene> createLobbyScene();

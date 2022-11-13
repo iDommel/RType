@@ -261,7 +261,9 @@ namespace ecs
         sceneManager.addScene(createLobbyScene(), SceneType::LOBBY);
         sceneManager.addScene(createSettingMenu(), SceneType::SOUND);
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
-        sceneManager.addScene(createGameScene(), SceneType::LEVEL_1);
+        sceneManager.addScene(createLevel(SceneType::LEVEL_1), SceneType::LEVEL_1);
+        sceneManager.addScene(createLevel(SceneType::LEVEL_2), SceneType::LEVEL_2);
+        sceneManager.addScene(createLevel(SceneType::LEVEL_3), SceneType::LEVEL_3);
         sceneManager.addScene(createEndMenu(), SceneType::END);
         if (Core::networkRole == NetworkRole::CLIENT) {
             createMusic(sceneManager.getScene(SceneType::LEVEL_1), "assets/Music/Level 1.ogg");
@@ -1121,9 +1123,9 @@ namespace ecs
 
     // TODO: create playAnotherLevel menu
 
-    std::unique_ptr<IScene> GameSystem::createGameScene()
+    std::unique_ptr<IScene> GameSystem::createLevel(SceneType sceneType)
     {
-        auto scene = ReadMap(3);
+        auto scene = ReadMap(sceneType);
         scene->addEntity(create2DCamera(0, 0));
         return scene;
     }
