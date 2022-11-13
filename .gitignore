@@ -16,6 +16,8 @@ cmake
 x64
 _deps
 jump.wav
+!cmake.msi
+!conan.exe
 
 # Prerequisites
 *.d

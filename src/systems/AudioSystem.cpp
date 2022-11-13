@@ -21,9 +21,7 @@ namespace ecs
 
     void AudioSystem::init(SceneManager &sceneManager)
     {
-        if (AudioDevice::isReady()) {
-            AudioDevice::setVolume(100);
-        }
+        std::cerr << "AudioSystem init" << std::endl;
         for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::MUSIC])
                 loadMusic(entity);
@@ -36,14 +34,16 @@ namespace ecs
     {
         auto music = Component::castComponent<MusicComponent>((*entity)[IComponent::Type::MUSIC]);
 
-        _musics.emplace(music->getValue(), std::make_unique<Music>(music->getValue()));
+        if (_musics.find(music->getValue()) == _musics.end())
+            _musics.emplace(music->getValue(), std::make_unique<Music>(music->getValue()));
     }
 
     void AudioSystem::loadSound(std::shared_ptr<IEntity> entity)
     {
         auto sound = Component::castComponent<SoundComponent>((*entity)[IComponent::Type::SOUND]);
 
-        _sounds.emplace(sound->getValue(), std::make_unique<Sound>(sound->getValue()));
+        if (_sounds.find(sound->getValue()) == _sounds.end())
+            _sounds.emplace(sound->getValue(), std::make_unique<Sound>(sound->getValue()));
     }
 
     void AudioSystem::update(SceneManager &sceneManager, uint64_t)

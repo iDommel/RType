@@ -34,7 +34,7 @@ namespace ecs
         void destroy();
 
     signals:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, QUuid id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int keyModule, QUuid id, Position pos, bool isMe);
 
     public slots:
         /// @brief Sends msg to server
@@ -50,15 +50,14 @@ namespace ecs
         void onPingTimeout();
 
     private:
-        /// @brief Gets a player event message and moves entities accordingly
-        /// @param msg The received message
-        void handlePlayerEvent(SceneManager &manager, std::string msg, uint64_t deltaTime);
 
         /// @brief Gets a player event message and moves entities accordingly
         /// @param msg The received message
         void handlePlayerEvent(SceneManager &manager, const Message &msg, uint64_t deltaTime);
         void handleMissileUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
         void handleEnemyUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt);
+        void handleSpaceModuleUpdate(SceneManager &manager, const Message &msg, uint64_t dt);
+
 
         void removePlayer(QUuid id, SceneManager &manager);
         void removeEntity(QUuid id, SceneManager &manager);

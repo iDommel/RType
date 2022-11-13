@@ -53,6 +53,13 @@ namespace ecs
         std::map<IEntity::Tags, std::vector<std::shared_ptr<IEntity>>> getTaggedEntities(std::vector<IEntity::Tags> tags);
 
         /**
+         * @brief Get every entity in the scene
+         * @return Returns a vector of entities
+         */
+        std::vector<std::shared_ptr<IEntity>> getAllEntities();
+
+
+        /**
          * @brief Set the callback function to call when an entity is added
          * @param callback Callback function
          */
@@ -77,8 +84,6 @@ namespace ecs
         std::vector<std::shared_ptr<IEntity>> &operator[](IEntity::Tags tag);
 
         SceneType getSceneType() const { return _type; }
-
-        std::vector<std::shared_ptr<IEntity>> getAllEntities();
 
         std::shared_ptr<IEntity> getEntityById(QUuid id);
 

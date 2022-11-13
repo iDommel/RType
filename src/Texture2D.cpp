@@ -39,7 +39,8 @@ namespace ecs
 
     void Texture::unload()
     {
-        if (_isLoaded) {
+        if (_isLoaded)
+        {
             UnloadTexture(*_texture);
             _isLoaded = false;
         }

@@ -69,6 +69,7 @@ add_library(${LIBRARY_NAME}
     src/components/Animation2D.cpp
     src/components/Wall.cpp
     src/components/Missile.cpp
+    src/components/Enemy.cpp
 
     test_functions/TestAnimations2D.cpp
     test_functions/TestCamera2D.cpp
@@ -109,6 +110,10 @@ target_link_libraries(${LIBRARY_NAME} raylib; Qt5::Core; Qt5::Network)
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(${LIBRARY_NAME} -lstdc++fs)
 endif(CMAKE_COMPILER_IS_GNUCXX)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(${CLIENT_NAME} src/main_client.cpp)
 target_link_libraries(${CLIENT_NAME} ${LIBRARY_NAME})

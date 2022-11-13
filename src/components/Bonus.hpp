@@ -18,6 +18,7 @@ namespace ecs
     public:
         enum class Type {
             BOMB,
+            MODULE,
             SPEED,
             POWER
         };
