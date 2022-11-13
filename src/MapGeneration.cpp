@@ -242,11 +242,11 @@ namespace ecs
         scene.addEntity(entity);
     }
 
-    std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
+    std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y, char letter)
     {
         int lastLine = 16;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::string path = Wall::getCorrespondingPath(mapAround);
+        std::string path = Wall::getCorrespondingPath(mapAround, letter);
 
         std::shared_ptr<Wall> wallComponent = std::make_shared<Wall>();
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
@@ -303,7 +303,7 @@ namespace ecs
                 strCube.push_back(lineOne[firstLine]);
                 strCube.push_back(lineThree[firstLine]);
                 strCube.push_back(lineTwo[firstLine + 1]);
-                scene->addEntity(whichWall(strCube, row, firstLine));
+                scene->addEntity(whichWall(strCube, row, firstLine, lineTwo[firstLine]));
             }
             if (lineTwo[lastLine] == 'a') {
                 strCube.clear();
@@ -311,13 +311,13 @@ namespace ecs
                 strCube.push_back(lineOne[lastLine]);
                 strCube.push_back(lineThree[lastLine]);
                 strCube.push_back('a');
-                scene->addEntity(whichWall(strCube, row, lastLine));
+                scene->addEntity(whichWall(strCube, row, lastLine, lineTwo[lastLine]));
             }
 
             for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++) {
                 if (lineTwo[line] == '*')
                     ;
-                else if (lineTwo[line] == 'a') {
+                else if (lineTwo[line] == 'a' || lineTwo[line] == 'b' || lineTwo[line] == 'c') {
                     strCube.clear();
                     if (line > 0)
                         strCube.push_back(lineTwo[line - 1]);
@@ -326,7 +326,7 @@ namespace ecs
                     strCube.push_back(lineOne[line]);
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
-                    scene->addEntity(whichWall(strCube, row, line));
+                    scene->addEntity(whichWall(strCube, row, line, lineTwo[line]));
                 } else if (lineTwo[line] == 'P')
                     playerSpawns.push_back({(float)row * (float)SCALE, (lastLine - line) * (float)SCALE, 0});
                 else if (lineTwo[line] >= '1' && lineTwo[line] <= '5') {
