@@ -245,7 +245,6 @@ namespace ecs
                 break;
             }
         }
-        //TODO: check if id is valid
         writeMsg(Message(EntityAction::DELETE, id));
     }
 
@@ -271,18 +270,6 @@ namespace ecs
                 writeToClient(msg, player);
             }
             GameSystem::playerSpawns.erase(GameSystem::playerSpawns.begin());
-        }
-
-        // Create enemies
-        for (auto &enemy : GameSystem::enemies) {
-            QUuid id = QUuid::createUuid();
-            GameSystem::createEnemy(manager.getScene(SceneType::GAME), enemy.first, enemy.second.x, enemy.second.y, id);
-            writeMsg(Message(EntityAction::CREATE, id, EntityType::ENEMY, enemy.second.getVector2(), quint8(enemy.first)));
-        }
-        for (auto &boss : GameSystem::bosses) {
-            QUuid id = QUuid::createUuid();
-            GameSystem::createBoss(manager.getScene(SceneType::GAME), boss.first, boss.second, id);
-            writeMsg(Message(EntityAction::CREATE, id, EntityType::BOSS, boss.second.getVector2(), quint8(boss.first)));
         }
 
         // notify clients game can start

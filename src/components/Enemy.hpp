@@ -17,10 +17,21 @@ namespace ecs {
     {
     public:
         enum class EnemyType : quint8 {
-            SCOUT = 1,
-            FIGHTER,
-            TORPEDO,
-            FRIGATE,
+            REDSCOUT = 1,
+            REDFIGHTER,
+            REDTORPEDO,
+            REDFRIGATE,
+            REDTURRET,
+            GREENSCOUT,
+            GREENFIGHTER,
+            GREENTORPEDO,
+            GREENFRIGATE,
+            GREENTURRET,
+            BROWNSCOUT,
+            BROWNFIGHTER,
+            BROWNTORPEDO,
+            BROWNFRIGATE,
+            BROWNTURRET,
             NB
         };
 

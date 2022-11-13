@@ -237,6 +237,7 @@ namespace ecs
         std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityRemovedCallbacks;
 
         void purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> pos);
+        void activateInboundsEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos);
 
         int timeElasped = 0;
         static unsigned int nbr_player;
@@ -253,7 +254,6 @@ namespace ecs
         static std::vector<std::string> _playersSprite;
         static std::vector<std::string> _modulesSprite;
         static std::map<std::string, std::string> _deathAnimations;
-        static std::map<std::string, int> _deathAnimationCount;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;
