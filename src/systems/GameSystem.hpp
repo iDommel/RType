@@ -236,8 +236,9 @@ namespace ecs
         std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityAddedCallbacks;
         std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityRemovedCallbacks;
 
-        void purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> pos);
+        void purgeAroundCameraEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos);
         void activateInboundsEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos);
+        void manageCamWhileBossing(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Velocity> vel);
 
         int timeElasped = 0;
         static unsigned int nbr_player;

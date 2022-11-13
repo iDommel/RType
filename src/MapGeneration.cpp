@@ -51,6 +51,7 @@
 #include "Wall.hpp"
 #include "Boss.hpp"
 
+
 namespace ecs
 {
     void GameSystem::createBoss(IScene &scene, Boss::BossType type, Position pos, QUuid id)
@@ -70,8 +71,13 @@ namespace ecs
         if (type == Boss::BossType::BOSS_1) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedBoss/RedBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
-            boss = std::make_shared<Boss>(type, 50);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+            boss = std::make_shared<Boss>(type, 1);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) {
+                                                            static const float xTarget = 500;
+                                                            if (-a > -xTarget)
+                                                                return (-a);
+                                                            return (-xTarget);
+                                                        }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
@@ -82,7 +88,12 @@ namespace ecs
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownBoss/BrownBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             boss = std::make_shared<Boss>(type, 50);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) {
+                                                            static const float xTarget = 500;
+                                                            if (-a > -xTarget)
+                                                                return (-a);
+                                                            return (-xTarget);
+                                                        }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
@@ -93,7 +104,12 @@ namespace ecs
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenBoss/GreenBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             boss = std::make_shared<Boss>(type, 50);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) {
+                                                            static const float xTarget = 500;
+                                                            if (-a > -xTarget)
+                                                                return (-a);
+                                                            return (-xTarget);
+                                                        }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
