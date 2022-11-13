@@ -358,7 +358,10 @@ namespace ecs
                 else if (lineTwo[line] == 'a')
                 {
                     strCube.clear();
-                    strCube.push_back(lineTwo[line - 1]);
+                    if (line > 0)
+                        strCube.push_back(lineTwo[line - 1]);
+                    else
+                        strCube.push_back('*');
                     strCube.push_back(lineOne[line]);
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
