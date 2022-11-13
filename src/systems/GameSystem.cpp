@@ -143,15 +143,18 @@ namespace ecs
             {"assets/Enemies/RedEnemy3/RedEnemy3SS.png", "assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png"},
             {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"},
             {"assets/Enemies/RedEnemy5/RedEnemy5SS.png", "assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png"},
+            {"assets/Enemies/RedEnemy5/RedEnemy5.png", "assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png"},
             {"assets/Enemies/GreenEnemy1/GreenEnemy1SS.png", "assets/Enemies/GreenEnemy1/GreenEnemy1 - Destruction.png"},
             {"assets/Enemies/GreenEnemy2/GreenEnemy2SS.png", "assets/Enemies/GreenEnemy2/GreenEnemy2 - Destruction.png"},
             {"assets/Enemies/GreenEnemy3/GreenEnemy3SS.png", "assets/Enemies/GreenEnemy3/GreenEnemy3 - Destruction.png"},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4SS.png", "assets/Enemies/GreenEnemy4/GreenEnemy4 - Destruction.png"},
             {"assets/Enemies/GreenEnemy5/GreenEnemy5SS.png", "assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5.png", "assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png"},
             {"assets/Enemies/BrownEnemy1/BrownEnemy1SS.png", "assets/Enemies/BrownEnemy1/BrownEnemy1 - Destruction.png"},
             {"assets/Enemies/BrownEnemy2/BrownEnemy2SS.png", "assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png"},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3SS.png", "assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png"},
             {"assets/Enemies/BrownEnemy4/BrownEnemy4SS.png", "assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy5.png", "assets/Enemies/BrownEnemy4/BrownEnemy5 - Destruction.png"},
             {"assets/Enemies/BrownEnemy5/BrownEnemy5SS.png", "assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png"}};
 
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
@@ -1240,8 +1243,16 @@ namespace ecs
 
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
         auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+        float rotation = 180.0f;
+        if (entity->hasComponent(IComponent::Type::ENEMY)) {
+            auto enemy = Component::castComponent<Enemy>((*entity)[IComponent::Type::ENEMY]);
+            Enemy::EnemyType type = enemy->getEnemyType();
+            if (type == Enemy::EnemyType::BROWNTURRET || type == Enemy::EnemyType::GREENTURRET || type == Enemy::EnemyType::REDTURRET) {
+                rotation = 0.0f;
+            }
+        }
         std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
-        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
+        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], rotation, 2.0f);
         std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_spriteFrameCounts[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(soundFile);
 
