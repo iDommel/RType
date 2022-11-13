@@ -69,6 +69,7 @@ add_library(${LIBRARY_NAME}
     src/components/Animation2D.cpp
     src/components/Wall.cpp
     src/components/Missile.cpp
+    src/components/Enemy.cpp
 
     test_functions/TestAnimations2D.cpp
     test_functions/TestCamera2D.cpp

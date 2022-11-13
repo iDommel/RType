@@ -65,9 +65,11 @@ namespace ecs
         std::shared_ptr<Enemy> enemyComponent = nullptr;
         std::shared_ptr<Sprite> sprite = nullptr;
         std::shared_ptr<Trajectory> trajectory = nullptr;
+        std::shared_ptr<Animation2D> animation = nullptr;
 
         if (mobId == Enemy::EnemyType::REDSCOUT) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(10, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_RED1, 8000);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
                                                       std::function<float(float)>([](float a) { return std::sin(a / 10) * 50; }),
@@ -160,6 +162,7 @@ namespace ecs
         entity->addComponent(position)
             .addComponent(enemyComponent)
             .addComponent(hitbox)
+            .addComponent(animation)
             .addComponent(sprite)
             .addComponent(trajectory);
         scene.addEntity(entity);
@@ -195,19 +198,19 @@ namespace ecs
 
         std::shared_ptr<Entity> BGentity1 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite1 = std::make_shared<Sprite>("assets/Background/Background1.png", 0.0f, 3.0f);
-        std::shared_ptr<Position> BGposition1 = std::make_shared<Position>(0, 180, 0);
+        std::shared_ptr<Position> BGposition1 = std::make_shared<Position>(0, 0, 0);
         BGentity1->addComponent(BGsprite1).addComponent(BGposition1);
         scene->addEntity(BGentity1);
 
         std::shared_ptr<Entity> BGentity2 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite2 = std::make_shared<Sprite>("assets/Background/Background2.png", 0.0f, 3.0f);
-        std::shared_ptr<Position> BGposition2 = std::make_shared<Position>(0, 180, 0);
+        std::shared_ptr<Position> BGposition2 = std::make_shared<Position>(0, 0, 0);
         BGentity2->addComponent(BGsprite2).addComponent(BGposition2);
         scene->addEntity(BGentity2);
 
         std::shared_ptr<Entity> BGentity3 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite3 = std::make_shared<Sprite>("assets/Background/Background3.png", 0.0f, 3.0f);
-        std::shared_ptr<Position> BGposition3 = std::make_shared<Position>(0, 180, 0);
+        std::shared_ptr<Position> BGposition3 = std::make_shared<Position>(0, 0, 0);
         BGentity3->addComponent(BGsprite3).addComponent(BGposition3);
         scene->addEntity(BGentity3);
 

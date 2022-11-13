@@ -5,8 +5,16 @@ Repository for the R-Type project
     firewall-cmd --add-port=4000/tcp --permanent
 
 # Compilation:
-    sh install.sh [Optional build type arg=(Release/Debug/ect)]
-
+    First :
+        chmod +x install.sh reBuild.sh
+    Then if fst compil :
+        ./install.sh [build_type]
+            [build_type] is an optional flag specifying build type, could be : [Release/Debug/ect]
+    Else :
+        ./reBuild.sh [should_rm_tmps] [to_forward_flag]
+            [should_rm_tmps] is an optional flag specifying that tmp files like bins and object files should be removed, could be : Re
+            [to_forward_flag] is an optional flag specifying build type, could be : [Release/Debug/ect]
+                -WARN, to_forward_flag should be used only if Re specified-
 
 ---
 
@@ -17,12 +25,6 @@ Repository for the R-Type project
     For debugging:
         cmake -DCMAKE_BUILD_TYPE=Debug
         cmake --build build
-# Recompilation (Debug or anything else)
-    sh reBuild.sh [Optional rm of tmp files=Re] [Optional build type arg=(Release/Debug/ect)]
-
-# Alternative way:
-    chmod +x install.sh reBuild.sh
-    "now use [./] instead of [sh ] for above commands"
 
 # Usage
 The Server has to be launched BEFORE the clients for the connection to work.

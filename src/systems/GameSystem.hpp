@@ -111,6 +111,13 @@ namespace ecs
         /// @param type Missile type
         /// @param targetType The type of the target if is a homing missile
         static void createMissile(SceneManager &sceneManager, QUuid id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS);
+
+        /// @param manager Scene manager
+        /// @param module Pointer to the module entity
+        /// @param type Type of missile to shoot
+        /// @return Returns the message for missile creation
+        static Message shootModuleMissile(SceneManager &manager, std::shared_ptr<IEntity> module, Missile::MissileType type);
+
         /// @brief Generates missile trajectory functions for homing missile
         /// @param sceneManager Scene manager
         /// @param entityPos Position of the new missile
@@ -125,11 +132,21 @@ namespace ecs
         /// @param id ID of the entity
         static void createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id);
 
+        /// @param manager Scene manager
+        /// @param id ID of the new entity
+        /// @param position Position of the new space module
+        /// @param playerNb Number of the player associated
+        /// @param player Player associated to the new space module
+        /// @return Returns the new space module entity
+        static std::shared_ptr<IEntity> createSpaceModule(SceneManager &manager, QUuid id, Position position, uint8_t playerNb = 0, std::shared_ptr<IEntity> player = nullptr);
+
+        static std::shared_ptr<IEntity> createBonus(QUuid id, Position pos);
+
     signals:
         void writeMsg(const Message &message);
 
     public slots:
-        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, QUuid id, Position pos, bool isMe);
+        void createPlayer(IScene &scene, int keyRight, int keyLeft, int keyUp, int keyDown, int keyBomb, int keyModule, QUuid id, Position pos, bool isMe);
 
     private:
         /// @brief Read map file and generate all the game scene entities
@@ -146,14 +163,27 @@ namespace ecs
         /// @param scene The scene to add the entity to
         /// @param soundFile Filepath of the sound to be created
         /// @param id ID of the new entity
-        static void createSound(IScene &scene, const std::string &soundFile, QUuid id);
+        static void createSound(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id);
+
+        /// @brief Adds a entity with a deathAnimation
+        /// @param scene The scene to add the entity to
+        /// @param id ID of the new entity
+        /// @param pos Position of the new entity
+        static void createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id);
         /// @brief Create an image entity
         /// @param path Path to the image to load
         /// @param position Position of the Image
         /// @param heigh Height of the Image
         /// @param width Width of the Image
         /// @return Returns a pointer to an entity with an Image Component with information on its position and size
-        std::shared_ptr<Entity> createImage(std::string path, Position position, int heigh, int width, float rotation, float scale);
+        std::shared_ptr<Entity> createImage(std::string path, Position position, int height, int width, float rotation, float scale);
+        /// @brief Create a button entity
+        /// @param path Path to the sprite to load
+        /// @param position Position of the Button
+        /// @param heigh Height of the Button
+        /// @param width Width of the Button
+        /// @return Returns a pointer to an entity with a Button with information on its position and size
+        std::shared_ptr<Entity> createButton(std::string path, Position position, int height, int width, int nbFrame, Animation2D::AnimationType type, float rotation, float scale);
         /// @brief Create an Text entity
         /// @param text Text to display
         /// @param position Initial position of the text
@@ -195,10 +225,13 @@ namespace ecs
         void updatePlayers(SceneManager &scene, uint64_t dt);
         void updateEnemies(SceneManager &scene, uint64_t dt);
         void updateProjectiles(SceneManager &scene, uint64_t dt);
+        void updateModules(SceneManager &scene, uint64_t dt);
 
         void setAddNRmEntityCallbacks();
-        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityAddedCallbacks;
-        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityRemovedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityAddedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityRemovedCallbacks;
+
+        void purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> pos);
 
         int timeElasped = 0;
         static unsigned int nbr_player;
@@ -212,6 +245,10 @@ namespace ecs
         static std::map<std::string, int> _spriteFrameCounts;
         static std::map<std::string, float> _spriteRotations;
         static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
+        static std::vector<std::string> _playersSprite;
+        static std::vector<std::string> _modulesSprite;
+        static std::map<std::string, std::string> _deathAnimations;
+        static std::map<std::string, int> _deathAnimationCount;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;

@@ -10,6 +10,7 @@
 
 #include "Component.hpp"
 #include "Missile.hpp"
+#include "Bonus.hpp"
 
 namespace ecs {
     class Enemy : public Component
@@ -34,25 +35,9 @@ namespace ecs {
             NB
         };
 
-        Enemy(EnemyType enemyType, Missile::MissileType missileType, int shootCooldown, uint8_t missileNb = 1)
-            : Component(Type::ENEMY), _enemyType(enemyType), _missile(missileType), _missileNb(missileNb), _shootCooldown(std::chrono::milliseconds(shootCooldown))
-        {
-            _isInitialized = true;
-            _shootTimer.setSingleShot(true);
-            _salvoTimer.setSingleShot(true);
-        };
+        Enemy(EnemyType enemyType, Missile::MissileType missileType, int shootCooldown, uint8_t missileNb = 1);
 
-        Enemy(quint8 enemyType, Missile::MissileType missileType, int shootCooldown, uint8_t missileNb = 1)
-        : Component(Type::ENEMY)
-        {
-            _isInitialized = true;
-            _enemyType = EnemyType(enemyType);
-            _missile = missileType;
-            _shootCooldown = std::chrono::milliseconds(shootCooldown);
-            _shootTimer.setSingleShot(true);
-            _salvoTimer.setSingleShot(true);
-            _missileNb = missileNb;
-        };
+        Enemy(quint8 enemyType, Missile::MissileType missileType, int shootCooldown, uint8_t missileNb = 1);
 
         EnemyType getEnemyType() const { return _enemyType; }
 
@@ -84,6 +69,8 @@ namespace ecs {
         uint8_t getNbMissile() const { return _missileNb; }
 
         Missile::MissileType getMissileType() const { return _missile; }
+
+        std::shared_ptr<IEntity> lootBonus(Position &pos);
 
     private:
         EnemyType _enemyType;
