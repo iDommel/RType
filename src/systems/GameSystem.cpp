@@ -128,13 +128,6 @@ namespace ecs
             {"assets/Enemies/RedEnemy3/RedEnemy3SS.png", "assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png"},
             {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"}};
 
-    std::map<std::string, int> GameSystem::_deathAnimationCount =
-        {
-            {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
-            {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
-            {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9}};
-
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
         {
             {"assets/Player/ChargedMissile.png", 5},
@@ -145,7 +138,11 @@ namespace ecs
             {"assets/Player/MainShipSSP4.png", 4},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 4},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4}};
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4},
+            {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
+            {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
+            {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9}};
 
     std::map<std::string, float> GameSystem::_spriteRotations =
         {
@@ -1064,7 +1061,7 @@ namespace ecs
         auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
         std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
         std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
-        std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_deathAnimationCount[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
+        std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_spriteFrameCounts[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(soundFile);
 
         deathEntity->addComponent(deathAnimation)
