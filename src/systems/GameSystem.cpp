@@ -241,11 +241,11 @@ namespace ecs
         {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 10 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 20 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_RED2, {[](float dt) { return -8 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::E_RED3, {[](float dt) { return -7 * dt; }, [](float dt) { return sin(dt / 10) * (50 + dt); }}},
-        {Missile::MissileType::E_REDRAND, {[](float dt) { return -8 * (dt); }, [](float dt) { return dt; }}}, // Add Rand
+        {Missile::MissileType::E_RED3, {[](float dt) { return -7 * dt; }, [](float dt) { return sin(dt / 10) * (40 + dt / 4); }}},
+        {Missile::MissileType::E_REDRAND, {[](float dt) { return -8 * (dt); }, [](float dt) { return dt; }}},  // Add Rand
         {Missile::MissileType::E_BROWN1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN2, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN4, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
@@ -368,9 +368,9 @@ namespace ecs
         else
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
-            camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
-            camPos->y + 1080 + validBoundingZone);
+                         camPos->y - validBoundingZone,
+                         camPos->x + 1920 + validBoundingZone,
+                         camPos->y + 1080 + validBoundingZone);
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
             auto component = (*entity)[IComponent::Type::POSITION];
             if (component == nullptr)
@@ -390,9 +390,9 @@ namespace ecs
         if (GameSystem::enemies.size() == 0 && GameSystem::bosses.size() == 0)
             return;
         auto rect = Rect(camPos->x - validBoundingZone,
-            camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
-            camPos->y + 1080 + validBoundingZone);
+                         camPos->y - validBoundingZone,
+                         camPos->x + 1920 + validBoundingZone,
+                         camPos->y + 1080 + validBoundingZone);
         std::vector<ecs::Position> toErasePos;
         std::vector<ecs::Position> toErasePosBoss;
         for (auto &enemy : GameSystem::enemies) {
@@ -847,6 +847,7 @@ namespace ecs
 
     void GameSystem::updateProjectiles(SceneManager &sceneManager, uint64_t dt)
     {
+        std::vector<std::shared_ptr<IEntity>> projectilesToDestroy;
         for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
             auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
             auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
@@ -857,6 +858,16 @@ namespace ecs
                 Rectangle newRect = {position->x, position->y, hitbox->getRect().width, hitbox->getRect().height};
                 hitbox->setRect(newRect);
             }
+            for (auto &collider : _collideSystem.getColliders(entity)) {
+                if (collider->hasTag(IEntity::Tags::WALL)) {
+                    projectilesToDestroy.push_back(entity);
+                    Message msg(EntityAction::DELETE, entity->getId());
+                    writeMsg(msg);
+                }
+            }
+        }
+        for (auto &entity : projectilesToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(entity);
         }
     }
 
@@ -1184,7 +1195,7 @@ namespace ecs
         return (scene);
     }
 
-    //TODO: create playAnotherLevel menu
+    // TODO: create playAnotherLevel menu
 
     std::unique_ptr<IScene> GameSystem::createGameScene()
     {
@@ -1197,7 +1208,7 @@ namespace ecs
     {
         std::shared_ptr<Entity> cam = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
-        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
+        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.2f, 0);
         std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
 
         cam->addComponent(camera)
