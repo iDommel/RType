@@ -79,11 +79,11 @@ namespace ecs
             writeMsg(msg);
         }
 
-        if (manager.getPreviousSceneType() == SceneType::GAME && manager.getCurrentSceneType() == SceneType::END && !alreadyChangedScene) {
+        if (manager.getPreviousSceneType() == SceneType::LEVEL_1 && manager.getCurrentSceneType() == SceneType::END && !alreadyChangedScene) {
             Message sceneChangement(SceneType::END);
             writeMsg(sceneChangement);
             alreadyChangedScene = true;
-        } else if (manager.getCurrentSceneType() == SceneType::GAME) {
+        } else if (manager.getCurrentSceneType() == SceneType::LEVEL_1) {
             alreadyChangedScene = false;
         }
     }
@@ -212,7 +212,7 @@ namespace ecs
                 _senders.erase(_senders.begin() + i);
                 _states.erase(s);
                 _timers.erase(s);
-                if (_sceneManager.getCurrentSceneType() == SceneType::GAME)
+                if (_sceneManager.getCurrentSceneType() == SceneType::LEVEL_1)
                     removePlayer(_playersId[s]);
                 break;
             }
@@ -227,7 +227,7 @@ namespace ecs
 
     void NetworkServerSystem::removePlayer(QUuid id)
     {
-        for (auto entity : _sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
+        for (auto entity : _sceneManager.getScene(SceneType::LEVEL_1)[IEntity::Tags::PLAYER]) {
             if (entity->getId() == id) {
                 auto playerComp = Component::castComponent<Player>((*entity)[IComponent::Type::PLAYER]);
                 if (playerComp->getSpaceModule() != nullptr) {
@@ -257,7 +257,7 @@ namespace ecs
         for (auto &client : _senders) {
             _playersId[client] = QUuid::createUuid();
             QUuid id = _playersId[client];
-            emit createPlayer(manager.getScene(SceneType::GAME), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, KEY_SPACE, id, GameSystem::playerSpawns.front(), false);
+            emit createPlayer(manager.getScene(SceneType::LEVEL_1), KEY_Q, KEY_D, KEY_Z, KEY_S, KEY_RIGHT_CONTROL, KEY_SPACE, id, GameSystem::playerSpawns.front(), false);
             for (auto &player : _senders) {
                 Message msg(EntityAction::CREATE, id, EntityType::PLAYER, GameSystem::playerSpawns.front().getVector2(), (client == player));
                 writeToClient(msg, player);
@@ -267,7 +267,7 @@ namespace ecs
 
         // notify clients game can start
         writeMsg(Message(NetworkMessageType::READY));
-        emit changeScene(SceneType::GAME);
+        emit changeScene(SceneType::LEVEL_1);
     }
 
 }

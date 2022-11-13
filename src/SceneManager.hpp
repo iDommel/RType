@@ -19,7 +19,9 @@ namespace ecs
 {
     enum class SceneType {
         NONE = -1,
-        GAME,
+        LEVEL_1,
+        LEVEL_2,
+        LEVEL_3,
         MAIN_MENU,
         CONNECTION,
         LOBBY,
@@ -38,7 +40,6 @@ namespace ecs
     class SceneManager
     {
     public:
-
         /**
          * @brief Add a scene to the scene manager
          * @param scene Scene to add

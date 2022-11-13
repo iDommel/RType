@@ -151,10 +151,10 @@ namespace ecs
     private:
         /// @brief Read map file and generate all the game scene entities
         /// @return Return the scene with all the map entities
-        std::unique_ptr<IScene> ReadMap();
+        std::unique_ptr<IScene> ReadMap(int level);
         /// @brief Choose what sprite choose for the entity
         /// @return Return the entity with the good sprite
-        std::shared_ptr<Entity> whichWall(std::string mapAround, int x, int y);
+        std::shared_ptr<Entity> whichWall(std::string mapAround, int x, int y, int level);
 
         /// @brief Adds a entity with a music component to a scene, the AudioSystem then loads it
         /// @param scene The scene to add the entity to

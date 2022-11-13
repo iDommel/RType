@@ -181,11 +181,11 @@ namespace ecs
         std::cout << "Enemy created" << std::endl;
     }
 
-    std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
+    std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y, int level)
     {
         int lastLine = 16;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::string path = Wall::getCorrespondingPath(mapAround);
+        std::string path = Wall::getCorrespondingPath(mapAround, level);
 
         std::shared_ptr<Wall> wallComponent = std::make_shared<Wall>();
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
@@ -199,7 +199,7 @@ namespace ecs
         return entity;
     }
 
-    std::unique_ptr<IScene> GameSystem::ReadMap()
+    std::unique_ptr<IScene> GameSystem::ReadMap(int level)
     {
         std::regex enemyRegex("[0-9]");
         int firstRow = 0;
@@ -207,7 +207,8 @@ namespace ecs
         int firstLine = 0;
         int lastLine = 16;
 
-        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this), SceneType::GAME);
+        std::string mapPath = "map/Level_" + std::to_string(level) + ".txt";
+        std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this), SceneType::LEVEL_1);
 
         std::shared_ptr<Entity> BGentity1 = std::make_shared<Entity>();
         std::shared_ptr<Sprite> BGsprite1 = std::make_shared<Sprite>("assets/Background/Background1.png", 0.0f, 3.0f);
@@ -228,7 +229,7 @@ namespace ecs
         scene->addEntity(BGentity3);
 
         std::ifstream file;
-        file.open("map/Map Test.txt");
+        file.open(mapPath);
         std::string lineOne = "****************";
         std::string lineTwo;
         std::string lineThree;
@@ -242,7 +243,7 @@ namespace ecs
                 strCube.push_back(lineOne[firstLine]);
                 strCube.push_back(lineThree[firstLine]);
                 strCube.push_back(lineTwo[firstLine + 1]);
-                scene->addEntity(whichWall(strCube, row, firstLine));
+                scene->addEntity(whichWall(strCube, row, firstLine, level));
             }
             if (lineTwo[lastLine] == 'a') {
                 strCube.clear();
@@ -250,7 +251,7 @@ namespace ecs
                 strCube.push_back(lineOne[lastLine]);
                 strCube.push_back(lineThree[lastLine]);
                 strCube.push_back('a');
-                scene->addEntity(whichWall(strCube, row, lastLine));
+                scene->addEntity(whichWall(strCube, row, lastLine, level));
             }
 
             for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++) {
@@ -262,7 +263,7 @@ namespace ecs
                     strCube.push_back(lineOne[line]);
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
-                    scene->addEntity(whichWall(strCube, row, line));
+                    scene->addEntity(whichWall(strCube, row, line, level));
                 } else if (lineTwo[line] == 'P')
                     playerSpawns.push_back({(float)row * (float)SCALE, (lastLine - line) * (float)SCALE, 0});
                 else if (lineTwo[line] >= '0' && lineTwo[line] <= '9') {

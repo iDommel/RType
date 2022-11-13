@@ -261,10 +261,10 @@ namespace ecs
         sceneManager.addScene(createLobbyScene(), SceneType::LOBBY);
         sceneManager.addScene(createSettingMenu(), SceneType::SOUND);
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
-        sceneManager.addScene(createGameScene(), SceneType::GAME);
+        sceneManager.addScene(createGameScene(), SceneType::LEVEL_1);
         sceneManager.addScene(createEndMenu(), SceneType::END);
         if (Core::networkRole == NetworkRole::CLIENT) {
-            createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Level 1.ogg");
+            createMusic(sceneManager.getScene(SceneType::LEVEL_1), "assets/Music/Level 1.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
         } else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
@@ -358,9 +358,9 @@ namespace ecs
         else
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
-            camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
-            camPos->y + 1080 + validBoundingZone);
+                         camPos->y - validBoundingZone,
+                         camPos->x + 1920 + validBoundingZone,
+                         camPos->y + 1080 + validBoundingZone);
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
             auto component = (*entity)[IComponent::Type::POSITION];
             if (component == nullptr)
@@ -380,15 +380,15 @@ namespace ecs
         if (GameSystem::enemies.size() == 0)
             return;
         auto rect = Rect(camPos->x - validBoundingZone,
-            camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
-            camPos->y + 1080 + validBoundingZone);
+                         camPos->y - validBoundingZone,
+                         camPos->x + 1920 + validBoundingZone,
+                         camPos->y + 1080 + validBoundingZone);
         std::vector<ecs::Position> toErasePos;
         for (auto &enemy : GameSystem::enemies) {
             Position pos(enemy.second.x, enemy.second.y, 0);
             if (rect.contains(pos.x, pos.y)) {
                 QUuid id = QUuid::createUuid();
-                GameSystem::createEnemy(manager.getScene(SceneType::GAME), enemy.first, pos.x, pos.y, id);
+                GameSystem::createEnemy(manager.getScene(SceneType::LEVEL_1), enemy.first, pos.x, pos.y, id);
                 writeMsg(Message(EntityAction::CREATE, id, EntityType::ENEMY, enemy.second.getVector2(), quint8(enemy.first)));
                 toErasePos.push_back(pos);
             }
@@ -411,7 +411,7 @@ namespace ecs
                 if (Core::networkRole == NetworkRole::CLIENT)
                     sceneManager.setCurrentScene(SceneType::CONNECTION);
                 if (Core::networkRole == NetworkRole::SERVER)
-                    sceneManager.setCurrentScene(SceneType::GAME);
+                    sceneManager.setCurrentScene(SceneType::LEVEL_1);
                 timeElasped = 0;
             }
         } else if (sceneManager.getCurrentSceneType() == SceneType::CONNECTION) {
@@ -421,7 +421,7 @@ namespace ecs
                 sceneManager.setShouldClose(true);
             }
         }
-        if (sceneManager.getCurrentSceneType() != SceneType::GAME)
+        if (sceneManager.getCurrentSceneType() != SceneType::LEVEL_1)
             return;
         if (Core::networkRole == NetworkRole::SERVER) {
             updatePlayers(sceneManager, dt);
@@ -578,10 +578,10 @@ namespace ecs
                         sceneManager.setCurrentScene(SceneManager::getPreviousSceneType());
                     else if (scenetype == SceneType::NONE) {
                         exit(0);
-                    } else if (scenetype == SceneType::GAME && sceneManager.getCurrentSceneType() != SceneType::PAUSE) {
-                        sceneManager.setCurrentScene(SceneType::GAME, true);
+                    } else if (scenetype == SceneType::LEVEL_1 && sceneManager.getCurrentSceneType() != SceneType::PAUSE) {
+                        sceneManager.setCurrentScene(SceneType::LEVEL_1, true);
                         _collideSystem.reloadCollidables3D(sceneManager);
-                        EventSystem::reloadScene(sceneManager, SceneType::GAME);
+                        EventSystem::reloadScene(sceneManager, SceneType::LEVEL_1);
                     } else
                         sceneManager.setCurrentScene(scenetype);
                 } else if (animation->getNbFrames() == 4)
@@ -719,7 +719,7 @@ namespace ecs
             [entity, id_player](SceneManager &sceneManager, Vector2) {
                 std::shared_ptr<IEntity> component = nullptr;
 
-                for (auto &entity : sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
+                for (auto &entity : sceneManager.getScene(SceneType::LEVEL_1)[IEntity::Tags::PLAYER]) {
                     if (entity->getId() == id_player) {
                         component = entity;
                         break;
@@ -1119,11 +1119,11 @@ namespace ecs
         return (scene);
     }
 
-    //TODO: create playAnotherLevel menu
+    // TODO: create playAnotherLevel menu
 
     std::unique_ptr<IScene> GameSystem::createGameScene()
     {
-        auto scene = ReadMap();
+        auto scene = ReadMap(3);
         scene->addEntity(create2DCamera(0, 0));
         return scene;
     }
@@ -1514,7 +1514,7 @@ namespace ecs
 
     void GameSystem::changeBindings(SceneManager &sceneManager, QUuid id_player, int button)
     {
-        auto entities = sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER];
+        auto entities = sceneManager.getScene(SceneType::LEVEL_1)[IEntity::Tags::PLAYER];
         std::shared_ptr<IEntity> playerEntity = nullptr;
         for (auto &entity : entities) {
             if (entity->getId() == id_player) {

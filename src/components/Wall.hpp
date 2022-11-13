@@ -21,7 +21,7 @@ namespace ecs
         /// surrounding map layout
         /// @param mapLayout the map layout
         /// @return the path to the correct wall texture
-        static std::string getCorrespondingPath(const std::string &mapAround);
+        static std::string getCorrespondingPath(const std::string &mapAround, int level);
 
     private:
     };

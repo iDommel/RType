@@ -37,13 +37,13 @@ namespace ecs
         getPreviousSceneType() = _currentScene;
         _currentScene = sceneType;
         getCurrentSceneType() = sceneType;
-        if (getPreviousSceneType() == SceneType::GAME && _currentScene != SceneType::PAUSE) {
+        if (getPreviousSceneType() == SceneType::LEVEL_1 && _currentScene != SceneType::PAUSE) {
             GameSystem::setNbrPlayer(4);
-            auto addEntityCallback = _scenes[SceneType::GAME]->getAddEntityCallback();
-            auto removeEntityCallback = _scenes[SceneType::GAME]->getRemoveEntityCallback();
-            _scenes[SceneType::GAME] = _scenes[SceneType::GAME]->initScene();
-            _scenes[SceneType::GAME]->setAddEntityCallback(addEntityCallback);
-            _scenes[SceneType::GAME]->setRemoveEntityCallback(removeEntityCallback);
+            auto addEntityCallback = _scenes[SceneType::LEVEL_1]->getAddEntityCallback();
+            auto removeEntityCallback = _scenes[SceneType::LEVEL_1]->getRemoveEntityCallback();
+            _scenes[SceneType::LEVEL_1] = _scenes[SceneType::LEVEL_1]->initScene();
+            _scenes[SceneType::LEVEL_1]->setAddEntityCallback(addEntityCallback);
+            _scenes[SceneType::LEVEL_1]->setRemoveEntityCallback(removeEntityCallback);
         } else if (getPreviousSceneType() == SceneType::END) {
             auto addEntityCallback = _scenes[SceneType::END]->getAddEntityCallback();
             auto removeEntityCallback = _scenes[SceneType::END]->getRemoveEntityCallback();

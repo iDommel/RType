@@ -14,59 +14,67 @@ namespace ecs
     {
     }
 
-    std::string Wall::getCorrespondingPath(const std::string &mapAround)
+    std::string Wall::getCorrespondingPath(const std::string &mapAround, int level)
     {
-        std::string path;
+        std::string path = "assets/Blue Ground/";
+
+        if (level == 1) {
+            path = "assets/Blue Ground/";
+        } else if (level == 2) {
+            path = "assets/Brown Ground/";
+        } else if (level == 3) {
+            path = "assets/Green Ground/";
+        }
         if (mapAround[0] == 'a') {
             if (mapAround[1] == 'a') {
                 if (mapAround[2] == 'a') {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Center.png";
+                        path += "Center.png";
                     else
-                        path = "assets/Blue Ground/Top.png";
+                        path += "Top.png";
                 } else {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Right.png";
+                        path += "Right.png";
                     else
-                        path = "assets/Blue Ground/TopRight.png";
+                        path += "TopRight.png";
                 }
             } else {
                 if (mapAround[2] == 'a') {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Left.png";
+                        path += "Left.png";
                     else
-                        path = "assets/Blue Ground/TopLeft.png";
+                        path += "TopLeft.png";
                 } else {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/LeftRight.png";
+                        path += "LeftRight.png";
                     else
-                        path = "assets/Blue Ground/TopLeftRight.png";
+                        path += "TopLeftRight.png";
                 }
             }
         } else {
             if (mapAround[1] == 'a') {
                 if (mapAround[2] == 'a') {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Bot.png";
+                        path += "Bot.png";
                     else
-                        path = "assets/Blue Ground/TopBot.png";
+                        path += "TopBot.png";
                 } else {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotRight.png";
+                        path += "BotRight.png";
                     else
-                        path = "assets/Blue Ground/TopBotRight.png";
+                        path += "TopBotRight.png";
                 }
             } else {
                 if (mapAround[2] == 'a') {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotLeft.png";
+                        path += "BotLeft.png";
                     else
-                        path = "assets/Blue Ground/TopBotLeft.png";
+                        path += "TopBotLeft.png";
                 } else {
                     if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotLeftRight.png";
+                        path += "BotLeftRight.png";
                     else
-                        path = "assets/Blue Ground/TopBotLeftRight.png";
+                        path += "TopBotLeftRight.png";
                 }
             }
             return path;

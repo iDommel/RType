@@ -56,11 +56,11 @@ namespace ecs
                     _connected = true;
                     _timer.start(PING_TIMEOUT);
                 } else if (msg.getNetworkMessageType() == NetworkMessageType::READY) {
-                    manager.setCurrentScene(SceneType::GAME);
+                    manager.setCurrentScene(SceneType::LEVEL_1);
                 }
-                
+
             } else if (msg.getMessageType() == MessageType::SCENE_CHANGE_MESSAGE && msg.getSceneType() != -1) {
-                    manager.setCurrentScene((SceneType)msg.getSceneType());
+                manager.setCurrentScene((SceneType)msg.getSceneType());
             }
         }
         _msgQueue.clear();
@@ -94,13 +94,13 @@ namespace ecs
         switch (message.getEntityAction()) {
         case EntityAction::CREATE:
             if (message.getEntityType() == EntityType::PLAYER) {
-                emit createPlayer(sceneManager.getScene(SceneType::GAME), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, KEY_SPACE,
+                emit createPlayer(sceneManager.getScene(SceneType::LEVEL_1), KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN, KEY_RIGHT_CONTROL, KEY_SPACE,
                                   id, Position(message.getEntityPosition()), bool(message.getArg()));
             } else if (message.getEntityType() == EntityType::MISSILE) {
                 GameSystem::createMissile(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), Missile::MissileType(message.getArg()));
             } else if (message.getEntityType() == EntityType::ENEMY) {
                 Vector2 pos = message.getEntityPosition();
-                GameSystem::createEnemy(sceneManager.getScene(SceneType::GAME), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
+                GameSystem::createEnemy(sceneManager.getScene(SceneType::LEVEL_1), Enemy::EnemyType(message.getArg()), pos.x, pos.y, message.getEntityId());
             } else if (message.getEntityType() == EntityType::MODULE)
                 GameSystem::createSpaceModule(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), message.getArg());
             else if (message.getEntityType() == EntityType::BONUS)
