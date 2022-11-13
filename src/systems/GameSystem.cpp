@@ -483,7 +483,6 @@ namespace ecs
             }
             manageCamWhileBossing(sceneManager, vel);
             *pos = (*pos) + ((*vel) * (float)(dt / 1000.0f));
-            std::cerr << "Cam pos x,y,z: " << pos->x << ", " << pos->y << ", " << pos->z << std::endl;
             cameraComp->getCamera().update();
         }
     }

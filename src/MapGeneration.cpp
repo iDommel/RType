@@ -51,6 +51,7 @@
 #include "Wall.hpp"
 #include "Boss.hpp"
 
+
 namespace ecs
 {
     void GameSystem::createBoss(IScene &scene, Boss::BossType type, Position pos, QUuid id)
@@ -71,7 +72,7 @@ namespace ecs
             sprite = std::make_shared<Sprite>("assets/Enemies/RedBoss/RedBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
             boss = std::make_shared<Boss>(type, 50);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) {std::cerr << " offset = " << (-std::exp(-a) * 1000) << std::endl; return (-std::exp(-a) * 1000); }),//-a*10 + 150
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
