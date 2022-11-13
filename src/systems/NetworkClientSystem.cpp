@@ -105,6 +105,8 @@ namespace ecs
                 GameSystem::createSpaceModule(sceneManager, message.getEntityId(), Position(message.getEntityPosition()), message.getArg());
             else if (message.getEntityType() == EntityType::BONUS)
                 sceneManager.getCurrentScene().addEntity(GameSystem::createBonus(message.getEntityId(), Position(message.getEntityPosition())));
+            else if (message.getEntityType() == EntityType::BOSS)
+                GameSystem::createBoss(sceneManager.getScene(SceneType::GAME), Boss::BossType(message.getArg()), Position(message.getEntityPosition()), message.getEntityId());
             break;
         case EntityAction::UPDATE:
             if (message.getEntityType() == EntityType::PLAYER)
@@ -115,6 +117,8 @@ namespace ecs
                 handleEnemyUpdate(sceneManager, message, dt);
             else if (message.getEntityType() == EntityType::MODULE)
                 handleSpaceModuleUpdate(sceneManager, message, dt);
+            else if (message.getEntityType() == EntityType::BOSS)
+                handleBossUpdate(sceneManager, message, dt);
             break;
         case EntityAction::DELETE:
             removeEntity(id, sceneManager);
@@ -175,6 +179,20 @@ namespace ecs
             if (enemy->getId() != msg.getEntityId())
                 continue;
             auto pos = Component::castComponent<Position>((*enemy)[IComponent::Type::POSITION]);
+            pos->x = msg.getEntityPosition().x;
+            pos->y = msg.getEntityPosition().y;
+            break;
+        }
+    }
+
+    void NetworkClientSystem::handleBossUpdate(SceneManager &sceneManager, const Message &msg, uint64_t dt)
+    {
+        auto bosses = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+
+        for (auto &boss : bosses) {
+            if (boss->getId() != msg.getEntityId())
+                continue;
+            auto pos = Component::castComponent<Position>((*boss)[IComponent::Type::POSITION]);
             pos->x = msg.getEntityPosition().x;
             pos->y = msg.getEntityPosition().y;
             break;

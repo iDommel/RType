@@ -35,3 +35,6 @@ x:  border on All sides
 
 Enemies:
 1:  Basic Enemy
+
+Bosses:
+B:  Boss

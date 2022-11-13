@@ -10,6 +10,7 @@
 
 #include "Missile.hpp"
 #include "Component.hpp"
+#include "SceneManager.hpp"
 #include <chrono>
 #include <map>
 #include <QTimer>
@@ -21,13 +22,16 @@ namespace ecs {
     class Boss : public Component
     {
     public:
-        enum class BossType {
+        enum class BossType : quint8 {
             BOSS_1,
             BOSS_2,
-            BOSS_3
+            BOSS_3,
+            NB
         };
 
-        Boss(BossType type);
+        /// @param type Type of the Boss
+        /// @param tank Number of missile the boss can tank
+        Boss(BossType type, uint32_t tank);
 
         BossType getBossType() const { return _bossType; }
 
@@ -53,6 +57,10 @@ namespace ecs {
         void startShootTimer(Missile::MissileType type);
         void startSalvoTimer();
 
+        /// @return Returns a reference to the intern number of tanked missile
+        uint32_t &getTankedMissile();
+        uint32_t getTankMax() const;
+
         /// @param manager Scene manager
         /// @param entity Boss entity
         /// @param nextType Next missile type to shoot if salvo is finished
@@ -67,6 +75,8 @@ namespace ecs {
         QTimer _salvoTimer;
         Missile::MissileType _currMissile = Missile::MissileType::NB_MISSILE;
         uint8_t _salvoCounter = 0;
+        uint32_t _tank;
+        uint32_t _tankCounter = 0;
         bool _shooting = false;
     };
 

@@ -53,6 +53,7 @@ namespace ecs
 {
     std::vector<Position> GameSystem::playerSpawns;
     std::vector<std::pair<Enemy::EnemyType, Position>> GameSystem::enemies;
+    std::vector<std::pair<Boss::BossType, Position>> GameSystem::bosses;
 
     // Purge of out of bounds entities frequency in ms
     #define PURGE_FREQUENCY 200
@@ -330,6 +331,7 @@ namespace ecs
             updateModules(sceneManager, dt);
             updateProjectiles(sceneManager, dt);
             updateEnemies(sceneManager, dt);
+            updateBosses(sceneManager, dt);
         } else if (Core::networkRole == NetworkRole::CLIENT) {
             for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
                 auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
@@ -918,6 +920,46 @@ namespace ecs
         }
         for (auto &enemy : enemiesToDestroy) {
             sceneManager.getCurrentScene().removeEntity(enemy);
+        }
+    }
+
+    void GameSystem::updateBosses(SceneManager &sceneManager, uint64_t dt)
+    {
+        auto bosses = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+
+        for (auto &boss : bosses) {
+            auto bossComp = Component::castComponent<Boss>((*boss)[IComponent::Type::BOSS]);
+            auto bossPos = Component::castComponent<Position>((*boss)[IComponent::Type::POSITION]);
+            auto hitbox = Component::castComponent<Hitbox>((*boss)[IComponent::Type::HITBOX]);
+
+            Rectangle newRect = {bossPos->x, bossPos->y, hitbox->getRect().width, hitbox->getRect().height};
+            hitbox->setRect(newRect);
+            Position pos(bossPos->x - SCALE, bossPos->y + (SCALE / 4));
+            for (auto &collider : _collideSystem.getColliders(boss)) {
+                if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                    auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
+                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                        bossComp->getTankedMissile()++;
+                        sceneManager.getCurrentScene().removeEntity(collider);
+                        Message missileMsg(EntityAction::DELETE, collider->getId());
+                        writeMsg(missileMsg);
+                        if (bossComp->getTankedMissile() < bossComp->getTankMax())
+                            continue;
+                        Message bossMsg(EntityAction::DELETE, boss->getId());
+                        writeMsg(bossMsg);
+                    }
+                }
+            }
+
+            auto missile = bossComp->shoot(sceneManager, boss, Missile::MissileType::E_CLASSIC);
+
+            if (missile != nullptr) {
+                auto missilePos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
+                auto projectile = Component::castComponent<Missile>((*missile)[IComponent::Type::MISSILE]);
+                Message msg(EntityAction::CREATE, missile->getId(), EntityType::MISSILE, missilePos->getVector2(), quint8(projectile->getMissileType()));
+                writeMsg(msg);
+            }
         }
     }
 

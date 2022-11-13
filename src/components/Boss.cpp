@@ -11,7 +11,7 @@
 namespace ecs
 {
 
-    Boss::Boss(BossType type) : Component(Type::BOSS), _bossType(type)
+    Boss::Boss(BossType type, uint32_t tank) : Component(Type::BOSS), _bossType(type), _tank(tank)
     {
         _isInitialized = true;
         _shootTimer.setSingleShot(true);
@@ -20,6 +20,8 @@ namespace ecs
 
     Boss &Boss::addMissileSalvo(Missile::MissileType missileType, uint32_t cooldown, uint8_t nb, uint32_t salvoCooldown)
     {
+        if (_currMissile == Missile::MissileType::NB_MISSILE)
+            _currMissile = missileType;
         _missiles[missileType] = std::chrono::milliseconds(cooldown);
         _missilesSalvo[missileType] = std::make_pair(nb, std::chrono::milliseconds(salvoCooldown));
         return *this;
@@ -63,10 +65,14 @@ namespace ecs
 
     void Boss::startSalvoTimer()
     {
-        if (_currMissile == NB_MISSILE)
+        if (_currMissile == Missile::MissileType::NB_MISSILE)
             return;
         _salvoTimer.start(_missilesSalvo[_currMissile].second);
     }
+
+    uint32_t &Boss::getTankedMissile() { return _tankCounter; }
+
+    uint32_t Boss::getTankMax() const { return _tank; }
 
     std::shared_ptr<IEntity> Boss::shoot(SceneManager &manager, std::shared_ptr<IEntity> entity, Missile::MissileType nextType)
     {
