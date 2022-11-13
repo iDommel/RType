@@ -49,9 +49,46 @@
 #include "Trajectory.hpp"
 #include "Enemy.hpp"
 #include "Wall.hpp"
+#include "Boss.hpp"
 
 namespace ecs
 {
+    void GameSystem::createBoss(IScene &scene, Boss::BossType type, Position pos, QUuid id)
+    {
+        if (quint8(type) >= quint8(Boss::BossType::NB))
+            throw std::invalid_argument("Boss factory: invalid boss type");
+
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
+        std::shared_ptr<Position> position = std::make_shared<Position>(pos);
+        Rectangle rect = {position->x + SCALE, position->y + SCALE, SCALE * 2, SCALE * 2};
+        std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
+        std::shared_ptr<Boss> boss = nullptr;
+        std::shared_ptr<Sprite> sprite = nullptr;
+        std::shared_ptr<Trajectory> trajectory = nullptr;
+        std::shared_ptr<Animation2D> animation = nullptr;
+
+        if (type == Boss::BossType::BOSS_1) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedBoss/RedBossSS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
+            boss = std::make_shared<Boss>(type, 50);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+
+            boss->addMissileSalvo(Missile::MissileType::E_HOMING_REDBOSS, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_REDRAND, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_RED2, 900, 1, 0);
+        } else
+            return;
+
+        entity->addComponent(position)
+            .addComponent(boss)
+            .addComponent(hitbox)
+            .addComponent(animation)
+            .addComponent(sprite)
+            .addComponent(trajectory);
+        scene.addEntity(entity);
+    }
 
     void GameSystem::createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id)
     {
@@ -329,10 +366,10 @@ namespace ecs
                 }
                 else if (lineTwo[line] == 'P')
                     playerSpawns.push_back({(float)row * (float)SCALE, (lastLine - line) * (float)SCALE, 0});
-                else if (lineTwo[line] >= '0' && lineTwo[line] <= '9')
-                {
+                else if (lineTwo[line] >= '0' && lineTwo[line] <= '9') {
                     GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - '0'), Position(row * SCALE, (lastLine - line) * SCALE)));
-                }
+                } else if (lineTwo[line] == 'B')
+                    GameSystem::bosses.push_back(std::make_pair(Boss::BossType::BOSS_1, Position(row * SCALE, (lastLine - line) * SCALE)));
             }
             lineOne = lineTwo;
             lineTwo = lineThree;

@@ -79,6 +79,13 @@ namespace ecs
             writeMsg(msg);
         }
 
+        auto bosses = manager.getCurrentScene()[IEntity::Tags::BOSS];
+        for (auto boss : bosses) {
+            auto pos = Component::castComponent<Position>((*boss)[IComponent::Type::POSITION]);
+            Message msg(EntityAction::UPDATE, boss->getId(), EntityType::BOSS, pos->getVector2());
+            writeMsg(msg);
+        }
+
         if (manager.getPreviousSceneType() == SceneType::GAME && manager.getCurrentSceneType() == SceneType::END && !alreadyChangedScene) {
             Message sceneChangement(SceneType::END);
             writeMsg(sceneChangement);

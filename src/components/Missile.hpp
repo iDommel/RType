@@ -21,6 +21,7 @@ namespace ecs
             P_CONDENSED,
             E_RED3,
             E_RED2,
+            E_REDRAND,
             E_BROWN1,
             E_BROWN2,
             E_BROWN4,
@@ -28,6 +29,7 @@ namespace ecs
             E_HOMING_RED1,
             E_HOMING_RED4,
             E_HOMING_RED5,
+            E_HOMING_REDBOSS,
             E_HOMING_BROWN3,
             E_HOMING_BROWN5,
             E_HOMING_GREEN1,
@@ -37,12 +39,14 @@ namespace ecs
             E_HOMING_GREEN5,
             NB_MISSILE /// End of missile types
         };
-        Missile(MissileType type);
+        Missile(MissileType type, bool enemy = false);
 
         MissileType getMissileType() const;
+        bool isEnemy() const;
 
     private:
         MissileType _missileType;
+        bool _enemy;
     };
 }
 
