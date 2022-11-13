@@ -1018,11 +1018,13 @@ namespace ecs
                             writeMsg(Message(EntityAction::CREATE, bonus->getId(), EntityType::BONUS, enPos->getVector2(), 0));
                         }
                         enemiesToDestroy.push_back(enemy);
-                        sceneManager.getCurrentScene().removeEntity(collider);
                         Message enemyMsg(EntityAction::DELETE, enemy->getId());
-                        Message missileMsg(EntityAction::DELETE, collider->getId());
                         writeMsg(enemyMsg);
-                        writeMsg(missileMsg);
+                        if (missile->getMissileType() != Missile::MissileType::P_CONDENSED) {
+                            sceneManager.getCurrentScene().removeEntity(collider);
+                            Message missileMsg(EntityAction::DELETE, collider->getId());
+                            writeMsg(missileMsg);
+                        }
                     }
                 }
             }
@@ -1474,10 +1476,11 @@ namespace ecs
         int nbFrames = _spriteFrameCounts.find(_missilesSprites[type]) != _spriteFrameCounts.end() ? _spriteFrameCounts[_missilesSprites[type]] : 0;
         float rotation = _spriteRotations.find(_missilesSprites[type]) != _spriteRotations.end() ? _spriteRotations[_missilesSprites[type]] : 0.0F;
         Animation2D::AnimationType animType = _spriteAnimType.find(_missilesSprites[type]) != _spriteAnimType.end() ? _spriteAnimType[_missilesSprites[type]] : Animation2D::AnimationType::ONCE;
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], rotation, 1.0f);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], rotation, type == Missile::MissileType::P_CONDENSED ? 2.5F : 1.0F);
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, animType);
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>("assets/Sounds/laser.mp3");
+
         if (Core::networkRole == NetworkRole::SERVER) {
             if (quint8(type) < quint8(Missile::MissileType::HOMING_MISSILE))
                 trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);
