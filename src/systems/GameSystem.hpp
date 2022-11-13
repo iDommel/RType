@@ -163,7 +163,13 @@ namespace ecs
         /// @param scene The scene to add the entity to
         /// @param soundFile Filepath of the sound to be created
         /// @param id ID of the new entity
-        static void createSound(IScene &scene, const std::string &soundFile, QUuid id);
+        static void createSound(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id);
+
+        /// @brief Adds a entity with a deathAnimation
+        /// @param scene The scene to add the entity to
+        /// @param id ID of the new entity
+        /// @param pos Position of the new entity
+        static void createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id);
         /// @brief Create an image entity
         /// @param path Path to the image to load
         /// @param position Position of the Image
@@ -222,8 +228,8 @@ namespace ecs
         void updateModules(SceneManager &scene, uint64_t dt);
 
         void setAddNRmEntityCallbacks();
-        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityAddedCallbacks;
-        std::map<IEntity::Tags, std::function<void(IScene &)>> _onEntityRemovedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityAddedCallbacks;
+        std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityRemovedCallbacks;
 
         void purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> pos);
         void activateInboundsEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos);
@@ -242,6 +248,7 @@ namespace ecs
         static std::map<std::string, Animation2D::AnimationType> _spriteAnimType;
         static std::vector<std::string> _playersSprite;
         static std::vector<std::string> _modulesSprite;
+        static std::map<std::string, std::string> _deathAnimations;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;
