@@ -32,7 +32,7 @@ namespace ecs
 
     std::shared_ptr<IEntity> Enemy::lootBonus(Position &pos)
     {
-        if (_enemyType != EnemyType::FRIGATE)
+        if (_enemyType != EnemyType::REDFRIGATE || _enemyType != EnemyType::BROWNFRIGATE || _enemyType != EnemyType::GREENFRIGATE)
             return nullptr;
         return GameSystem::createBonus(QUuid::createUuid(), pos);
     }

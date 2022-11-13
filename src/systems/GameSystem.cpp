@@ -118,15 +118,38 @@ namespace ecs
 
         {Missile::MissileType::P_SIMPLE, "assets/Player/BasicMissile.png"},
         {Missile::MissileType::P_CONDENSED, "assets/Player/ChargedMissile.png"},
-        {Missile::MissileType::E_CLASSIC, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"},
-        {Missile::MissileType::E_SINUSOIDAL, "assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png"},
-        {Missile::MissileType::E_HOMING_MISSILE, "assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png"}};
+        {Missile::MissileType::E_RED2, "assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png"},
+        {Missile::MissileType::E_RED3, "assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png"},
+        {Missile::MissileType::E_BROWN1, "assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png"},
+        {Missile::MissileType::E_BROWN2, "assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png"},
+        {Missile::MissileType::E_BROWN4, "assets/Enemies/BrownEnemy4/BrownEnemy4 - Missile.png"},
+        {Missile::MissileType::E_HOMING_RED1, "assets/Enemies/RedEnemy1/RedEnemy1 - Missile.png"},
+        {Missile::MissileType::E_HOMING_RED4, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"},
+        {Missile::MissileType::E_HOMING_RED5, "assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png"},
+        {Missile::MissileType::E_HOMING_BROWN3, "assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png"},
+        {Missile::MissileType::E_HOMING_BROWN5, "assets/Enemies/BrownEnemy5/BrownEnemy5 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREEN1, "assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREEN2, "assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREEN3, "assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREEN4, "assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREEN5, "assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png"}};
     std::map<std::string, std::string> GameSystem::_deathAnimations =
         {
             {"assets/Enemies/RedEnemy1/RedEnemy1SS.png", "assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png"},
             {"assets/Enemies/RedEnemy2/RedEnemy2SS.png", "assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png"},
             {"assets/Enemies/RedEnemy3/RedEnemy3SS.png", "assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png"},
-            {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"}};
+            {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"},
+            {"assets/Enemies/RedEnemy5/RedEnemy5SS.png", "assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy1/GreenEnemy1SS.png", "assets/Enemies/GreenEnemy1/GreenEnemy1 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy2/GreenEnemy2SS.png", "assets/Enemies/GreenEnemy2/GreenEnemy2 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy3/GreenEnemy3SS.png", "assets/Enemies/GreenEnemy3/GreenEnemy3 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy4/GreenEnemy4SS.png", "assets/Enemies/GreenEnemy4/GreenEnemy4 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5SS.png", "assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy1/BrownEnemy1SS.png", "assets/Enemies/BrownEnemy1/BrownEnemy1 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy2/BrownEnemy2SS.png", "assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy3/BrownEnemy3SS.png", "assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy4SS.png", "assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5SS.png", "assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png"}};
 
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
         {
@@ -136,36 +159,87 @@ namespace ecs
             {"assets/Player/MainShipSSP2.png", 4},
             {"assets/Player/MainShipSSP3.png", 4},
             {"assets/Player/MainShipSSP4.png", 4},
+            {"assets/Enemies/RedEnemy1/RedEnemy1 - Missile.png", 4},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 4},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4},
+            {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 6},
+            {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", 5},
+            {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", 4},
+            {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", 4},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy4 - Missile.png", 5},
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Missile.png", 4},
+            {"assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png", 4},
+            {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", 5},
+            {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 4},
+            {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 4},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 4},
             {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9}};
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png", 9},
+            {"assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png", 10},
+            {"assets/Enemies/GreenEnemy1/GreenEnemy1 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Destruction.png", 16},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png", 16},
+            {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Destruction.png", 9},
+            {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png", 9},
+            {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png", 10},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png", 9},
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png", 8}};
 
     std::map<std::string, float> GameSystem::_spriteRotations =
         {
             {"assets/Player/ChargedMissile.png", 0.0F},
             {"assets/Player/BasicMissile.png", 0.0F},
             {"assets/Player/MainShipSSP1.png", 0.0F},
+            {"assets/Enemies/RedEnemy1/RedEnemy1 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 180.0F},
-            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F}};
+            {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F},
+            {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 0.0F},
+            {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", 180.0F},
+            {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", 180.0F},
+            {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", 180.0F},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy4 - Missile.png", 180.0F},
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Missile.png", 90.0F},
+            {"assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png", 180.0F},
+            {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", 180.0F},
+            {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 180.0F},
+            {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 180.0F},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 90.0F}};
 
     std::map<std::string, Animation2D::AnimationType> GameSystem::_spriteAnimType = {
         {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
         {"assets/Player/BasicMissile.png", Animation2D::AnimationType::ONCE},
         {"assets/Player/MainShipSSP1.png", Animation2D::AnimationType::ONCE},
+        {"assets/Enemies/RedEnemy1/RedEnemy1 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
-        {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
-        {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP}};
+        {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownEnemy4/BrownEnemy4 - Missile.png", Animation2D::AnimationType::ONCE},
+        {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenEnemy2/GreenEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 4 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::E_CLASSIC, {[](float dt) { return -4 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::E_SINUSOIDAL, {[](float dt) { return -dt; }, [](float a) { return std::sin(a / 10) * 50; }}}};
+        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_RED2, {[](float dt) { return -8 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_RED3, {[](float dt) { return -7 * dt; }, [](float dt) { return sin(dt / 10) * (50 + dt); }}},
+        {Missile::MissileType::E_BROWN1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_BROWN2, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_BROWN4, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
+    };
 
     std::vector<std::string> GameSystem::_playersSprite = {
         "assets/Player/MainShipSSP1.png",
@@ -786,7 +860,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE) {
+                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5) {
                         if (playerComp->getSpaceModule() != nullptr) {
                             writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
                             sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
@@ -863,7 +937,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE) {
+                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5) {
                         auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
                         player->setSpaceModule(nullptr);
                         sceneManager.getCurrentScene().removeEntity(collider);
@@ -1366,8 +1440,8 @@ namespace ecs
         coeffDirX = (target->x + SCALE / 2 - missilePos->x) / distRef;
         coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
         trajectory = std::make_shared<Trajectory>(
-            [coeffDirX](float t) { return t * 4 * coeffDirX; },
-            [coeffDirY](float t) { return t * 4 * coeffDirY; },
+            [coeffDirX](float t) { return t * 7 * coeffDirX; },
+            [coeffDirY](float t) { return t * 7 * coeffDirY; },
             missilePos);
         return trajectory;
     }
