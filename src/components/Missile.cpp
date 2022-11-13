@@ -9,7 +9,7 @@
 
 namespace ecs
 {
-    Missile::Missile(MissileType type) : Component(Type::MISSILE), _missileType(type)
+    Missile::Missile(MissileType type, bool enemy) : Component(Type::MISSILE), _missileType(type), _enemy(enemy)
     {
         _isInitialized = true;
     }
@@ -18,4 +18,6 @@ namespace ecs
     {
         return _missileType;
     }
+
+    bool Missile::isEnemy() const { return _enemy; }
 }  // namespace ecs

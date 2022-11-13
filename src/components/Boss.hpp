@@ -54,9 +54,6 @@ namespace ecs {
         /// @return Returns True if timer for shooting a missile in a salvo has timed out, False otherwise.
         bool isSalvoTime(Missile::MissileType type) const;
 
-        // void startShootTimer(Missile::MissileType type);
-        // void startSalvoTimer();
-
         /// @return Returns a reference to the intern number of tanked missile
         uint32_t &getTankedMissile();
         uint32_t getTankMax() const;

@@ -70,14 +70,14 @@ namespace ecs
         if (type == Boss::BossType::BOSS_1) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedBoss/RedBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
-            boss = std::make_shared<Boss>(type, 100);
+            boss = std::make_shared<Boss>(type, 50);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
-            boss->addMissileSalvo(Missile::MissileType::E_RED3, 4000, 3, 200)
-                .addMissileSalvo(Missile::MissileType::E_RED2, 10000, 10, 200)
-                .addMissileSalvo(Missile::MissileType::E_HOMING_RED1, 20000, 1, 0);
+            boss->addMissileSalvo(Missile::MissileType::E_HOMING_REDBOSS, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_REDRAND, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_RED2, 900, 1, 0);
         } else
             return;
 
@@ -215,7 +215,6 @@ namespace ecs
         if (animation)
             entity->addComponent(animation);
         scene.addEntity(entity);
-        std::cout << "Enemy created" << std::endl;
     }
 
     std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
