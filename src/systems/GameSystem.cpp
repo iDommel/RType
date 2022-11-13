@@ -54,10 +54,10 @@ namespace ecs
     std::vector<Position> GameSystem::playerSpawns;
     std::vector<std::pair<Enemy::EnemyType, Position>> GameSystem::enemies;
 
-    // Purge of out of bounds entities frequency in ms
-    #define PURGE_FREQUENCY 200
-    // Size of valib area around camera in px
-    #define VALID_BORDER_SIZE 100
+// Purge of out of bounds entities frequency in ms
+#define PURGE_FREQUENCY 200
+// Size of valib area around camera in px
+#define VALID_BORDER_SIZE 100
 
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -265,10 +265,12 @@ namespace ecs
         sceneManager.addScene(createHelpMenu(), SceneType::HELP);
         sceneManager.addScene(createGameScene(), SceneType::GAME);
         sceneManager.addScene(createEndMenu(), SceneType::END);
-        if (Core::networkRole == NetworkRole::CLIENT) {
+        if (Core::networkRole == NetworkRole::CLIENT)
+        {
             createMusic(sceneManager.getScene(SceneType::GAME), "assets/Music/Level 1.ogg");
             sceneManager.setCurrentScene(SceneType::SPLASH);
-        } else if (Core::networkRole == NetworkRole::SERVER)
+        }
+        else if (Core::networkRole == NetworkRole::SERVER)
             sceneManager.setCurrentScene(SceneType::LOBBY);
         _collideSystem.init(sceneManager);
         _aiSystem.init(sceneManager);
@@ -375,16 +377,18 @@ namespace ecs
         else
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
-            camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,//TODO: use cam or window size maybe
-            camPos->y + 1080 + validBoundingZone);
+                         camPos->y - validBoundingZone,
+                         camPos->x + 1920 + validBoundingZone, // TODO: use cam or window size maybe
+                         camPos->y + 1080 + validBoundingZone);
 
-        for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
+        for (auto &entity : sceneManager.getCurrentScene().getAllEntities())
+        {
             auto component = (*entity)[IComponent::Type::POSITION];
             if (component == nullptr)
                 continue;
             auto pos = Component::castComponent<Position>(component);
-            if (pos && !(rect.contains(pos->x, pos->y))) {
+            if (pos && !(rect.contains(pos->x, pos->y)))
+            {
                 writeMsg(Message(EntityAction::DELETE, entity->getId()));
                 sceneManager.getCurrentScene().removeEntity(entity);
             }
@@ -393,9 +397,10 @@ namespace ecs
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
-        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)//TODO: improve ending of the server
+        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END) // TODO: improve ending of the server
             sceneManager.setShouldClose(true);
-        if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
+        if (sceneManager.getCurrentSceneType() == SceneType::SPLASH)
+        {
             timeElasped += dt;
             if (timeElasped > SPLASH_TIMEOUT)
             {
@@ -507,34 +512,43 @@ namespace ecs
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
 
         MouseCallbacks mouseCallbacks(
-            [value, entity](SceneManager &sceneManager, Vector2 mousePosition) {
+            [value, entity](SceneManager &sceneManager, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION, IComponent::Type::RECT});
                 auto pos = Component::castComponent<Position>(comp[1]);
                 auto sprite = Component::castComponent<Sprite>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[2]);
 
                 if (mousePosition.x > pos->x && mousePosition.x < pos->x + rect->width &&
-                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height) {
+                    mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
+                {
                     auto comp2 = sceneManager.getCurrentScene()[IEntity::Tags::TEXT][2];
                     auto text = (*comp2)[IComponent::Type::TEXT];
                     auto value2 = Component::castComponent<String>(text);
 
-                    if ((value == "+" || value == "-") && AudioDevice::isMute) {
+                    if ((value == "+" || value == "-") && AudioDevice::isMute)
+                    {
                         AudioDevice::isMute = false;
                         AudioDevice::setVolume(AudioDevice::oldVolume);
                     }
-                    if (AudioDevice::masterVolume <= 1 && value == "+") {
+                    if (AudioDevice::masterVolume <= 1 && value == "+")
+                    {
                         AudioDevice::setVolume(AudioDevice::masterVolume + 0.1);
                         value2->getValue() = std::to_string(int(AudioDevice::masterVolume * 100));
-                    } else if (AudioDevice::masterVolume >= 0.1 && value == "-") {
+                    }
+                    else if (AudioDevice::masterVolume >= 0.1 && value == "-")
+                    {
                         AudioDevice::setVolume(AudioDevice::masterVolume - 0.1);
                         value2->getValue() = std::to_string(int(AudioDevice::masterVolume * 100));
                     }
-                    if (value == "unmute" && AudioDevice::isMute == true) {
+                    if (value == "unmute" && AudioDevice::isMute == true)
+                    {
                         std::cerr << "unmute: " << AudioDevice::oldVolume << std::endl;
                         AudioDevice::isMute = false;
                         AudioDevice::setVolume(AudioDevice::oldVolume > 1 ? 1 : AudioDevice::oldVolume);
-                    } else if (value == "mute" && AudioDevice::isMute == false) {
+                    }
+                    else if (value == "mute" && AudioDevice::isMute == false)
+                    {
                         AudioDevice::isMute = true;
                         AudioDevice::setVolume(0);
                     }
@@ -553,7 +567,8 @@ namespace ecs
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
 
         MouseCallbacks mouseCallbacks(
-            [entity](SceneManager &, Vector2 mousePosition) {
+            [entity](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -564,7 +579,8 @@ namespace ecs
                     if (animation->getNbFrames() == 4)
                         animation->setCurrentFrame(3);
             },
-            [scenetype, entity, this](SceneManager &sceneManager, Vector2 mousePosition) {
+            [scenetype, entity, this](SceneManager &sceneManager, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -587,11 +603,13 @@ namespace ecs
                     }
                     else
                         sceneManager.setCurrentScene(scenetype);
-                } else if (animation->getNbFrames() == 4)
+                }
+                else if (animation->getNbFrames() == 4)
                     animation->setCurrentFrame(1);
             },
             [](SceneManager &, Vector2) {},
-            [entity](SceneManager &, Vector2 mousePosition) {
+            [entity](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -614,7 +632,8 @@ namespace ecs
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
 
         MouseCallbacks mouseCallbacks(
-            [entity](SceneManager &, Vector2 mousePosition) {
+            [entity](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -625,7 +644,8 @@ namespace ecs
                     if (animation->getNbFrames() == 4)
                         animation->setCurrentFrame(3);
             },
-            [entity, this, msg](SceneManager &, Vector2 mousePosition) {
+            [entity, this, msg](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -635,11 +655,13 @@ namespace ecs
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
                 {
                     emit writeMsg(Message(msg));
-                } else if (animation->getNbFrames() == 4)
+                }
+                else if (animation->getNbFrames() == 4)
                     animation->setCurrentFrame(1);
             },
             [](SceneManager &, Vector2) {},
-            [entity](SceneManager &, Vector2 mousePosition) {
+            [entity](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -662,7 +684,8 @@ namespace ecs
         std::shared_ptr<EventListener> eventListener = std::make_shared<EventListener>();
 
         MouseCallbacks mouseCallbacks(
-            [entity](SceneManager &, Vector2 mousePosition) {
+            [entity](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -673,7 +696,8 @@ namespace ecs
                     if (animation->getNbFrames() == 4)
                         animation->setCurrentFrame(3);
             },
-            [entity, this, msg](SceneManager &, Vector2 mousePosition) {
+            [entity, this, msg](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -683,11 +707,13 @@ namespace ecs
                     mousePosition.y > pos->y && mousePosition.y < pos->y + rect->height)
                 {
                     emit writeMsg(Message(msg));
-                } else if (animation->getNbFrames() == 4)
+                }
+                else if (animation->getNbFrames() == 4)
                     animation->setCurrentFrame(1);
             },
             [](SceneManager &, Vector2) {},
-            [entity](SceneManager &, Vector2 mousePosition) {
+            [entity](SceneManager &, Vector2 mousePosition)
+            {
                 auto comp = entity->getFilteredComponents({IComponent::Type::POSITION, IComponent::Type::RECT, IComponent::Type::ANIMATION_2D});
                 auto pos = Component::castComponent<Position>(comp[0]);
                 auto rect = Component::castComponent<Rect>(comp[1]);
@@ -723,11 +749,14 @@ namespace ecs
             },
             [](SceneManager &, Vector2) {},
             [](SceneManager &, Vector2) {},
-            [entity, id_player](SceneManager &sceneManager, Vector2) {
+            [entity, id_player](SceneManager &sceneManager, Vector2)
+            {
                 std::shared_ptr<IEntity> component = nullptr;
 
-                for (auto &entity : sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER]) {
-                    if (entity->getId() == id_player) {
+                for (auto &entity : sceneManager.getScene(SceneType::GAME)[IEntity::Tags::PLAYER])
+                {
+                    if (entity->getId() == id_player)
+                    {
                         component = entity;
                         break;
                     }
@@ -862,7 +891,8 @@ namespace ecs
     {
         std::vector<std::shared_ptr<IEntity>> playersToDestroy;
 
-        for (auto &player : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER]) {
+        for (auto &player : sceneManager.getCurrentScene()[IEntity::Tags::PLAYER])
+        {
             auto pos = Component::castComponent<Position>((*player)[IComponent::Type::POSITION]);
             auto lastPos = *pos;
             auto vel = Component::castComponent<Velocity>((*player)[IComponent::Type::VELOCITY]);
@@ -873,9 +903,12 @@ namespace ecs
             splitVel.y = 0;
             (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
             (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            for (auto &collider : _collideSystem.getColliders(player)) {
-                if (collider->hasTag(IEntity::Tags::WALL) || collider->hasTag(IEntity::Tags::ENEMY)) {
-                    if (playerComp->getSpaceModule() != nullptr) {
+            for (auto &collider : _collideSystem.getColliders(player))
+            {
+                if (collider->hasTag(IEntity::Tags::WALL) || collider->hasTag(IEntity::Tags::ENEMY))
+                {
+                    if (playerComp->getSpaceModule() != nullptr)
+                    {
                         writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
                         sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
                     }
@@ -887,8 +920,10 @@ namespace ecs
                 {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5) {
-                        if (playerComp->getSpaceModule() != nullptr) {
+                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5)
+                    {
+                        if (playerComp->getSpaceModule() != nullptr)
+                        {
                             writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
                             sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
                         }
@@ -899,9 +934,12 @@ namespace ecs
                         writeMsg(missileMsg);
                         writeMsg(playerMsg);
                     }
-                } else if (collider->hasTag(IEntity::Tags::BONUS)) {
+                }
+                else if (collider->hasTag(IEntity::Tags::BONUS))
+                {
                     auto bonus = Component::castComponent<Bonus>((*collider)[IComponent::Type::BONUS]);
-                    if (bonus->getBonusType() == Bonus::Type::MODULE && playerComp->getSpaceModule() == nullptr) {
+                    if (bonus->getBonusType() == Bonus::Type::MODULE && playerComp->getSpaceModule() == nullptr)
+                    {
                         QUuid modId = QUuid::createUuid();
                         auto modPos = Component::castComponent<Position>((*collider)[IComponent::Type::POSITION]);
                         playerComp->setSpaceModule(GameSystem::createSpaceModule(sceneManager, modId, *modPos, playerComp->getId(), player));
@@ -928,13 +966,15 @@ namespace ecs
         auto modules = sceneManager.getCurrentScene()[IEntity::Tags::SPACE_MODULE];
         std::vector<std::shared_ptr<IEntity>> modulesToDestroy;
 
-        for (auto &module : modules) {
+        for (auto &module : modules)
+        {
             auto pos = Component::castComponent<Position>((*module)[IComponent::Type::POSITION]);
             auto vel = Component::castComponent<Velocity>((*module)[IComponent::Type::VELOCITY]);
             auto hitbox = Component::castComponent<Hitbox>((*module)[IComponent::Type::HITBOX]);
             auto modComp = Component::castComponent<SpaceModule>((*module)[IComponent::Type::SPACE_MODULE]);
 
-            if (modComp->getBoundMode() == SpaceModule::BoundMode::NONE) {
+            if (modComp->getBoundMode() == SpaceModule::BoundMode::NONE)
+            {
                 auto splitVel = *vel;
                 splitVel.y = 0;
                 (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
@@ -943,7 +983,9 @@ namespace ecs
                 splitVel.x = 0;
                 (*pos) = (*pos) + (splitVel * (float)(dt / 1000.0f));
                 (*hitbox) += splitVel * (float)(dt / 1000.0f);
-            } else {
+            }
+            else
+            {
                 auto playerPos = Component::castComponent<Position>((*modComp->getPlayer())[IComponent::Type::POSITION]);
                 *pos = *playerPos;
                 if (modComp->getBoundMode() == SpaceModule::BoundMode::FRONT)
@@ -956,15 +998,20 @@ namespace ecs
                 hitbox->setRect(rect);
             }
 
-            for (auto &collider : _collideSystem.getColliders(module)) {
-                if (collider->hasTag(IEntity::Tags::WALL) || collider->hasTag(IEntity::Tags::ENEMY)) {
+            for (auto &collider : _collideSystem.getColliders(module))
+            {
+                if (collider->hasTag(IEntity::Tags::WALL) || collider->hasTag(IEntity::Tags::ENEMY))
+                {
                     auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
                     player->setSpaceModule(nullptr);
                     modulesToDestroy.push_back(module);
-                } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                }
+                else if (collider->hasTag(IEntity::Tags::MISSILE))
+                {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_SINUSOIDAL || missile->getMissileType() == Missile::MissileType::E_CLASSIC || missile->getMissileType() == Missile::MissileType::E_HOMING_MISSILE) {
+                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5)
+                    {
                         auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
                         player->setSpaceModule(nullptr);
                         sceneManager.getCurrentScene().removeEntity(collider);
@@ -974,7 +1021,8 @@ namespace ecs
                 }
             }
         }
-        for (auto &module : modulesToDestroy) {
+        for (auto &module : modulesToDestroy)
+        {
             sceneManager.getCurrentScene().removeEntity(module);
             writeMsg(Message(EntityAction::DELETE, module->getId()));
         }
@@ -994,8 +1042,10 @@ namespace ecs
             Rectangle newRect = {enPos->x, enPos->y, hitbox->getRect().width, hitbox->getRect().height};
             hitbox->setRect(newRect);
             Position pos(enPos->x - SCALE, enPos->y + (SCALE / 4));
-            for (auto &collider : _collideSystem.getColliders(enemy)) {
-                if (collider->hasTag(IEntity::Tags::WALL)) {
+            for (auto &collider : _collideSystem.getColliders(enemy))
+            {
+                if (collider->hasTag(IEntity::Tags::WALL))
+                {
                     enemiesToDestroy.push_back(enemy);
                     Message msg(EntityAction::DELETE, enemy->getId());
                     writeMsg(msg);
@@ -1004,9 +1054,11 @@ namespace ecs
                 {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
-                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                        missile->getMissileType() == Missile::MissileType::P_CONDENSED)
+                    {
                         auto bonus = enComp->lootBonus(*enPos);
-                        if (bonus != nullptr) {
+                        if (bonus != nullptr)
+                        {
                             sceneManager.getCurrentScene().addEntity(bonus);
                             writeMsg(Message(EntityAction::CREATE, bonus->getId(), EntityType::BONUS, enPos->getVector2(), 0));
                         }
@@ -1153,7 +1205,7 @@ namespace ecs
         createMusic(*scene, "assets/Music/Menu.ogg");
         createMsgEvent(quitButton, NetworkMessageType::DISCONNECTED);
         createSceneEvent(quitButton, SceneType::NONE);
-        scene->addEntities({ background, endText, quitButton });
+        scene->addEntities({background, endText, quitButton});
         return (scene);
     }
 
@@ -1374,19 +1426,23 @@ namespace ecs
                     player->stopDown(manager, playerEntity, 1);
             });
         ButtonCallbacks moduleCallbacks(
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::PRESSED, KeyboardKey::KEY_SPACE));
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::RELEASED, KeyboardKey::KEY_SPACE));
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::DOWN, KeyboardKey::KEY_SPACE));
             },
-            [&, this, player, playerEntity](SceneManager &manager) {
+            [&, this, player, playerEntity](SceneManager &manager)
+            {
                 if (this->isNetworkActivated())
                     emit writeMsg(Message(EventType::KEYBOARD, KeyState::UP, KeyboardKey::KEY_SPACE));
             });
@@ -1461,7 +1517,8 @@ namespace ecs
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, animType);
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>("assets/Sounds/laser.mp3");
-        if (Core::networkRole == NetworkRole::SERVER) {
+        if (Core::networkRole == NetworkRole::SERVER)
+        {
             if (quint8(type) < quint8(Missile::MissileType::HOMING_MISSILE))
                 trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);
             else
@@ -1501,8 +1558,10 @@ namespace ecs
         coeffDirX = (target->x + SCALE / 2 - missilePos->x) / distRef;
         coeffDirY = (target->y + SCALE / 2 - missilePos->y) / distRef;
         trajectory = std::make_shared<Trajectory>(
-            [coeffDirX](float t) { return t * 4 * coeffDirX; },
-            [coeffDirY](float t) { return t * 4 * coeffDirY; },
+            [coeffDirX](float t)
+            { return t * 4 * coeffDirX; },
+            [coeffDirY](float t)
+            { return t * 4 * coeffDirY; },
             missilePos);
         return trajectory;
     }
@@ -1519,7 +1578,8 @@ namespace ecs
             .addComponent(anim)
             .addComponent(mod)
             .addComponent(sprite);
-        if (Core::networkRole == NetworkRole::SERVER) {
+        if (Core::networkRole == NetworkRole::SERVER)
+        {
             Rectangle rect = {pos->x, pos->y, SCALE / 2, SCALE / 2};
             std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
             std::shared_ptr<Velocity> velocity = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
@@ -1551,8 +1611,10 @@ namespace ecs
 
     void GameSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene)
     {
-        for (auto tag : entity->getTags()) {
-            if (_onEntityAddedCallbacks.find(tag) != _onEntityAddedCallbacks.end()) {
+        for (auto tag : entity->getTags())
+        {
+            if (_onEntityAddedCallbacks.find(tag) != _onEntityAddedCallbacks.end())
+            {
                 _onEntityAddedCallbacks[tag](scene, entity);
             }
         }
@@ -1561,8 +1623,10 @@ namespace ecs
 
     void GameSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene)
     {
-        for (auto tag : entity->getTags()) {
-            if (_onEntityRemovedCallbacks.find(tag) != _onEntityRemovedCallbacks.end()) {
+        for (auto tag : entity->getTags())
+        {
+            if (_onEntityRemovedCallbacks.find(tag) != _onEntityRemovedCallbacks.end())
+            {
                 _onEntityRemovedCallbacks[tag](scene, entity);
             }
         }
