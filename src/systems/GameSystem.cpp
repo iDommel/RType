@@ -120,6 +120,7 @@ namespace ecs
         {Missile::MissileType::P_SIMPLE, "assets/Player/BasicMissile.png"},
         {Missile::MissileType::P_CONDENSED, "assets/Player/ChargedMissile.png"},
         {Missile::MissileType::E_RED2, "assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png"},
+        {Missile::MissileType::E_REDRAND, "assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png"},
         {Missile::MissileType::E_RED3, "assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png"},
         {Missile::MissileType::E_BROWN1, "assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png"},
         {Missile::MissileType::E_BROWN2, "assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png"},
@@ -127,6 +128,7 @@ namespace ecs
         {Missile::MissileType::E_HOMING_RED1, "assets/Enemies/RedEnemy1/RedEnemy1 - Missile.png"},
         {Missile::MissileType::E_HOMING_RED4, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"},
         {Missile::MissileType::E_HOMING_RED5, "assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png"},
+        {Missile::MissileType::E_HOMING_REDBOSS, "assets/Enemies/RedBoss/RedBoss - Missile1.png"},
         {Missile::MissileType::E_HOMING_BROWN3, "assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png"},
         {Missile::MissileType::E_HOMING_BROWN5, "assets/Enemies/BrownEnemy5/BrownEnemy5 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN1, "assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png"},
@@ -165,6 +167,8 @@ namespace ecs
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4},
             {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 6},
+            {"assets/Enemies/RedBoss/RedBoss - Missile1.png", 4},
+            {"assets/Enemies/RedBoss/RedBoss - Laser.png", 3},
             {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", 5},
             {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", 4},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", 4},
@@ -200,6 +204,8 @@ namespace ecs
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F},
+            {"assets/Enemies/RedBoss/RedBoss - Laser.png", 90.0F},
+            {"assets/Enemies/RedBoss/RedBoss - Missile1.png", 0.0F},
             {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 0.0F},
             {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", 180.0F},
             {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", 180.0F},
@@ -221,6 +227,8 @@ namespace ecs
         {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::ONCE},
         {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedBoss/RedBoss - Laser.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedBoss/RedBoss - Missile1.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", Animation2D::AnimationType::ONCE},
         {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
@@ -237,6 +245,7 @@ namespace ecs
         {Missile::MissileType::P_CONDENSED, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_RED2, {[](float dt) { return -8 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_RED3, {[](float dt) { return -7 * dt; }, [](float dt) { return sin(dt / 10) * (50 + dt); }}},
+        {Missile::MissileType::E_REDRAND, {[](float dt) { return -8 * (dt); }, [](float dt) { return dt; }}}, // Add Rand
         {Missile::MissileType::E_BROWN1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN2, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN4, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
@@ -878,7 +887,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5) {
+                    if (missile->isEnemy()) {
                         if (playerComp->getSpaceModule() != nullptr) {
                             writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
                             sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
@@ -955,7 +964,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5) {
+                    if (missile->isEnemy()) {
                         auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
                         player->setSpaceModule(nullptr);
                         sceneManager.getCurrentScene().removeEntity(collider);
@@ -991,8 +1000,7 @@ namespace ecs
                     writeMsg(msg);
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
-                    if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
-                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                    if (!missile->isEnemy()) {
                         auto bonus = enComp->lootBonus(*enPos);
                         if (bonus != nullptr) {
                             sceneManager.getCurrentScene().addEntity(bonus);
@@ -1010,7 +1018,7 @@ namespace ecs
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
                 QUuid id = QUuid::createUuid();
-                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER);
+                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER, true);
                 Message msg(EntityAction::CREATE, id, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 if (enComp->getNbMissile() > 1) {
@@ -1022,7 +1030,7 @@ namespace ecs
             } else if (enComp->salvoTime() && enComp->isShooting()) {
                 // Shoot a salvo
                 QUuid id = QUuid::createUuid();
-                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER);
+                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER, true);
                 Message msg(EntityAction::CREATE, id, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 enComp->getSalvo()++;
@@ -1054,8 +1062,7 @@ namespace ecs
             for (auto &collider : _collideSystem.getColliders(boss)) {
                 if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
-                    if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
-                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                    if (!missile->isEnemy()) {
                         bossComp->getTankedMissile()++;
                         sceneManager.getCurrentScene().removeEntity(collider);
                         Message missileMsg(EntityAction::DELETE, collider->getId());
@@ -1444,12 +1451,12 @@ namespace ecs
         return msg;
     }
 
-    void GameSystem::createMissile(SceneManager &sceneManager, QUuid id, Position position, Missile::MissileType type, IEntity::Tags targetType)
+    void GameSystem::createMissile(SceneManager &sceneManager, QUuid id, Position position, Missile::MissileType type, IEntity::Tags targetType, bool isEnemy)
     {
         if (quint8(type) >= quint8(Missile::MissileType::NB_MISSILE) || quint8(type) == quint8(Missile::MissileType::HOMING_MISSILE))
             throw std::invalid_argument("Missile type invalid: " + quint8(type));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
-        std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
+        std::shared_ptr<Missile> missile = std::make_shared<Missile>(type, isEnemy);
         Rectangle missileHitbox = {position.x, position.y, SCALE / 2, SCALE / 2};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(missileHitbox);
         std::shared_ptr<Position> pos = std::make_shared<Position>(position);

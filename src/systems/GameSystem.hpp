@@ -112,7 +112,7 @@ namespace ecs
         /// @param pos Position of the new missile
         /// @param type Missile type
         /// @param targetType The type of the target if is a homing missile
-        static void createMissile(SceneManager &sceneManager, QUuid id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS);
+        static void createMissile(SceneManager &sceneManager, QUuid id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS, bool isEnemy = false);
 
         /// @param manager Scene manager
         /// @param module Pointer to the module entity

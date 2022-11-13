@@ -55,19 +55,6 @@ namespace ecs
         return (_salvoTimers.at(type).remainingTime() <= 0);
     }
 
-    // void Boss::startShootTimer(Missile::MissileType type)
-    // {
-    //     _shootTimer.start(_missiles[type]);
-    //     _currMissile = type;
-    // }
-
-    // void Boss::startSalvoTimer()
-    // {
-    //     if (_currMissile == Missile::MissileType::NB_MISSILE)
-    //         return;
-    //     _salvoTimer.start(_missilesSalvo[_currMissile].second);
-    // }
-
     uint32_t &Boss::getTankedMissile() { return _tankCounter; }
 
     uint32_t Boss::getTankMax() const { return _tank; }
@@ -80,7 +67,7 @@ namespace ecs
 
         pos.y += SCALE / 2;
         if (_shooting && isSalvoTime(_currMissile)) {
-            GameSystem::createMissile(manager, id, pos, _currMissile, IEntity::Tags::PLAYER);
+            GameSystem::createMissile(manager, id, pos, _currMissile, IEntity::Tags::PLAYER, true);
             if (++_salvoCounter >= _missilesSalvo[_currMissile].first) {
                 _salvoCounter = 0;
                 _shootTimers[_currMissile].start(_missiles[_currMissile]);
@@ -93,7 +80,7 @@ namespace ecs
             for (auto &shootTimer : _shootTimers) {
                 Missile::MissileType type = shootTimer.first;
                 if (isShootTime(type) && !_shooting) {
-                    GameSystem::createMissile(manager, id, pos, type, IEntity::Tags::PLAYER);
+                    GameSystem::createMissile(manager, id, pos, type, IEntity::Tags::PLAYER, true);
                     if (_missilesSalvo[type].first > 1) {
                         _shooting = true;
                         _salvoTimers[type].start(_missilesSalvo[type].second);
