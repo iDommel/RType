@@ -1061,6 +1061,7 @@ namespace ecs
     void GameSystem::updateBosses(SceneManager &sceneManager, uint64_t dt)
     {
         auto bosses = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+        std::vector<std::shared_ptr<IEntity>> bossesToDestroy;
 
         for (auto &boss : bosses) {
             auto bossComp = Component::castComponent<Boss>((*boss)[IComponent::Type::BOSS]);
@@ -1082,6 +1083,7 @@ namespace ecs
                             continue;
                         Message bossMsg(EntityAction::DELETE, boss->getId());
                         writeMsg(bossMsg);
+                        bossesToDestroy.push_back(boss);
                     }
                 }
             }
@@ -1094,6 +1096,9 @@ namespace ecs
                 Message msg(EntityAction::CREATE, missile->getId(), EntityType::MISSILE, missilePos->getVector2(), quint8(projectile->getMissileType()));
                 writeMsg(msg);
             }
+        }
+        for (auto &boss : bossesToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(boss);
         }
     }
 
