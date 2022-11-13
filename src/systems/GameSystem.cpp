@@ -952,7 +952,7 @@ namespace ecs
                 }
             }
 
-            auto missile = bossComp->shoot(sceneManager, boss, Missile::MissileType::E_CLASSIC);
+            auto missile = bossComp->shoot(sceneManager, boss);
 
             if (missile != nullptr) {
                 auto missilePos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
