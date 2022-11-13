@@ -57,6 +57,7 @@ namespace ecs
         UNDEFINED = -1,
         PLAYER,
         ENEMY,
+        BOSS,
         MISSILE,
         MODULE,
         BONUS

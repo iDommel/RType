@@ -53,11 +53,14 @@ namespace ecs
 {
     std::vector<Position> GameSystem::playerSpawns;
     std::vector<std::pair<Enemy::EnemyType, Position>> GameSystem::enemies;
+    std::vector<std::pair<Boss::BossType, Position>> GameSystem::bosses;
 
 // Purge of out of bounds entities frequency in ms
 #define PURGE_FREQUENCY 200
 // Size of valib area around camera in px
 #define VALID_BORDER_SIZE 100
+// Camera speed modifier, total is based on player speed
+#define CAM_VEL_SCALE 0.2f
 
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -119,6 +122,7 @@ namespace ecs
         {Missile::MissileType::P_SIMPLE, "assets/Player/BasicMissile.png"},
         {Missile::MissileType::P_CONDENSED, "assets/Player/ChargedMissile.png"},
         {Missile::MissileType::E_RED2, "assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png"},
+        {Missile::MissileType::E_REDRAND, "assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png"},
         {Missile::MissileType::E_RED3, "assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png"},
         {Missile::MissileType::E_BROWN1, "assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png"},
         {Missile::MissileType::E_BROWN2, "assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png"},
@@ -126,13 +130,20 @@ namespace ecs
         {Missile::MissileType::E_HOMING_RED1, "assets/Enemies/RedEnemy1/RedEnemy1 - Missile.png"},
         {Missile::MissileType::E_HOMING_RED4, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"},
         {Missile::MissileType::E_HOMING_RED5, "assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png"},
+        {Missile::MissileType::E_HOMING_REDBOSS, "assets/Enemies/RedBoss/RedBoss - Missile1.png"},
+        {Missile::MissileType::E_BROWNBOSS1, "assets/Enemies/BrownBoss/BrownBoss - Missile1.png"},
+        {Missile::MissileType::E_BROWNBOSS2, "assets/Enemies/BrownBoss/BrownBoss - Missile2.png"},
+        {Missile::MissileType::E_HOMING_BROWNBOSS, "assets/Enemies/BrownBoss/BrownBoss - Missile3.png"},
         {Missile::MissileType::E_HOMING_BROWN3, "assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png"},
         {Missile::MissileType::E_HOMING_BROWN5, "assets/Enemies/BrownEnemy5/BrownEnemy5 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN1, "assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN2, "assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN3, "assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN4, "assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png"},
-        {Missile::MissileType::E_HOMING_GREEN5, "assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png"}};
+        {Missile::MissileType::E_HOMING_GREEN5, "assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS1, "assets/Enemies/GreenBoss/GreenBoss - Missile1.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS2, "assets/Enemies/GreenBoss/GreenBoss - Missile2.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS3, "assets/Enemies/GreenBoss/GreenBoss - Missile3.png"}};
     std::map<std::string, std::string> GameSystem::_deathAnimations =
         {
             {"assets/Enemies/RedEnemy1/RedEnemy1SS.png", "assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png"},
@@ -140,15 +151,18 @@ namespace ecs
             {"assets/Enemies/RedEnemy3/RedEnemy3SS.png", "assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png"},
             {"assets/Enemies/RedEnemy4/RedEnemy4SS.png", "assets/Enemies/RedEnemy4/RedEnemy4 - Destruction.png"},
             {"assets/Enemies/RedEnemy5/RedEnemy5SS.png", "assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png"},
+            {"assets/Enemies/RedEnemy5/RedEnemy5.png", "assets/Enemies/RedEnemy5/RedEnemy5 - Destruction.png"},
             {"assets/Enemies/GreenEnemy1/GreenEnemy1SS.png", "assets/Enemies/GreenEnemy1/GreenEnemy1 - Destruction.png"},
             {"assets/Enemies/GreenEnemy2/GreenEnemy2SS.png", "assets/Enemies/GreenEnemy2/GreenEnemy2 - Destruction.png"},
             {"assets/Enemies/GreenEnemy3/GreenEnemy3SS.png", "assets/Enemies/GreenEnemy3/GreenEnemy3 - Destruction.png"},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4SS.png", "assets/Enemies/GreenEnemy4/GreenEnemy4 - Destruction.png"},
             {"assets/Enemies/GreenEnemy5/GreenEnemy5SS.png", "assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png"},
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5.png", "assets/Enemies/GreenEnemy5/GreenEnemy5 - Destruction.png"},
             {"assets/Enemies/BrownEnemy1/BrownEnemy1SS.png", "assets/Enemies/BrownEnemy1/BrownEnemy1 - Destruction.png"},
             {"assets/Enemies/BrownEnemy2/BrownEnemy2SS.png", "assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png"},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3SS.png", "assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png"},
             {"assets/Enemies/BrownEnemy4/BrownEnemy4SS.png", "assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png"},
+            {"assets/Enemies/BrownEnemy4/BrownEnemy5.png", "assets/Enemies/BrownEnemy4/BrownEnemy5 - Destruction.png"},
             {"assets/Enemies/BrownEnemy5/BrownEnemy5SS.png", "assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png"}};
 
     std::map<std::string, int> GameSystem::_spriteFrameCounts =
@@ -164,6 +178,8 @@ namespace ecs
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 4},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 4},
             {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 6},
+            {"assets/Enemies/RedBoss/RedBoss - Missile1.png", 4},
+            {"assets/Enemies/RedBoss/RedBoss - Laser.png", 3},
             {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", 5},
             {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", 4},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", 4},
@@ -174,6 +190,9 @@ namespace ecs
             {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 4},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 4},
             {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 4},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", 5},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", 5},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", 4},
             {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
@@ -188,7 +207,10 @@ namespace ecs
             {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png", 9},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png", 10},
             {"assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png", 9},
-            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png", 8}};
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png", 8},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", 4},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", 4},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", 4}};
 
     std::map<std::string, float> GameSystem::_spriteRotations =
         {
@@ -199,6 +221,8 @@ namespace ecs
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", 180.0F},
             {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", 180.0F},
+            {"assets/Enemies/RedBoss/RedBoss - Laser.png", 90.0F},
+            {"assets/Enemies/RedBoss/RedBoss - Missile1.png", 0.0F},
             {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", 0.0F},
             {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", 180.0F},
             {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", 180.0F},
@@ -209,7 +233,13 @@ namespace ecs
             {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", 180.0F},
             {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 180.0F},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 180.0F},
-            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 90.0F}};
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 90.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", 180.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", 180.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", 180.0F},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", 180.0F},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", 180.0F},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", 180.0F}};
 
     std::map<std::string, Animation2D::AnimationType> GameSystem::_spriteAnimType = {
         {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
@@ -220,6 +250,8 @@ namespace ecs
         {"assets/Enemies/RedEnemy3/RedEnemy3 - Missile.png", Animation2D::AnimationType::ONCE},
         {"assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedBoss/RedBoss - Laser.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/RedBoss/RedBoss - Missile1.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/BrownEnemy1/BrownEnemy1 - Missile.png", Animation2D::AnimationType::ONCE},
         {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
@@ -229,16 +261,25 @@ namespace ecs
         {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy2/GreenEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
-        {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP}};
+        {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 10 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 20 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_RED2, {[](float dt) { return -8 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::E_RED3, {[](float dt) { return -7 * dt; }, [](float dt) { return sin(dt / 10) * (50 + dt); }}},
+        {Missile::MissileType::E_RED3, {[](float dt) { return -7 * dt; }, [](float dt) { return sin(dt / 10) * (40 + dt / 4); }}},
+        {Missile::MissileType::E_REDRAND, {[](float dt) { return -8 * (dt); }, [](float dt) { return dt; }}},  // Add Rand
         {Missile::MissileType::E_BROWN1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN2, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN4, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_BROWNBOSS1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_BROWNBOSS2, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
     };
 
     std::vector<std::string> GameSystem::_playersSprite = {
@@ -349,14 +390,9 @@ namespace ecs
         }
     }
 
-    void GameSystem::purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> camPos)
+    void GameSystem::purgeAroundCameraEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos)
     {
         const int validBoundingZone = VALID_BORDER_SIZE;
-        static uint64_t lastPurge = 0;
-        if ((lastPurge += dt) < PURGE_FREQUENCY)
-            return;
-        else
-            lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
             camPos->y - validBoundingZone,
             camPos->x + 1920 + validBoundingZone,
@@ -376,14 +412,15 @@ namespace ecs
     void GameSystem::activateInboundsEntities(ecs::SceneManager &manager, std::shared_ptr<ecs::Position> camPos)
     {
         const int validBoundingZone = VALID_BORDER_SIZE;
-
-        if (GameSystem::enemies.size() == 0)
-            return;
         auto rect = Rect(camPos->x - validBoundingZone,
-            camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
-            camPos->y + 1080 + validBoundingZone);
+                         camPos->y - validBoundingZone,
+                         camPos->x + 1920 + validBoundingZone,
+                         camPos->y + 1080 + validBoundingZone);
         std::vector<ecs::Position> toErasePos;
+        std::vector<ecs::Position> toErasePosBoss;
+
+        if (GameSystem::enemies.size() == 0 && GameSystem::bosses.size() == 0)
+                    return;
         for (auto &enemy : GameSystem::enemies) {
             Position pos(enemy.second.x, enemy.second.y, 0);
             if (rect.contains(pos.x, pos.y)) {
@@ -393,17 +430,43 @@ namespace ecs
                 toErasePos.push_back(pos);
             }
         }
+        for (auto &boss : GameSystem::bosses) {
+            Position pos(boss.second.x, boss.second.y, 0);
+            if (rect.contains(pos.x, pos.y)) {
+                QUuid id = QUuid::createUuid();
+                GameSystem::createBoss(manager.getScene(SceneType::GAME), boss.first, boss.second, id);
+                writeMsg(Message(EntityAction::CREATE, id, EntityType::BOSS, boss.second.getVector2(), quint8(boss.first)));
+                toErasePosBoss.push_back(pos);
+            }
+        }
         for (auto &pos : toErasePos)
             for (auto it = GameSystem::enemies.begin(); it != GameSystem::enemies.end(); ++it)
                 if (it->second.x == pos.x && it->second.y == pos.y) {
                     GameSystem::enemies.erase(it);
                     break;
                 }
+        for (auto &pos : toErasePosBoss)
+            for (auto it = GameSystem::bosses.begin(); it != GameSystem::bosses.end(); ++it)
+                if (it->second.x == pos.x && it->second.y == pos.y) {
+                    GameSystem::bosses.erase(it);
+                    break;
+                }
+    }
+
+    void GameSystem::manageCamWhileBossing(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Velocity> vel)
+    {
+        auto maybeBoss = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+        if (maybeBoss.size() == 0)
+            vel->x = Player::_defaultSpeed * CAM_VEL_SCALE;
+        else
+            vel->x = 0;
     }
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
-        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)  // TODO: improve ending of the server
+        static uint64_t lastPurge = 0;
+
+        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)// TODO: improve ending of the server
             sceneManager.setShouldClose(true);
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
             timeElasped += dt;
@@ -428,6 +491,7 @@ namespace ecs
             updateModules(sceneManager, dt);
             updateProjectiles(sceneManager, dt);
             updateEnemies(sceneManager, dt);
+            updateBosses(sceneManager, dt);
         } else if (Core::networkRole == NetworkRole::CLIENT) {
             for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
                 auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
@@ -440,12 +504,14 @@ namespace ecs
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
             auto pos = Component::castComponent<Position>((*camera)[IComponent::Type::POSITION]);
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
-            *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
-            cameraComp->getCamera().update();
-            if (Core::networkRole == NetworkRole::SERVER) {
-                purgeAroundCameraEntities(sceneManager, dt, pos);
+            if (Core::networkRole == NetworkRole::SERVER && (lastPurge += dt) >= PURGE_FREQUENCY) {
+                lastPurge = 0;
+                purgeAroundCameraEntities(sceneManager, pos);
                 activateInboundsEntities(sceneManager, pos);
             }
+            manageCamWhileBossing(sceneManager, vel);
+            *pos = (*pos) + ((*vel) * (float)(dt / 1000.0f));
+            cameraComp->getCamera().update();
         }
     }
 
@@ -820,6 +886,7 @@ namespace ecs
 
     void GameSystem::updateProjectiles(SceneManager &sceneManager, uint64_t dt)
     {
+        std::vector<std::shared_ptr<IEntity>> projectilesToDestroy;
         for (auto &entity : sceneManager.getCurrentScene()[IEntity::Tags::TRAJECTORY]) {
             auto trajectory = Component::castComponent<Trajectory>((*entity)[IComponent::Type::TRAJECTORY]);
             auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
@@ -830,6 +897,16 @@ namespace ecs
                 Rectangle newRect = {position->x, position->y, hitbox->getRect().width, hitbox->getRect().height};
                 hitbox->setRect(newRect);
             }
+            for (auto &collider : _collideSystem.getColliders(entity)) {
+                if (collider->hasTag(IEntity::Tags::WALL)) {
+                    projectilesToDestroy.push_back(entity);
+                    Message msg(EntityAction::DELETE, entity->getId());
+                    writeMsg(msg);
+                }
+            }
+        }
+        for (auto &entity : projectilesToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(entity);
         }
     }
 
@@ -860,7 +937,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5) {
+                    if (missile->isEnemy()) {
                         if (playerComp->getSpaceModule() != nullptr) {
                             writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
                             sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
@@ -937,7 +1014,7 @@ namespace ecs
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
                     auto sprite = Component::castComponent<Sprite>((*collider)[IComponent::Type::SPRITE]);
-                    if (missile->getMissileType() == Missile::MissileType::E_RED3 || missile->getMissileType() == Missile::MissileType::E_RED2 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED1 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED4 || missile->getMissileType() == Missile::MissileType::E_HOMING_RED5 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN1 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN2 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_GREEN5 || missile->getMissileType() == Missile::MissileType::E_BROWN1 || missile->getMissileType() == Missile::MissileType::E_BROWN2 || missile->getMissileType() == Missile::MissileType::E_BROWN4 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN3 || missile->getMissileType() == Missile::MissileType::E_HOMING_BROWN5) {
+                    if (missile->isEnemy()) {
                         auto player = Component::castComponent<Player>((*modComp->getPlayer())[IComponent::Type::PLAYER]);
                         player->setSpaceModule(nullptr);
                         sceneManager.getCurrentScene().removeEntity(collider);
@@ -973,26 +1050,27 @@ namespace ecs
                     writeMsg(msg);
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
                     auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
-                    if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
-                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                    if (!missile->isEnemy()) {
                         auto bonus = enComp->lootBonus(*enPos);
                         if (bonus != nullptr) {
                             sceneManager.getCurrentScene().addEntity(bonus);
                             writeMsg(Message(EntityAction::CREATE, bonus->getId(), EntityType::BONUS, enPos->getVector2(), 0));
                         }
                         enemiesToDestroy.push_back(enemy);
-                        sceneManager.getCurrentScene().removeEntity(collider);
                         Message enemyMsg(EntityAction::DELETE, enemy->getId());
-                        Message missileMsg(EntityAction::DELETE, collider->getId());
                         writeMsg(enemyMsg);
-                        writeMsg(missileMsg);
+                        if (missile->getMissileType() != Missile::MissileType::P_CONDENSED) {
+                            sceneManager.getCurrentScene().removeEntity(collider);
+                            Message missileMsg(EntityAction::DELETE, collider->getId());
+                            writeMsg(missileMsg);
+                        }
                     }
                 }
             }
             if (enComp->isShootTime() && !enComp->isShooting()) {
                 // Shoot
                 QUuid id = QUuid::createUuid();
-                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER);
+                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER, true);
                 Message msg(EntityAction::CREATE, id, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 if (enComp->getNbMissile() > 1) {
@@ -1004,7 +1082,7 @@ namespace ecs
             } else if (enComp->salvoTime() && enComp->isShooting()) {
                 // Shoot a salvo
                 QUuid id = QUuid::createUuid();
-                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER);
+                GameSystem::createMissile(sceneManager, id, pos, enComp->getMissileType(), IEntity::Tags::PLAYER, true);
                 Message msg(EntityAction::CREATE, id, EntityType::MISSILE, pos.getVector2(), quint8(enComp->getMissileType()));
                 emit writeMsg(msg);
                 enComp->getSalvo()++;
@@ -1018,6 +1096,50 @@ namespace ecs
         }
         for (auto &enemy : enemiesToDestroy) {
             sceneManager.getCurrentScene().removeEntity(enemy);
+        }
+    }
+
+    void GameSystem::updateBosses(SceneManager &sceneManager, uint64_t dt)
+    {
+        auto bosses = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+        std::vector<std::shared_ptr<IEntity>> bossesToDestroy;
+
+        for (auto &boss : bosses) {
+            auto bossComp = Component::castComponent<Boss>((*boss)[IComponent::Type::BOSS]);
+            auto bossPos = Component::castComponent<Position>((*boss)[IComponent::Type::POSITION]);
+            auto hitbox = Component::castComponent<Hitbox>((*boss)[IComponent::Type::HITBOX]);
+
+            Rectangle newRect = {bossPos->x, bossPos->y, hitbox->getRect().width, hitbox->getRect().height};
+            hitbox->setRect(newRect);
+            Position pos(bossPos->x - SCALE, bossPos->y + (SCALE / 4));
+            for (auto &collider : _collideSystem.getColliders(boss)) {
+                if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                    auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    if (!missile->isEnemy()) {
+                        bossComp->getTankedMissile()++;
+                        sceneManager.getCurrentScene().removeEntity(collider);
+                        Message missileMsg(EntityAction::DELETE, collider->getId());
+                        writeMsg(missileMsg);
+                        if (bossComp->getTankedMissile() < bossComp->getTankMax())
+                            continue;
+                        Message bossMsg(EntityAction::DELETE, boss->getId());
+                        writeMsg(bossMsg);
+                        bossesToDestroy.push_back(boss);
+                    }
+                }
+            }
+
+            auto missile = bossComp->shoot(sceneManager, boss);
+
+            if (missile != nullptr) {
+                auto missilePos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
+                auto projectile = Component::castComponent<Missile>((*missile)[IComponent::Type::MISSILE]);
+                Message msg(EntityAction::CREATE, missile->getId(), EntityType::MISSILE, missilePos->getVector2(), quint8(projectile->getMissileType()));
+                writeMsg(msg);
+            }
+        }
+        for (auto &boss : bossesToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(boss);
         }
     }
 
@@ -1119,7 +1241,7 @@ namespace ecs
         return (scene);
     }
 
-    //TODO: create playAnotherLevel menu
+    // TODO: create playAnotherLevel menu
 
     std::unique_ptr<IScene> GameSystem::createGameScene()
     {
@@ -1132,7 +1254,8 @@ namespace ecs
     {
         std::shared_ptr<Entity> cam = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
-        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
+        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * CAM_VEL_SCALE, 0);
+
         std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
 
         cam->addComponent(camera)
@@ -1158,14 +1281,23 @@ namespace ecs
         entity->addComponent(sound);
         scene.addEntity(entity);
     }
+
     void GameSystem::createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id)
     {
         std::shared_ptr<Entity> deathEntity = std::make_shared<Entity>(id);
 
         auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
         auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+        float rotation = 180.0f;
+        if (entity->hasComponent(IComponent::Type::ENEMY)) {
+            auto enemy = Component::castComponent<Enemy>((*entity)[IComponent::Type::ENEMY]);
+            Enemy::EnemyType type = enemy->getEnemyType();
+            if (type == Enemy::EnemyType::BROWNTURRET || type == Enemy::EnemyType::GREENTURRET || type == Enemy::EnemyType::REDTURRET) {
+                rotation = 0.0f;
+            }
+        }
         std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
-        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
+        std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], rotation, 2.0f);
         std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_spriteFrameCounts[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(soundFile);
 
@@ -1386,22 +1518,23 @@ namespace ecs
         return msg;
     }
 
-    void GameSystem::createMissile(SceneManager &sceneManager, QUuid id, Position position, Missile::MissileType type, IEntity::Tags targetType)
+    void GameSystem::createMissile(SceneManager &sceneManager, QUuid id, Position position, Missile::MissileType type, IEntity::Tags targetType, bool isEnemy)
     {
         if (quint8(type) >= quint8(Missile::MissileType::NB_MISSILE) || quint8(type) == quint8(Missile::MissileType::HOMING_MISSILE))
             throw std::invalid_argument("Missile type invalid: " + quint8(type));
         std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
-        std::shared_ptr<Missile> missile = std::make_shared<Missile>(type);
+        std::shared_ptr<Missile> missile = std::make_shared<Missile>(type, isEnemy);
         Rectangle missileHitbox = {position.x, position.y, SCALE / 2, SCALE / 2};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(missileHitbox);
         std::shared_ptr<Position> pos = std::make_shared<Position>(position);
         int nbFrames = _spriteFrameCounts.find(_missilesSprites[type]) != _spriteFrameCounts.end() ? _spriteFrameCounts[_missilesSprites[type]] : 0;
         float rotation = _spriteRotations.find(_missilesSprites[type]) != _spriteRotations.end() ? _spriteRotations[_missilesSprites[type]] : 0.0F;
         Animation2D::AnimationType animType = _spriteAnimType.find(_missilesSprites[type]) != _spriteAnimType.end() ? _spriteAnimType[_missilesSprites[type]] : Animation2D::AnimationType::ONCE;
-        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], rotation, 1.0f);
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(_missilesSprites[type], rotation, type == Missile::MissileType::P_CONDENSED ? 2.5F : 1.0F);
         std::shared_ptr<Animation2D> anim = std::make_shared<Animation2D>(nbFrames, 24, animType);
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>("assets/Sounds/laser.mp3");
+
         if (Core::networkRole == NetworkRole::SERVER) {
             if (quint8(type) < quint8(Missile::MissileType::HOMING_MISSILE))
                 trajectory = std::make_shared<Trajectory>(_missilesTrajectories[type].first, _missilesTrajectories[type].second, pos);

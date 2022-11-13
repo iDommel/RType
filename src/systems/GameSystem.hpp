@@ -24,6 +24,7 @@
 #include "Enemy.hpp"
 #include "Trajectory.hpp"
 #include "Animation2D.hpp"
+#include "Boss.hpp"
 #include <QtCore>  // for networked event handling
 
 #define GAME_MAP_WIDTH 15
@@ -103,6 +104,7 @@ namespace ecs
         static std::vector<Position> playerSpawns;
         /// @brief Enemies to generate when launching game scene and their positions
         static std::vector<std::pair<Enemy::EnemyType, Position>> enemies;
+        static std::vector<std::pair<Boss::BossType, Position>> bosses;
 
         /// @brief Missile factory
         /// @param sceneManager Scene manager
@@ -110,7 +112,7 @@ namespace ecs
         /// @param pos Position of the new missile
         /// @param type Missile type
         /// @param targetType The type of the target if is a homing missile
-        static void createMissile(SceneManager &sceneManager, QUuid id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS);
+        static void createMissile(SceneManager &sceneManager, QUuid id, Position pos, Missile::MissileType type, IEntity::Tags targetType = IEntity::Tags::NB_TAGS, bool isEnemy = false);
 
         /// @param manager Scene manager
         /// @param module Pointer to the module entity
@@ -131,6 +133,8 @@ namespace ecs
         /// @param y Y position
         /// @param id ID of the entity
         static void createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id);
+
+        static void createBoss(IScene &scene, Boss::BossType type, Position pos, QUuid id);
 
         /// @param manager Scene manager
         /// @param id ID of the new entity
@@ -224,6 +228,7 @@ namespace ecs
         void updateTextBindings(ecs::SceneManager &sceneManager, std::shared_ptr<Player> players, int firstText);
         void updatePlayers(SceneManager &scene, uint64_t dt);
         void updateEnemies(SceneManager &scene, uint64_t dt);
+        void updateBosses(SceneManager &scene, uint64_t dt);
         void updateProjectiles(SceneManager &scene, uint64_t dt);
         void updateModules(SceneManager &scene, uint64_t dt);
 
@@ -231,8 +236,9 @@ namespace ecs
         std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityAddedCallbacks;
         std::map<IEntity::Tags, std::function<void(IScene &, std::shared_ptr<IEntity>)>> _onEntityRemovedCallbacks;
 
-        void purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> pos);
+        void purgeAroundCameraEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos);
         void activateInboundsEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos);
+        void manageCamWhileBossing(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Velocity> vel);
 
         int timeElasped = 0;
         static unsigned int nbr_player;

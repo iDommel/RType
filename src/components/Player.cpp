@@ -30,7 +30,7 @@
 
 namespace ecs
 {
-    const int Player::_defaultSpeed = 140;
+    const int Player::_defaultSpeed = 250;
     const float Player::maxBoundingDist = SCALE / 2;
 
     Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb, int module) : Component(Type::PLAYER), _id(id)

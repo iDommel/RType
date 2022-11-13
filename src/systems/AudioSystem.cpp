@@ -97,7 +97,7 @@ namespace ecs
 
     void AudioSystem::manageSound(SoundComponent &soundComponent)
     {
-        if (!soundComponent.shouldUpdate())
+        if (!soundComponent.shouldUpdate() || _sounds.find(soundComponent.getValue()) == _sounds.end())
             return;
         if (soundComponent.getSoundState() == Sound::SoundState::PLAYING)
             _sounds[soundComponent.getValue()]->play();
