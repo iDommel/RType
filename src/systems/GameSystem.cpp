@@ -297,7 +297,6 @@ namespace ecs
     {
         const int validBoundingZone = VALID_BORDER_SIZE;
 
-        std::cerr << "activateInboundsEntities = " << GameSystem::enemies.size() << std::endl;
         if (GameSystem::enemies.size() == 0)
             return;
         auto rect = Rect(camPos->x - validBoundingZone,
@@ -314,7 +313,6 @@ namespace ecs
                 toErasePos.push_back(pos);
             }
         }
-        std::cerr << "to erase nbr = " << toErasePos.size() << std::endl;
         for (auto &pos : toErasePos)
             for (auto it = GameSystem::enemies.begin(); it != GameSystem::enemies.end(); ++it)
                 if (it->second.x == pos.x && it->second.y == pos.y) {
