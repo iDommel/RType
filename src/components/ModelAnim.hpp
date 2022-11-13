@@ -20,7 +20,7 @@ namespace ecs
          * @param filepath Path to the file containing the animation
          * @param currentFrame Current frame of the animation
          */
-        ModelAnim(std::string const &filepath, int currentFrame = 0) : Component(IComponent::Type::ANIMATION), _filepath(filepath), _currFrame(currentFrame){};
+        ModelAnim(std::string const &filepath, int currentFrame = 0) : Component(IComponent::Type::ANIMATION_3D), _filepath(filepath), _currFrame(currentFrame){};
 
         /// @brief Get the animation filepath
         std::string getAnimPath() { return _filepath; };

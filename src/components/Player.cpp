@@ -26,18 +26,21 @@
 #include "Missile.hpp"
 #include "Sprite.hpp"
 #include "Trajectory.hpp"
+#include "SpaceModule.hpp"
 
 namespace ecs
 {
     const int Player::_defaultSpeed = 140;
+    const float Player::maxBoundingDist = SCALE / 2;
 
-    Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb) : Component(Type::PLAYER), _id(id)
+    Player::Player(int id, int _up, int _down, int _left, int _right, int _bomb, int module) : Component(Type::PLAYER), _id(id)
     {
         UP = GameSystem::getBinding(_up);
         DOWN = GameSystem::getBinding(_down);
         LEFT = GameSystem::getBinding(_left);
         RIGHT = GameSystem::getBinding(_right);
         BOMB = GameSystem::getBinding(_bomb);
+        MODULE = GameSystem::getBinding(module);
         changeBomb = 0;
         changeDown = 0;
         changeUp = 0;
@@ -45,7 +48,7 @@ namespace ecs
         changeRight = 0;
         _blastPower = _defaultBlastPower;
         _speed = _defaultSpeed;
-        _blastPower = _defaultBlastPower;
+        _shootCooldownTimer.setSingleShot(true);
     }
 
     Player::~Player()
@@ -54,10 +57,6 @@ namespace ecs
 
     void Player::handleBonus(const Bonus &bonus)
     {
-        if (bonus.getBonusType() == Bonus::Type::SPEED)
-            _speed += 10;
-        else if (bonus.getBonusType() == Bonus::Type::POWER)
-            _blastPower++;
     }
 
     void Player::moveRight(SceneManager &, std::shared_ptr<IEntity> entity, float)
@@ -168,6 +167,43 @@ namespace ecs
     {
         return _blastPower;
     }
+
+    std::shared_ptr<IEntity> Player::getSpaceModule()
+    {
+        return _spaceModule;
+    }
+
+    void Player::setSpaceModule(std::shared_ptr<IEntity> spaceModule)
+    {
+        _spaceModule = spaceModule;
+    }
+
+    void Player::bindModule(std::shared_ptr<IEntity> entity)
+    {
+        if (_spaceModule == nullptr)
+            return;
+        auto moduleComp = Component::castComponent<SpaceModule>((*_spaceModule)[IComponent::Type::SPACE_MODULE]);
+        auto posPlayer = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+        auto posModule = Component::castComponent<Position>((*_spaceModule)[IComponent::Type::POSITION]);
+        Position posModuleFront(posModule->x + SCALE, posModule->y);
+        Position posPlayerFront(posPlayer->x + SCALE, posPlayer->y);
+
+        if (_isModuleBound) {
+            moduleComp->setBoundMode(SpaceModule::BoundMode::NONE);
+            _isModuleBound = false;
+            return;
+        }
+        float distFront = AVector::getDistance2D(posPlayerFront, *posModule);
+        float distBack = AVector::getDistance2D(posModuleFront, *posPlayer);
+        if (distFront <= maxBoundingDist && distFront <= distBack) {
+            moduleComp->setBoundMode(SpaceModule::BoundMode::FRONT);
+            _isModuleBound = true;
+        } else if (distBack <= maxBoundingDist) {
+            moduleComp->setBoundMode(SpaceModule::BoundMode::BACK);
+            _isModuleBound = true;
+        }
+    }
+
     std::string Player::getUp()
     {
         return UP;
@@ -193,6 +229,11 @@ namespace ecs
         return BOMB;
     }
 
+    std::string Player::getModule()
+    {
+        return MODULE;
+    }
+
     int Player::getTagUp()
     {
         return GameSystem::getTag(UP);
@@ -216,6 +257,11 @@ namespace ecs
     int Player::getTagBomb()
     {
         return GameSystem::getTag(BOMB);
+    }
+
+    int Player::getTagModule()
+    {
+        return GameSystem::getTag(MODULE);
     }
 
     void Player::setUP(std::string _up)
@@ -251,5 +297,23 @@ namespace ecs
     bool Player::isDead() const
     {
         return _isDead;
+    }
+
+    QTimer &Player::getShootCooldownTimer()
+    {
+        return _shootCooldownTimer;
+    }
+
+    bool Player::hasCooldownTimedOut() const
+    {
+        if (_shootCooldownTimer.remainingTime() > 0)
+            return false;
+        else
+            return true;
+    }
+
+    void Player::startShootCooldownTimer(std::chrono::milliseconds msecs)
+    {
+        _shootCooldownTimer.start(msecs);
     }
 }

@@ -47,136 +47,79 @@
 #include "ModelAnim.hpp"
 #include "Window.hpp"
 #include "Trajectory.hpp"
+#include "Enemy.hpp"
+#include "Wall.hpp"
 
 namespace ecs
 {
 
-    std::shared_ptr<Entity> GameSystem::whichEnemy(int mobId, int x, int y)
+    void GameSystem::createEnemy(IScene &scene, Enemy::EnemyType mobId, int x, int y, QUuid id)
     {
-        std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+        if (quint8(mobId) >= quint8(Enemy::EnemyType::NB))
+            throw std::invalid_argument("Enemy factory: invalid enemy type");
+
+        std::shared_ptr<Entity> entity = std::make_shared<Entity>(id);
         std::shared_ptr<Position> position = std::make_shared<Position>(x, y, 0);
         Rectangle rect = {position->x + SCALE / 2, position->y + SCALE / 2, SCALE, SCALE};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
-        entity->addComponent(position).addComponent(hitbox);
+        std::shared_ptr<Enemy> enemyComponent = nullptr;
+        std::shared_ptr<Sprite> sprite = nullptr;
+        std::shared_ptr<Trajectory> trajectory = nullptr;
+        std::shared_ptr<Animation2D> animation = nullptr;
 
-        if (mobId == 1)
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1.png", 0.0f, 2.0f);
-            entity->addComponent(sprite);
-            std::shared_ptr<Trajectory> trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                                          { return -a; }),
-                                                                                  std::function<float(float)>([](float a)
-                                                                                                          { return std::sin(a) * 2; }),
-                                                                                  position);
-            entity->addComponent(trajectory);
-            return entity;
+        if (mobId == Enemy::EnemyType::SCOUT) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1/RedEnemy1SS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(10, 6, Animation2D::AnimationType::LOOP);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return std::sin(a / 10) * 50; }),
+                                                      position);
+        } else if (mobId == Enemy::EnemyType::FIGHTER) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2/RedEnemy2SS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(10, 6, Animation2D::AnimationType::LOOP);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_MISSILE, 5000);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+        } else if (mobId == Enemy::EnemyType::TORPEDO) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3/RedEnemy3SS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(10, 6, Animation2D::AnimationType::LOOP);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_SINUSOIDAL, 4000);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+        } else if (mobId == Enemy::EnemyType::FRIGATE) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4/RedEnemy4SS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
+            enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_CLASSIC, 8000, 8);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
         }
-        if (mobId == 2)
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2.png", 0.0f, 2.0f);
-            entity->addComponent(sprite);
-            return entity;
-        }
-        if (mobId == 3)
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3.png", 0.0f, 2.0f);
-            entity->addComponent(sprite);
-            return entity;
-        }
-        if (mobId == 4)
-        {
-            std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4.png", 0.0f, 2.0f);
-            entity->addComponent(sprite);
-            return entity;
-        }
-        return nullptr;
+        entity->addComponent(position)
+            .addComponent(enemyComponent)
+            .addComponent(hitbox)
+            .addComponent(animation)
+            .addComponent(sprite)
+            .addComponent(trajectory);
+        scene.addEntity(entity);
     }
 
     std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
     {
         int lastLine = 15;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-        std::string path;
+        std::string path = Wall::getCorrespondingPath(mapAround);
 
-        if (mapAround[0] == 'a')
-        {
-            if (mapAround[1] == 'a')
-            {
-                if (mapAround[2] == 'a')
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Center.png";
-                    else
-                        path = "assets/Blue Ground/Top.png";
-                }
-                else
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Right.png";
-                    else
-                        path = "assets/Blue Ground/TopRight.png";
-                }
-            }
-            else
-            {
-                if (mapAround[2] == 'a')
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Left.png";
-                    else
-                        path = "assets/Blue Ground/TopLeft.png";
-                }
-                else
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/LeftRight.png";
-                    else
-                        path = "assets/Blue Ground/TopLeftRight.png";
-                }
-            }
-        }
-        else
-        {
-            if (mapAround[1] == 'a')
-            {
-                if (mapAround[2] == 'a')
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/Bot.png";
-                    else
-                        path = "assets/Blue Ground/TopBot.png";
-                }
-                else
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotRight.png";
-                    else
-                        path = "assets/Blue Ground/TopBotRight.png";
-                }
-            }
-            else
-            {
-                if (mapAround[2] == 'a')
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotLeft.png";
-                    else
-                        path = "assets/Blue Ground/TopBotLeft.png";
-                }
-                else
-                {
-                    if (mapAround[3] == 'a')
-                        path = "assets/Blue Ground/BotLeftRight.png";
-                    else
-                        path = "assets/Blue Ground/TopBotLeftRight.png";
-                }
-            }
-        }
+        std::shared_ptr<Wall> wallComponent = std::make_shared<Wall>();
         std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>(path, 0.0f, 2.0f);
         std::shared_ptr<Position> position = std::make_shared<Position>(x * SCALE, (lastLine - y) * SCALE, 0);
         Rectangle rect = {position->x, position->y, SCALE, SCALE};
         std::shared_ptr<Hitbox> hitbox = std::make_shared<Hitbox>(rect);
-        entity->addComponent(sprite).addComponent(position).addComponent(hitbox);
+        entity->addComponent(sprite)
+            .addComponent(position)
+            .addComponent(wallComponent)
+            .addComponent(hitbox);
         return entity;
     }
 
@@ -216,10 +159,8 @@ namespace ecs
         std::string strCube;
         std::getline(file, lineTwo);
         std::getline(file, lineThree);
-        for (int row = firstRow; row <= lastRow && lineThree != ""; row++)
-        {
-            if (lineTwo[firstLine] == 'a')
-            {
+        for (int row = firstRow; row <= lastRow && lineThree != ""; row++) {
+            if (lineTwo[firstLine] == 'a') {
                 strCube.clear();
                 strCube.push_back('a');
                 strCube.push_back(lineOne[firstLine]);
@@ -227,8 +168,7 @@ namespace ecs
                 strCube.push_back(lineTwo[firstLine + 1]);
                 scene->addEntity(whichWall(strCube, row, firstLine));
             }
-            if (lineTwo[lastLine] == 'a')
-            {
+            if (lineTwo[lastLine] == 'a') {
                 strCube.clear();
                 strCube.push_back(lineTwo[lastLine - 1]);
                 strCube.push_back(lineOne[lastLine]);
@@ -237,25 +177,22 @@ namespace ecs
                 scene->addEntity(whichWall(strCube, row, lastLine));
             }
 
-            for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++)
-            {
+            for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++) {
                 if (lineTwo[line] == '*')
                     ;
-                else if (line != firstLine && line != lastLine && lineTwo[line] == 'a')
-                {
+                else if (line != firstLine && line != lastLine && lineTwo[line] == 'a') {
                     strCube.clear();
                     strCube.push_back(lineTwo[line - 1]);
                     strCube.push_back(lineOne[line]);
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
                     scene->addEntity(whichWall(strCube, row, line));
-                }
-                else if (lineTwo[line] == 'P')
-                    playerSpawns.push_back({row * SCALE, (lastLine - line) * SCALE, 0});
-                else if (lineTwo[line] >= '0' && lineTwo[line] <= '9')
-                {
-                    std::shared_ptr<Entity> entity = whichEnemy(lineTwo[line] - '0', row * SCALE, (lastLine - line) * SCALE);
-                    scene->addEntity(entity);
+                } else if (lineTwo[line] == 'P')
+                    playerSpawns.push_back({(float)row * (float)SCALE, (lastLine - line) * (float)SCALE, 0});
+                else if (lineTwo[line] >= '0' && lineTwo[line] <= '9') {
+                    // std::shared_ptr<Entity> entity = whichEnemy(lineTwo[line] - '0', row * SCALE, (lastLine - line) * SCALE);
+                    // scene->addEntity(entity);
+                    GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - '0'), Position(row * SCALE, (lastLine - line) * SCALE)));
                 }
             }
             lineOne = lineTwo;

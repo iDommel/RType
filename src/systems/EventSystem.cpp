@@ -13,6 +13,7 @@
 #include "EventListener.hpp"
 #include "Window.hpp"
 #include "EventSystem.hpp"
+#include "GraphicSystem.hpp"
 
 namespace ecs
 {
@@ -73,7 +74,11 @@ namespace ecs
     {
         for (auto &it : listener->getMouseMappings()) {
             Vector2 pos = Window::getMousePosition();
+            pos.x /= GraphicSystem::horizontalScale;
+            pos.y /= GraphicSystem::verticalScale;
             if (it.second._pressed && Window::isMouseButtonPressed(it.first)) {
+                std::cout << "Mouse pos: " << pos.x << " " << pos.y << std::endl;
+                std::cout << "Mouse altered pos: " << pos.x / GraphicSystem::horizontalScale << " " << pos.y / GraphicSystem::verticalScale << std::endl;
                 it.second._pressed(manager, pos);
                 break;
             }
@@ -127,17 +132,15 @@ namespace ecs
         std::cerr << "EventSystem destroy" << std::endl;
     }
 
-    void EventSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType scene)
+    void EventSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &scene)
     {
-        std::cerr << "EventSystem onEntityAdded" << std::endl;
         if (entity->hasTag(IEntity::Tags::CALLABLE)) {
-            std::cerr << "Entity added" << (int)scene << std::endl;
             std::shared_ptr<EventListener> listener = Component::castComponent<EventListener>((*entity)[Component::Type::EVT_LISTENER]);
-            _listeners[(int)scene].push_back(listener);
+            _listeners[(int)scene.getSceneType()].push_back(listener);
         }
     }
 
-    void EventSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void EventSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &scene)
     {
         if (entity->hasTag(IEntity::Tags::CALLABLE)) {
             auto currentListeners = _listeners[(int)SceneManager::getCurrentSceneType()];

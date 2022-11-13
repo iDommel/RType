@@ -139,4 +139,11 @@ namespace ecs
             throw TextureError("Texture::operator=: Texture failed to load");
     }
 
+    void Texture::drawPro(Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
+    {
+        if (!_isLoaded)
+            throw TextureError("Texture drawPro: Texture not loaded");
+        DrawTexturePro(*_texture, source, dest, origin, rotation, tint);
+    }
+
 }

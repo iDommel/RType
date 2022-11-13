@@ -9,8 +9,11 @@
 #define MESSAGE_HPP_
 #include <QtGlobal>
 #include <QString>
+#include <QUuid>
 #include <string>
 #include "raylib.h"
+
+#include "SceneManager.hpp"
 namespace ecs
 {
     template <typename E>
@@ -30,10 +33,11 @@ namespace ecs
 
     enum class MessageType : qint8 {
         UNDEFINED = -1,
-        ENTITYMESSAGE,
-        GRAPHICEVENTMESSAGE,
-        NETWORKEVENTMESSAGE,
-        TEXTMESSAGE,
+        ENTITY_MESSAGE,
+        GRAPHIC_EVENT_MESSAGE,
+        NETWORK_EVENT_MESSAGE,
+        TEXT_MESSAGE,
+        SCENE_CHANGE_MESSAGE
     };
 
     enum class EventType : qint8 {
@@ -54,6 +58,8 @@ namespace ecs
         PLAYER,
         ENEMY,
         MISSILE,
+        MODULE,
+        BONUS
     };
 
     enum class KeyState : qint8 {
@@ -75,16 +81,19 @@ namespace ecs
     {
     public:
         Message();
-        /// @brief Constructor for TEXTMESSAGE messages
+        /// @brief Constructor for TEXT_MESSAGE messages
         /// @param str the string to send
         Message(const std::string &);
-        /// @brief Alternate constructor for TEXTMESSAGE messages
+        /// @brief Alternate constructor for TEXT_MESSAGE messages
         /// @param str the string to send
         Message(const char *);
 
         /// @brief Constructor for a NetworkEventMessage
         /// @param the type of the event
         Message(NetworkMessageType);
+        /// @brief Constructor for a SceneTypeMessage
+        /// @param the type of the scene
+        Message(SceneType);
         /// @brief Constructor for KeyboardEvents messages
         /// @param eventType the type of the event
         /// @param keyState the state of the key pressed
@@ -100,27 +109,28 @@ namespace ecs
         /// @brief Constructor for deleting an Entity
         /// @param action, the action to do, should be DELETE
         /// @param id the id of the entity to delete
-        Message(EntityAction, uint64_t);
+        Message(EntityAction, QUuid);
 
         /// @brief Constructor for creating an Entity
         /// @param action, the action to do, should be CREATE
         /// @param id the id of the entity to create
         /// @param type the type of the entity to create
-        Message(EntityAction, uint64_t, EntityType);
+        Message(EntityAction, QUuid, EntityType);
 
         /// @brief Constructor for creating an Entity
         /// @param action, the action to do, should be CREATE
         /// @param id the id of the entity to create
         /// @param type the type of the entity to create
-        /// @param isMe boolean indicating whether the player belongs to the client
-        Message(EntityAction action, uint64_t id, EntityType type, bool isMe);
+        /// @param pos the position of the entity to create
+        /// @param arg remaining argument depending on entity type
+        Message(EntityAction action, QUuid id, EntityType type, Vector2 pos, quint8 arg);
 
         /// @brief Constructor for updating an Entity
         /// @param action, the action to do, should be UPDATE
         /// @param id the id of the entity to update
         /// @param type the type of the entity to update
         /// @param pos the new position of the entity
-        Message(EntityAction, uint64_t, EntityType, Vector2);
+        Message(EntityAction, QUuid, EntityType, Vector2);
 
         ~Message();
         friend QDataStream &operator<<(QDataStream &out, const Message &toWrite);
@@ -136,11 +146,12 @@ namespace ecs
         NetworkMessageType getNetworkMessageType() const;
         CustomMouseButton getMouseButton() const;
         KeyboardKey getKeyboardKey() const;
-        uint64_t getEntityId() const;
+        QUuid getEntityId() const;
         Vector2 getEntityPosition() const;
         std::string getText() const;
         std::pair<QString, unsigned short> getSender() const { return _sender; };
-        bool getIsMe() const { return _isMe; };
+        quint8 getArg() const { return _arg; };
+        qint8 getSceneType() const { return _sceneType; };
 
         void setSender(std::pair<QString, unsigned short> sender) { _sender = sender; };
 
@@ -156,14 +167,15 @@ namespace ecs
         EntityAction _entityAction = EntityAction::UNDEFINED;
         EntityType _entityType = EntityType::UNDEFINED;
         NetworkMessageType _networkEventType = NetworkMessageType::UNDEFINED;
+        qint8 _sceneType = -1;
         KeyboardKey _keyboardKey = KeyboardKey::KEY_NULL;
         CustomMouseButton _mouseButton = CustomMouseButton::UNDEFINED;
         KeyState _keyState = KeyState::UNDEFINED;
         Vector2 _mousePosition = {-1, -1};
         Vector2 _pos = {-1, -1};
         QString _textMessage = "";
-        quint64 _id = 0;
-        bool _isMe = false;
+        QUuid _id;
+        quint8 _arg = 0;
         std::pair<QString, unsigned short> _sender;
     };
 }

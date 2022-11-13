@@ -26,9 +26,12 @@
 #include "ModelAnim.hpp"
 #include "ModelAnimation.hpp"
 #include "ParticleCloud.hpp"
+#include "Animation2D.hpp"
 
 namespace ecs
 {
+    float GraphicSystem::horizontalScale;
+    float GraphicSystem::verticalScale;
 
     GraphicSystem::GraphicSystem()
     {
@@ -36,7 +39,7 @@ namespace ecs
     void GraphicSystem::init(SceneManager &sceneManager)
     {
         std::cerr << "GraphicSystem::init" << std::endl;
-        _window = std::make_unique<Window>(800, 600, FLAG_WINDOW_RESIZABLE, "R-Type");
+        _window = std::make_unique<Window>(::GetScreenWidth(), ::GetScreenHeight(), FLAG_WINDOW_RESIZABLE, "R-Type");
 
         for (auto &scene : sceneManager.getScenes()) {
             for (auto &entity : (*scene.second)[IEntity::Tags::SPRITE_2D])
@@ -50,6 +53,8 @@ namespace ecs
 
     void GraphicSystem::update(SceneManager &sceneManager, uint64_t)
     {
+        horizontalScale = _window->getScreenWidth() / 1920.0f;
+        verticalScale = _window->getScreenHeight() / 1080.0f;
         for (auto &scene : sceneManager.getScenes())
             for (auto &e : (*scene.second)[IEntity::Tags::TEXT])
                 loadText(e);
@@ -80,13 +85,16 @@ namespace ecs
             for (auto &camera : sceneManager.getCurrentScene()[IEntity::Tags::CAMERA_2D]) {
                 auto camComponent = (*camera)[IComponent::Type::CAMERA_2D];
                 auto cam = Component::castComponent<Camera2DComponent>(camComponent);
-                std::cout << "detected camera" << std::endl;
                 cam->getCamera().beginDrawScope();
 
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::SPRITE_2D])
                     displaySprite(e);
                 for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                     displayText(e);
+                if (DISPLAY_HITBOXES) {
+                    for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
+                        displayCollidable(e);
+                }
                 cam->getCamera().endDrawScope();
             }
         } else {
@@ -94,8 +102,6 @@ namespace ecs
                 displaySprite(e);
             for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::TEXT])
                 displayText(e);
-            // for (auto &e : sceneManager.getCurrentScene()[IEntity::Tags::COLLIDABLE])
-            //     displayCollidable(e);
         }
         _window->endDraw();
     }
@@ -105,25 +111,22 @@ namespace ecs
         std::cerr << "GraphicSystem::destroy" << std::endl;
     }
 
-    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity, SceneType)
-    {
-        if (entity->hasTag(IEntity::Tags::SPRITE_2D)) {
-            std::cerr << "loadSprite" << std::endl;
-            loadSprite(entity);
-        }
-        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
-            std::cerr << "loadModel" << std::endl;
-            loadModel(entity);
-        }
-    }
-
-    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity)
+    void GraphicSystem::onEntityAdded(std::shared_ptr<IEntity> entity, IScene &)
     {
         if (entity->hasTag(IEntity::Tags::SPRITE_2D))
-            unloadSprite(entity);
-        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
-            unloadModel(entity);
-        }
+            loadSprite(entity);
+        if (entity->hasTag(IEntity::Tags::RENDERABLE_3D))
+            loadModel(entity);
+    }
+
+    void GraphicSystem::onEntityRemoved(std::shared_ptr<IEntity> entity, IScene &)
+    {
+        // if (entity->hasTag(IEntity::Tags::SPRITE_2D))
+        //     unloadSprite(entity);
+        // if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
+        //     unloadModel(entity);
+        // }
+        //TODO: clear chache elements at a lower rate, unloading everything each time a missile is destroyed is not efficient
     }
 
     void GraphicSystem::loadSprite(std::shared_ptr<IEntity> &entity)
@@ -134,13 +137,6 @@ namespace ecs
             _textures[sprite->getValue()].second++;
         else
             _textures[sprite->getValue()] = std::make_pair(std::make_unique<Texture>(sprite->getValue()), 1);
-        if (sprite->getNbFrame() == 0)
-            return;
-
-        auto spriteRect = Component::castComponent<Rect>((*entity)[IComponent::Type::RECT]);
-
-        spriteRect->width = _textures[sprite->getValue()].first->getWidth() / sprite->getNbFrame();
-        spriteRect->height = _textures[sprite->getValue()].first->getHeight();
     }
 
     void GraphicSystem::unloadSprite(std::shared_ptr<IEntity> &entity)
@@ -160,13 +156,27 @@ namespace ecs
         auto pos = Component::castComponent<Position>(components[1]);
         Vector2 p = {pos->x, pos->y};
 
-        try {
-            auto rect = (*entity)[IComponent::Type::RECT];
-            auto r = Component::castComponent<Rect>(rect);
+        if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
+            auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
+            float width = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
+            float height = _textures.at(sprite->getValue()).first->getHeight();
+            float scaledWidth = width * sprite->getScale() * horizontalScale;
+            float scaledHeight = height * sprite->getScale() * verticalScale;
+            Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
+            Rectangle destRec = {p.x, p.y, scaledWidth, scaledHeight};
+            if (sprite->getRotation() == 180.0f || entity->hasTag(IEntity::Tags::MISSILE))
+                destRec = {p.x + scaledWidth / 2, p.y + scaledHeight / 2, scaledWidth, scaledHeight};
+            Vector2 origin = {width * horizontalScale / 2, height * verticalScale / 2};
+            if (sprite->getOrigin().x != -1) {
+                origin.x = sprite->getOrigin().x;
+                origin.y = sprite->getOrigin().y;
+            }
 
-            _textures.at(sprite->getValue()).first->setRect(r->left, r->top, r->width, r->height);
-            _textures.at(sprite->getValue()).first->drawRec(p);
-        } catch (std::runtime_error &) {
+            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, origin, sprite->getRotation(), WHITE);
+        } else {
+            float width = _textures.at(sprite->getValue()).first->getWidth();
+            float height = _textures.at(sprite->getValue()).first->getHeight();
+            p = {pos->x * horizontalScale, pos->y * verticalScale};
             _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
         }
     }
@@ -191,8 +201,8 @@ namespace ecs
         auto pos = Component::castComponent<Position>(components[1]);
         Vector3 position = {pos->x, pos->y, pos->z};
 
-        if ((*entity)[IComponent::Type::ANIMATION] != nullptr) {
-            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr) {
+            auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
             Vector3 size = {model->getSize(), model->getSize(), model->getSize()};
             _animations[anim->getAnimPath()].first->updateModelAnimation(*_models[model->getModelPath()].first, anim->getCurrentFrame());
             Vector3 x = {1.0f, 0.0f, 0.0f};
@@ -209,6 +219,11 @@ namespace ecs
         auto components = entity->getFilteredComponents({IComponent::Type::HITBOX});
         auto hitbox = Component::castComponent<Hitbox>(components[0]);
 
+        if (entity->hasComponent(IComponent::Type::POSITION)) {
+            auto pos = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+            Rectangle newRect = {pos->x, pos->y, hitbox->getRect().width, hitbox->getRect().height};
+            hitbox->setRect(newRect);
+        }
         if (hitbox->is3D())
             ::DrawBoundingBox(hitbox->getBBox(), RED);
         else
@@ -225,7 +240,7 @@ namespace ecs
             _models[model->getModelPath()].second++;
         else
             _models[model->getModelPath()] = std::make_pair(std::make_unique<Model>(model->getModelPath(), model->getTexturePath()), 1);
-        if ((*entity)[IComponent::Type::ANIMATION] != nullptr)
+        if ((*entity)[IComponent::Type::ANIMATION_3D] != nullptr)
             loadModelAnimation(entity);
         if (boxComponent == nullptr)
             return;
@@ -290,7 +305,7 @@ namespace ecs
         auto text = Component::castComponent<String>(components[0]);
         auto pos = Component::castComponent<Position>(components[1]);
 
-        _texts.at(text->getValue()).first->draw(pos->x, pos->y, text->getFontSize(), BLACK);
+        _texts.at(text->getValue()).first->drawEx({pos->x, pos->y}, text->getFontSize(), 1, BLACK);
     }
 
     void GraphicSystem::loadText(std::shared_ptr<IEntity> &entity)
@@ -315,7 +330,7 @@ namespace ecs
 
     void GraphicSystem::loadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations.find(anim->getAnimPath()) != _animations.end())
             _animations[anim->getAnimPath()].second++;
@@ -328,7 +343,7 @@ namespace ecs
 
     void GraphicSystem::unloadModelAnimation(std::shared_ptr<IEntity> &entity)
     {
-        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION]);
+        auto anim = Component::castComponent<ModelAnim>((*entity)[IComponent::Type::ANIMATION_3D]);
 
         if (_animations[anim->getAnimPath()].second < 1)
             _animations[anim->getAnimPath()].second--;
