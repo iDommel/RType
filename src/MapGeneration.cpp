@@ -264,7 +264,7 @@ namespace ecs
     {
         std::regex enemyRegex("[0-9]");
         int firstRow = 0;
-        int lastRow = 169;
+        int lastRow = 600;
         int firstLine = 0;
         int lastLine = 16;
 
