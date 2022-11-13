@@ -78,6 +78,28 @@ namespace ecs
             boss->addMissileSalvo(Missile::MissileType::E_HOMING_REDBOSS, 4000, 3, 200)
                 .addMissileSalvo(Missile::MissileType::E_REDRAND, 10000, 10, 200)
                 .addMissileSalvo(Missile::MissileType::E_RED2, 900, 1, 0);
+        } else if (type == Boss::BossType::BOSS_2) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/BrownBoss/BrownBossSS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
+            boss = std::make_shared<Boss>(type, 50);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+
+            boss->addMissileSalvo(Missile::MissileType::E_BROWNBOSS1, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_BROWNBOSS, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_BROWNBOSS2, 900, 1, 0);
+        } else if (type == Boss::BossType::BOSS_3) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/GreenBoss/GreenBossSS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
+            boss = std::make_shared<Boss>(type, 50);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+
+            boss->addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS1, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS2, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS3, 900, 1, 0);
         } else
             return;
 
@@ -310,7 +332,7 @@ namespace ecs
                 else if (lineTwo[line] >= '0' && lineTwo[line] <= '9') {
                     GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - '0'), Position(row * SCALE, (lastLine - line) * SCALE)));
                 } else if (lineTwo[line] == 'B')
-                    GameSystem::bosses.push_back(std::make_pair(Boss::BossType::BOSS_1, Position(row * SCALE, (lastLine - line) * SCALE)));
+                    GameSystem::bosses.push_back(std::make_pair(Boss::BossType::BOSS_3, Position(row * SCALE, (lastLine - line) * SCALE)));
             }
             lineOne = lineTwo;
             lineTwo = lineThree;

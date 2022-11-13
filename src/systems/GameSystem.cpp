@@ -129,13 +129,19 @@ namespace ecs
         {Missile::MissileType::E_HOMING_RED4, "assets/Enemies/RedEnemy4/RedEnemy4 - Missile.png"},
         {Missile::MissileType::E_HOMING_RED5, "assets/Enemies/RedEnemy5/RedEnemy5 - Missile.png"},
         {Missile::MissileType::E_HOMING_REDBOSS, "assets/Enemies/RedBoss/RedBoss - Missile1.png"},
+        {Missile::MissileType::E_BROWNBOSS1, "assets/Enemies/BrownBoss/BrownBoss - Missile1.png"},
+        {Missile::MissileType::E_BROWNBOSS2, "assets/Enemies/BrownBoss/BrownBoss - Missile2.png"},
+        {Missile::MissileType::E_HOMING_BROWNBOSS, "assets/Enemies/BrownBoss/BrownBoss - Missile3.png"},
         {Missile::MissileType::E_HOMING_BROWN3, "assets/Enemies/BrownEnemy3/BrownEnemy3 - Missile.png"},
         {Missile::MissileType::E_HOMING_BROWN5, "assets/Enemies/BrownEnemy5/BrownEnemy5 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN1, "assets/Enemies/GreenEnemy1/GreenEnemy1 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN2, "assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN3, "assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN4, "assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png"},
-        {Missile::MissileType::E_HOMING_GREEN5, "assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png"}};
+        {Missile::MissileType::E_HOMING_GREEN5, "assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS1, "assets/Enemies/GreenBoss/GreenBoss - Missile1.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS2, "assets/Enemies/GreenBoss/GreenBoss - Missile2.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS3, "assets/Enemies/GreenBoss/GreenBoss - Missile3.png"}};
     std::map<std::string, std::string> GameSystem::_deathAnimations =
         {
             {"assets/Enemies/RedEnemy1/RedEnemy1SS.png", "assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png"},
@@ -182,6 +188,9 @@ namespace ecs
             {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 4},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 4},
             {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 4},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", 5},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", 5},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", 4},
             {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
@@ -196,7 +205,10 @@ namespace ecs
             {"assets/Enemies/BrownEnemy2/BrownEnemy2 - Destruction.png", 9},
             {"assets/Enemies/BrownEnemy3/BrownEnemy3 - Destruction.png", 10},
             {"assets/Enemies/BrownEnemy4/BrownEnemy4 - Destruction.png", 9},
-            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png", 8}};
+            {"assets/Enemies/BrownEnemy5/BrownEnemy5 - Destruction.png", 8},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", 4},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", 4},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", 4}};
 
     std::map<std::string, float> GameSystem::_spriteRotations =
         {
@@ -219,7 +231,13 @@ namespace ecs
             {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", 180.0F},
             {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 180.0F},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 180.0F},
-            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 90.0F}};
+            {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 90.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", 180.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", 180.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", 180.0F},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", 180.0F},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", 180.0F},
+            {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", 180.0F}};
 
     std::map<std::string, Animation2D::AnimationType> GameSystem::_spriteAnimType = {
         {"assets/Player/ChargedMissile.png", Animation2D::AnimationType::ONCE},
@@ -241,7 +259,13 @@ namespace ecs
         {"assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy2/GreenEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
-        {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP}};
+        {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
         {Missile::MissileType::P_SIMPLE, {[](float dt) { return 10 * dt; }, [](float) { return 0; }}},
@@ -252,6 +276,8 @@ namespace ecs
         {Missile::MissileType::E_BROWN1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN2, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_BROWN4, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_BROWNBOSS1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::E_BROWNBOSS2, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
     };
 
     std::vector<std::string> GameSystem::_playersSprite = {
