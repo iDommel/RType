@@ -126,7 +126,7 @@ namespace ecs
         // if (entity->hasTag(IEntity::Tags::RENDERABLE_3D)) {
         //     unloadModel(entity);
         // }
-        //TODO: clear chache elements at a lower rate, unloading everything each time a missile is destroyed is not efficient
+        // TODO: clear chache elements at a lower rate, unloading everything each time a missile is destroyed is not efficient
     }
 
     void GraphicSystem::loadSprite(std::shared_ptr<IEntity> &entity)
@@ -151,34 +151,30 @@ namespace ecs
 
     void GraphicSystem::displaySprite(std::shared_ptr<IEntity> &entity) const
     {
-        auto components = entity->getFilteredComponents({IComponent::Type::SPRITE, IComponent::Type::POSITION});
-        auto sprite = Component::castComponent<Sprite>(components[0]);
-        auto pos = Component::castComponent<Position>(components[1]);
-        Vector2 p = {pos->x, pos->y};
+        auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
+        auto position = Component::castComponent<Position>((*entity)[IComponent::Type::POSITION]);
+        std::shared_ptr<Animation2D> anim = nullptr;
+        if (entity->hasComponent(IComponent::Type::ANIMATION_2D))
+            anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
 
-        if (entity->hasTag(IEntity::Tags::ANIMATED_2D)) {
-            auto anim = Component::castComponent<Animation2D>((*entity)[IComponent::Type::ANIMATION_2D]);
-            float width = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
-            float height = _textures.at(sprite->getValue()).first->getHeight();
-            float scaledWidth = width * sprite->getScale() * horizontalScale;
-            float scaledHeight = height * sprite->getScale() * verticalScale;
-            Rectangle sourceRec = {0 + (width * (anim->getCurrentFrame() - 1)), 0, width, height};
-            Rectangle destRec = {p.x, p.y, scaledWidth, scaledHeight};
-            if (sprite->getRotation() == 180.0f || entity->hasTag(IEntity::Tags::MISSILE))
-                destRec = {p.x + scaledWidth / 2, p.y + scaledHeight / 2, scaledWidth, scaledHeight};
-            Vector2 origin = {width * horizontalScale / 2, height * verticalScale / 2};
-            if (sprite->getOrigin().x != -1) {
-                origin.x = sprite->getOrigin().x;
-                origin.y = sprite->getOrigin().y;
-            }
-
-            _textures.at(sprite->getValue()).first->drawPro(sourceRec, destRec, origin, sprite->getRotation(), WHITE);
-        } else {
-            float width = _textures.at(sprite->getValue()).first->getWidth();
-            float height = _textures.at(sprite->getValue()).first->getHeight();
-            p = {pos->x * horizontalScale, pos->y * verticalScale};
-            _textures.at(sprite->getValue()).first->drawEx(p, sprite->getRotation(), sprite->getScale(), WHITE);
+        float textureWidth = _textures.at(sprite->getValue()).first->getWidth();
+        float textureHeight = _textures.at(sprite->getValue()).first->getHeight();
+        if (anim) {
+            textureWidth = _textures.at(sprite->getValue()).first->getWidth() / anim->getNbFrames();
         }
+        Vector2 scaledPos = {position->x * horizontalScale, position->y * verticalScale};
+        float scaledWidth = textureWidth * horizontalScale * sprite->getScale();
+        float scaledHeight = textureHeight * verticalScale * sprite->getScale();
+        Vector2 origin = {scaledWidth / 2, scaledHeight / 2};
+
+        Rectangle source = {0, 0, textureWidth, textureHeight};
+        if (anim) {
+            source.x = textureWidth * (anim->getCurrentFrame() - 1);
+        }
+        Rectangle dest = {scaledPos.x + origin.x, scaledPos.y + origin.y, scaledWidth, scaledHeight};
+        if (anim && !entity->hasComponent(IComponent::Type::EVT_LISTENER))
+            dest = {scaledPos.x + origin.x / sprite->getScale(), scaledPos.y + origin.y / sprite->getScale(), scaledWidth, scaledHeight};
+        _textures.at(sprite->getValue()).first->drawPro(source, dest, origin, sprite->getRotation(), WHITE);
     }
 
     void GraphicSystem::displayParticles(std::shared_ptr<IEntity> &entity) const

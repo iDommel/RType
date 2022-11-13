@@ -402,7 +402,7 @@ namespace ecs
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
                          camPos->y - validBoundingZone,
-                         camPos->x + 1920 + validBoundingZone, // TODO: use cam or window size maybe
+                         camPos->x + 1920 + validBoundingZone,  // TODO: use cam or window size maybe
                          camPos->y + 1080 + validBoundingZone);
 
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities())
@@ -421,11 +421,7 @@ namespace ecs
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
-        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END) // TODO: improve ending of the server
-            sceneManager.setShouldClose(true);
-        if (sceneManager.getCurrentSceneType() == SceneType::SPLASH)
         {
-            timeElasped += dt;
             if (timeElasped > SPLASH_TIMEOUT)
             {
                 if (Core::networkRole == NetworkRole::CLIENT)
@@ -1222,7 +1218,7 @@ namespace ecs
     std::unique_ptr<IScene> GameSystem::createEndMenu()
     {
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createEndMenu, this), SceneType::END);
-        std::shared_ptr<Entity> background = createImage("assets/Background/Background.png", Position(960, 540), 0, 0);
+        std::shared_ptr<Entity> background = createImage("assets/Background/Background.png", Position(0, 0), 0, 0);
         std::shared_ptr<Entity> endText = createText("End", Position(800, 50), 50, "assets/Font/techno_hideo.ttf");
         std::shared_ptr<Entity> quitButton = createButton("assets/MainMenu/Quit/quitButton.png", Position(843, 550), 274, 91, 4, Animation2D::AnimationType::FIXED, 0.0f, 2.4f);
 
@@ -1278,7 +1274,7 @@ namespace ecs
         auto sprite = Component::castComponent<Sprite>((*entity)[IComponent::Type::SPRITE]);
         std::shared_ptr<Position> newPos = std::make_shared<Position>(pos->x, pos->y);
         std::shared_ptr<Sprite> deathSpriteSheet = std::make_shared<Sprite>(_deathAnimations[sprite->getValue()], 180.0f, 2.0f);
-        std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_deathAnimationCount[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
+        std::shared_ptr<Animation2D> deathAnimation = std::make_shared<Animation2D>(_spriteFrameCounts[_deathAnimations[sprite->getValue()]], 4, Animation2D::AnimationType::ONCE);
         std::shared_ptr<SoundComponent> sound = std::make_shared<SoundComponent>(soundFile);
 
         deathEntity->addComponent(deathAnimation)

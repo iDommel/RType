@@ -248,7 +248,6 @@ namespace ecs
         static std::vector<std::string> _playersSprite;
         static std::vector<std::string> _modulesSprite;
         static std::map<std::string, std::string> _deathAnimations;
-        static std::map<std::string, int> _deathAnimationCount;
 
         CollideSystem _collideSystem;
         AISystem _aiSystem;

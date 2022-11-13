@@ -77,8 +77,6 @@ namespace ecs
             pos.x /= GraphicSystem::horizontalScale;
             pos.y /= GraphicSystem::verticalScale;
             if (it.second._pressed && Window::isMouseButtonPressed(it.first)) {
-                std::cout << "Mouse pos: " << pos.x << " " << pos.y << std::endl;
-                std::cout << "Mouse altered pos: " << pos.x / GraphicSystem::horizontalScale << " " << pos.y / GraphicSystem::verticalScale << std::endl;
                 it.second._pressed(manager, pos);
                 break;
             }
