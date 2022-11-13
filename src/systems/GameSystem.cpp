@@ -358,10 +358,9 @@ namespace ecs
         else
             lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
-                         camPos->y - validBoundingZone,
-                         camPos->x + 1920 + validBoundingZone,  // TODO: use cam or window size maybe
-                         camPos->y + 1080 + validBoundingZone);
-
+            camPos->y - validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,
+            camPos->y + 1080 + validBoundingZone);
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
             auto component = (*entity)[IComponent::Type::POSITION];
             if (component == nullptr)
@@ -372,6 +371,34 @@ namespace ecs
                 sceneManager.getCurrentScene().removeEntity(entity);
             }
         }
+    }
+
+    void GameSystem::activateInboundsEntities(ecs::SceneManager &manager, std::shared_ptr<ecs::Position> camPos)
+    {
+        const int validBoundingZone = VALID_BORDER_SIZE;
+
+        if (GameSystem::enemies.size() == 0)
+            return;
+        auto rect = Rect(camPos->x - validBoundingZone,
+            camPos->y - validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,
+            camPos->y + 1080 + validBoundingZone);
+        std::vector<ecs::Position> toErasePos;
+        for (auto &enemy : GameSystem::enemies) {
+            Position pos(enemy.second.x, enemy.second.y, 0);
+            if (rect.contains(pos.x, pos.y)) {
+                QUuid id = QUuid::createUuid();
+                GameSystem::createEnemy(manager.getScene(SceneType::GAME), enemy.first, pos.x, pos.y, id);
+                writeMsg(Message(EntityAction::CREATE, id, EntityType::ENEMY, enemy.second.getVector2(), quint8(enemy.first)));
+                toErasePos.push_back(pos);
+            }
+        }
+        for (auto &pos : toErasePos)
+            for (auto it = GameSystem::enemies.begin(); it != GameSystem::enemies.end(); ++it)
+                if (it->second.x == pos.x && it->second.y == pos.y) {
+                    GameSystem::enemies.erase(it);
+                    break;
+                }
     }
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
@@ -415,8 +442,10 @@ namespace ecs
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
             *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
             cameraComp->getCamera().update();
-            if (Core::networkRole == NetworkRole::SERVER)
+            if (Core::networkRole == NetworkRole::SERVER) {
                 purgeAroundCameraEntities(sceneManager, dt, pos);
+                activateInboundsEntities(sceneManager, pos);
+            }
         }
     }
 
@@ -1089,6 +1118,8 @@ namespace ecs
         scene->addEntities({background, endText, quitButton});
         return (scene);
     }
+
+    //TODO: create playAnotherLevel menu
 
     std::unique_ptr<IScene> GameSystem::createGameScene()
     {
