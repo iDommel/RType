@@ -16,7 +16,7 @@
 #include "Text.hpp"
 #include "ModelAnimation.hpp"
 
-#define DISPLAY_HITBOXES true
+#define DISPLAY_HITBOXES false
 namespace ecs
 {
 

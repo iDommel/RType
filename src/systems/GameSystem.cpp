@@ -59,6 +59,8 @@ namespace ecs
 #define PURGE_FREQUENCY 200
 // Size of valib area around camera in px
 #define VALID_BORDER_SIZE 100
+// Camera speed modifier, total is based on player speed
+#define CAM_VEL_SCALE 0.2f
 
     const std::string GameSystem::getBinding(int keyboard)
     {
@@ -388,18 +390,13 @@ namespace ecs
         }
     }
 
-    void GameSystem::purgeAroundCameraEntities(ecs::SceneManager &sceneManager, uint64_t dt, std::shared_ptr<ecs::Position> camPos)
+    void GameSystem::purgeAroundCameraEntities(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Position> camPos)
     {
         const int validBoundingZone = VALID_BORDER_SIZE;
-        static uint64_t lastPurge = 0;
-        if ((lastPurge += dt) < PURGE_FREQUENCY)
-            return;
-        else
-            lastPurge = 0;
         auto rect = Rect(camPos->x - validBoundingZone,
-                         camPos->y - validBoundingZone,
-                         camPos->x + 1920 + validBoundingZone,
-                         camPos->y + 1080 + validBoundingZone);
+            camPos->y - validBoundingZone,
+            camPos->x + 1920 + validBoundingZone,
+            camPos->y + 1080 + validBoundingZone);
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
             auto component = (*entity)[IComponent::Type::POSITION];
             if (component == nullptr)
@@ -415,15 +412,15 @@ namespace ecs
     void GameSystem::activateInboundsEntities(ecs::SceneManager &manager, std::shared_ptr<ecs::Position> camPos)
     {
         const int validBoundingZone = VALID_BORDER_SIZE;
-
-        if (GameSystem::enemies.size() == 0 && GameSystem::bosses.size() == 0)
-            return;
         auto rect = Rect(camPos->x - validBoundingZone,
                          camPos->y - validBoundingZone,
                          camPos->x + 1920 + validBoundingZone,
                          camPos->y + 1080 + validBoundingZone);
         std::vector<ecs::Position> toErasePos;
         std::vector<ecs::Position> toErasePosBoss;
+
+        if (GameSystem::enemies.size() == 0 && GameSystem::bosses.size() == 0)
+                    return;
         for (auto &enemy : GameSystem::enemies) {
             Position pos(enemy.second.x, enemy.second.y, 0);
             if (rect.contains(pos.x, pos.y)) {
@@ -456,9 +453,20 @@ namespace ecs
                 }
     }
 
+    void GameSystem::manageCamWhileBossing(ecs::SceneManager &sceneManager, std::shared_ptr<ecs::Velocity> vel)
+    {
+        auto maybeBoss = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+        if (maybeBoss.size() == 0)
+            vel->x = Player::_defaultSpeed * CAM_VEL_SCALE;
+        else
+            vel->x = 0;
+    }
+
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
-        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)  // TODO: improve ending of the server
+        static uint64_t lastPurge = 0;
+
+        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)// TODO: improve ending of the server
             sceneManager.setShouldClose(true);
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
             timeElasped += dt;
@@ -496,12 +504,14 @@ namespace ecs
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
             auto pos = Component::castComponent<Position>((*camera)[IComponent::Type::POSITION]);
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
-            *pos = (*pos) + (*vel) * (float)(dt / 1000.0f);
-            cameraComp->getCamera().update();
-            if (Core::networkRole == NetworkRole::SERVER) {
-                purgeAroundCameraEntities(sceneManager, dt, pos);
+            if (Core::networkRole == NetworkRole::SERVER && (lastPurge += dt) >= PURGE_FREQUENCY) {
+                lastPurge = 0;
+                purgeAroundCameraEntities(sceneManager, pos);
                 activateInboundsEntities(sceneManager, pos);
             }
+            manageCamWhileBossing(sceneManager, vel);
+            *pos = (*pos) + ((*vel) * (float)(dt / 1000.0f));
+            cameraComp->getCamera().update();
         }
     }
 
@@ -1092,6 +1102,7 @@ namespace ecs
     void GameSystem::updateBosses(SceneManager &sceneManager, uint64_t dt)
     {
         auto bosses = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+        std::vector<std::shared_ptr<IEntity>> bossesToDestroy;
 
         for (auto &boss : bosses) {
             auto bossComp = Component::castComponent<Boss>((*boss)[IComponent::Type::BOSS]);
@@ -1113,6 +1124,7 @@ namespace ecs
                             continue;
                         Message bossMsg(EntityAction::DELETE, boss->getId());
                         writeMsg(bossMsg);
+                        bossesToDestroy.push_back(boss);
                     }
                 }
             }
@@ -1125,6 +1137,9 @@ namespace ecs
                 Message msg(EntityAction::CREATE, missile->getId(), EntityType::MISSILE, missilePos->getVector2(), quint8(projectile->getMissileType()));
                 writeMsg(msg);
             }
+        }
+        for (auto &boss : bossesToDestroy) {
+            sceneManager.getCurrentScene().removeEntity(boss);
         }
     }
 
@@ -1239,7 +1254,8 @@ namespace ecs
     {
         std::shared_ptr<Entity> cam = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
-        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.2f, 0);
+        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * CAM_VEL_SCALE, 0);
+
         std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
 
         cam->addComponent(camera)
@@ -1265,6 +1281,7 @@ namespace ecs
         entity->addComponent(sound);
         scene.addEntity(entity);
     }
+
     void GameSystem::createDeathAnimation(IScene &scene, std::shared_ptr<IEntity> entity, const std::string &soundFile, QUuid id)
     {
         std::shared_ptr<Entity> deathEntity = std::make_shared<Entity>(id);
