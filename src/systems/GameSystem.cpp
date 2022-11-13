@@ -232,8 +232,8 @@ namespace ecs
         {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP}};
 
     std::map<Missile::MissileType, std::pair<std::function<float(float)>, std::function<float(float)>>> GameSystem::_missilesTrajectories = {
-        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
-        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 7 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_SIMPLE, {[](float dt) { return 10 * dt; }, [](float) { return 0; }}},
+        {Missile::MissileType::P_CONDENSED, {[](float dt) { return 10 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_RED2, {[](float dt) { return -8 * dt; }, [](float) { return 0; }}},
         {Missile::MissileType::E_RED3, {[](float dt) { return -7 * dt; }, [](float dt) { return sin(dt / 10) * (50 + dt); }}},
         {Missile::MissileType::E_BROWN1, {[](float dt) { return -7 * dt; }, [](float) { return 0; }}},
@@ -1132,7 +1132,7 @@ namespace ecs
     {
         std::shared_ptr<Entity> cam = std::make_shared<Entity>();
         std::shared_ptr<Position> pos = std::make_shared<Position>(x, y);
-        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.1f, 0);
+        std::shared_ptr<Velocity> vel = std::make_shared<Velocity>(Player::_defaultSpeed * 0.2f, 0);
         std::shared_ptr<Camera2DComponent> camera = std::make_shared<Camera2DComponent>(pos);
 
         cam->addComponent(camera)
