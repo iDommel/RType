@@ -47,6 +47,7 @@ namespace ecs
             TRAJECTORY,
             MISSILE,
             ENEMY,
+            BOSS,
             SPACE_MODULE,
             WALL,
             NB_TAGS

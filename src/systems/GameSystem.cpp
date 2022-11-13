@@ -53,6 +53,7 @@ namespace ecs
 {
     std::vector<Position> GameSystem::playerSpawns;
     std::vector<std::pair<Enemy::EnemyType, Position>> GameSystem::enemies;
+    std::vector<std::pair<Boss::BossType, Position>> GameSystem::bosses;
 
 // Purge of out of bounds entities frequency in ms
 #define PURGE_FREQUENCY 200
@@ -377,13 +378,14 @@ namespace ecs
     {
         const int validBoundingZone = VALID_BORDER_SIZE;
 
-        if (GameSystem::enemies.size() == 0)
+        if (GameSystem::enemies.size() == 0 && GameSystem::bosses.size() == 0)
             return;
         auto rect = Rect(camPos->x - validBoundingZone,
             camPos->y - validBoundingZone,
             camPos->x + 1920 + validBoundingZone,
             camPos->y + 1080 + validBoundingZone);
         std::vector<ecs::Position> toErasePos;
+        std::vector<ecs::Position> toErasePosBoss;
         for (auto &enemy : GameSystem::enemies) {
             Position pos(enemy.second.x, enemy.second.y, 0);
             if (rect.contains(pos.x, pos.y)) {
@@ -393,10 +395,25 @@ namespace ecs
                 toErasePos.push_back(pos);
             }
         }
+        for (auto &boss : GameSystem::bosses) {
+            Position pos(boss.second.x, boss.second.y, 0);
+            if (rect.contains(pos.x, pos.y)) {
+                QUuid id = QUuid::createUuid();
+                GameSystem::createBoss(manager.getScene(SceneType::GAME), boss.first, boss.second, id);
+                writeMsg(Message(EntityAction::CREATE, id, EntityType::BOSS, boss.second.getVector2(), quint8(boss.first)));
+                toErasePosBoss.push_back(pos);
+            }
+        }
         for (auto &pos : toErasePos)
             for (auto it = GameSystem::enemies.begin(); it != GameSystem::enemies.end(); ++it)
                 if (it->second.x == pos.x && it->second.y == pos.y) {
                     GameSystem::enemies.erase(it);
+                    break;
+                }
+        for (auto &pos : toErasePosBoss)
+            for (auto it = GameSystem::bosses.begin(); it != GameSystem::bosses.end(); ++it)
+                if (it->second.x == pos.x && it->second.y == pos.y) {
+                    GameSystem::bosses.erase(it);
                     break;
                 }
     }
@@ -428,6 +445,7 @@ namespace ecs
             updateModules(sceneManager, dt);
             updateProjectiles(sceneManager, dt);
             updateEnemies(sceneManager, dt);
+            updateBosses(sceneManager, dt);
         } else if (Core::networkRole == NetworkRole::CLIENT) {
             for (auto &animation : sceneManager.getCurrentScene()[IEntity::Tags::ANIMATED_2D]) {
                 auto animationComp = Component::castComponent<Animation2D>((*animation)[IComponent::Type::ANIMATION_2D]);
@@ -1018,6 +1036,46 @@ namespace ecs
         }
         for (auto &enemy : enemiesToDestroy) {
             sceneManager.getCurrentScene().removeEntity(enemy);
+        }
+    }
+
+    void GameSystem::updateBosses(SceneManager &sceneManager, uint64_t dt)
+    {
+        auto bosses = sceneManager.getCurrentScene()[IEntity::Tags::BOSS];
+
+        for (auto &boss : bosses) {
+            auto bossComp = Component::castComponent<Boss>((*boss)[IComponent::Type::BOSS]);
+            auto bossPos = Component::castComponent<Position>((*boss)[IComponent::Type::POSITION]);
+            auto hitbox = Component::castComponent<Hitbox>((*boss)[IComponent::Type::HITBOX]);
+
+            Rectangle newRect = {bossPos->x, bossPos->y, hitbox->getRect().width, hitbox->getRect().height};
+            hitbox->setRect(newRect);
+            Position pos(bossPos->x - SCALE, bossPos->y + (SCALE / 4));
+            for (auto &collider : _collideSystem.getColliders(boss)) {
+                if (collider->hasTag(IEntity::Tags::MISSILE)) {
+                    auto missile = Component::castComponent<Missile>((*collider)[IComponent::Type::MISSILE]);
+                    if (missile->getMissileType() == Missile::MissileType::P_SIMPLE ||
+                        missile->getMissileType() == Missile::MissileType::P_CONDENSED) {
+                        bossComp->getTankedMissile()++;
+                        sceneManager.getCurrentScene().removeEntity(collider);
+                        Message missileMsg(EntityAction::DELETE, collider->getId());
+                        writeMsg(missileMsg);
+                        if (bossComp->getTankedMissile() < bossComp->getTankMax())
+                            continue;
+                        Message bossMsg(EntityAction::DELETE, boss->getId());
+                        writeMsg(bossMsg);
+                    }
+                }
+            }
+
+            auto missile = bossComp->shoot(sceneManager, boss);
+
+            if (missile != nullptr) {
+                auto missilePos = Component::castComponent<Position>((*missile)[IComponent::Type::POSITION]);
+                auto projectile = Component::castComponent<Missile>((*missile)[IComponent::Type::MISSILE]);
+                Message msg(EntityAction::CREATE, missile->getId(), EntityType::MISSILE, missilePos->getVector2(), quint8(projectile->getMissileType()));
+                writeMsg(msg);
+            }
         }
     }
 
