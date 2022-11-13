@@ -183,7 +183,7 @@ namespace ecs
 
     std::shared_ptr<Entity> GameSystem::whichWall(std::string mapAround, int x, int y)
     {
-        int lastLine = 15;
+        int lastLine = 16;
         std::shared_ptr<Entity> entity = std::make_shared<Entity>();
         std::string path = Wall::getCorrespondingPath(mapAround);
 
@@ -205,7 +205,7 @@ namespace ecs
         int firstRow = 0;
         int lastRow = 169;
         int firstLine = 0;
-        int lastLine = 15;
+        int lastLine = 16;
 
         std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::bind(&GameSystem::createGameScene, this), SceneType::GAME);
 
