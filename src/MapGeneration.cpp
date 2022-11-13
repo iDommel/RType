@@ -78,6 +78,28 @@ namespace ecs
             boss->addMissileSalvo(Missile::MissileType::E_HOMING_REDBOSS, 4000, 3, 200)
                 .addMissileSalvo(Missile::MissileType::E_REDRAND, 10000, 10, 200)
                 .addMissileSalvo(Missile::MissileType::E_RED2, 900, 1, 0);
+        } else if (type == Boss::BossType::BOSS_2) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/BrownBoss/BrownBossSS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
+            boss = std::make_shared<Boss>(type, 50);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+
+            boss->addMissileSalvo(Missile::MissileType::E_BROWNBOSS1, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_BROWNBOSS, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_BROWNBOSS2, 900, 1, 0);
+        } else if (type == Boss::BossType::BOSS_3) {
+            sprite = std::make_shared<Sprite>("assets/Enemies/GreenBoss/GreenBossSS.png", 180.0f, 2.0f);
+            animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
+            boss = std::make_shared<Boss>(type, 50);
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
+                                                      position);
+
+            boss->addMissileSalvo(Missile::MissileType::E_BROWNBOSS1, 4000, 3, 200)
+                .addMissileSalvo(Missile::MissileType::E_HOMING_BROWNBOSS, 10000, 10, 200)
+                .addMissileSalvo(Missile::MissileType::E_BROWNBOSS2, 900, 1, 0);
         } else
             return;
 
