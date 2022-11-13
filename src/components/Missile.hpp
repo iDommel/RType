@@ -40,6 +40,9 @@ namespace ecs
             E_HOMING_GREEN3,
             E_HOMING_GREEN4,
             E_HOMING_GREEN5,
+            E_HOMING_GREENBOSS1,
+            E_HOMING_GREENBOSS2,
+            E_HOMING_GREENBOSS3,
             NB_MISSILE /// End of missile types
         };
         Missile(MissileType type, bool enemy = false);

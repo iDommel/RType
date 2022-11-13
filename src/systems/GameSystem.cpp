@@ -138,7 +138,10 @@ namespace ecs
         {Missile::MissileType::E_HOMING_GREEN2, "assets/Enemies/GreenEnemy2/GreenEnemy2 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN3, "assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png"},
         {Missile::MissileType::E_HOMING_GREEN4, "assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png"},
-        {Missile::MissileType::E_HOMING_GREEN5, "assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png"}};
+        {Missile::MissileType::E_HOMING_GREEN5, "assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS1, "assets/Enemies/GreenBoss/GreenBoss - Missile1.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS2, "assets/Enemies/GreenBoss/GreenBoss - Missile2.png"},
+        {Missile::MissileType::E_HOMING_GREENBOSS3, "assets/Enemies/GreenBoss/GreenBoss - Missile3.png"}};
     std::map<std::string, std::string> GameSystem::_deathAnimations =
         {
             {"assets/Enemies/RedEnemy1/RedEnemy1SS.png", "assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png"},
@@ -182,6 +185,9 @@ namespace ecs
             {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 4},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 4},
             {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 4},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", 5},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", 5},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", 4},
             {"assets/Enemies/RedEnemy1/RedEnemy1 - Destruction.png", 10},
             {"assets/Enemies/RedEnemy2/RedEnemy2 - Destruction.png", 9},
             {"assets/Enemies/RedEnemy3/RedEnemy3 - Destruction.png", 8},
@@ -223,6 +229,9 @@ namespace ecs
             {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", 180.0F},
             {"assets/Enemies/GreenEnemy4/GreenEnemy4 - Missile.png", 180.0F},
             {"assets/Enemies/GreenEnemy5/GreenEnemy5 - Missile.png", 90.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", 180.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", 180.0F},
+            {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", 180.0F},
             {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", 180.0F},
             {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", 180.0F},
             {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", 180.0F}};
@@ -248,6 +257,9 @@ namespace ecs
         {"assets/Enemies/GreenEnemy3/GreenEnemy3 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy2/GreenEnemy4 - Missile.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/GreenEnemy4/GreenEnemy5 - Missile.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile1.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile2.png", Animation2D::AnimationType::LOOP},
+        {"assets/Enemies/GreenBoss/GreenBoss - Missile3.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/BrownBoss/BrownBoss - Missile1.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/BrownBoss/BrownBoss - Missile2.png", Animation2D::AnimationType::LOOP},
         {"assets/Enemies/BrownBoss/BrownBoss - Missile3.png", Animation2D::AnimationType::LOOP}};
