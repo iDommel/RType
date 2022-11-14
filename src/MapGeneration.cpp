@@ -51,7 +51,6 @@
 #include "Wall.hpp"
 #include "Boss.hpp"
 
-
 namespace ecs
 {
     void GameSystem::createBoss(IScene &scene, Boss::BossType type, Position pos, QUuid id)
@@ -68,61 +67,55 @@ namespace ecs
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<Animation2D> animation = nullptr;
 
-        if (type == Boss::BossType::BOSS_1)
-        {
+        if (type == Boss::BossType::BOSS_1) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedBoss/RedBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
-            boss = std::make_shared<Boss>(type, 1);
+            boss = std::make_shared<Boss>(type, 25);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) {
-                                                            static const float xTarget = 500;
-                                                            if (-a > -xTarget)
-                                                                return (-a);
-                                                            return (-xTarget);
-                                                        }),
+                                                          static const float xTarget = 500;
+                                                          if (-a > -xTarget)
+                                                              return (-a);
+                                                          return (-xTarget);
+                                                      }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
             boss->addMissileSalvo(Missile::MissileType::E_HOMING_REDBOSS, 4000, 3, 200)
                 .addMissileSalvo(Missile::MissileType::E_REDRAND, 10000, 10, 200)
                 .addMissileSalvo(Missile::MissileType::E_RED2, 900, 1, 0);
-        }
-        else if (type == Boss::BossType::BOSS_2)
-        {
+        } else if (type == Boss::BossType::BOSS_2) {
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownBoss/BrownBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
-            boss = std::make_shared<Boss>(type, 50);
+            boss = std::make_shared<Boss>(type, 25);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) {
-                                                            static const float xTarget = 500;
-                                                            if (-a > -xTarget)
-                                                                return (-a);
-                                                            return (-xTarget);
-                                                        }),
+                                                          static const float xTarget = 500;
+                                                          if (-a > -xTarget)
+                                                              return (-a);
+                                                          return (-xTarget);
+                                                      }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
             boss->addMissileSalvo(Missile::MissileType::E_BROWNBOSS1, 4000, 3, 200)
                 .addMissileSalvo(Missile::MissileType::E_HOMING_BROWNBOSS, 10000, 10, 200)
                 .addMissileSalvo(Missile::MissileType::E_BROWNBOSS2, 900, 1, 0);
-        }
-        else if (type == Boss::BossType::BOSS_3)
-        {
+        } else if (type == Boss::BossType::BOSS_3) {
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenBoss/GreenBossSS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
-            boss = std::make_shared<Boss>(type, 50);
+            boss = std::make_shared<Boss>(type, 25);
             trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) {
-                                                            static const float xTarget = 500;
-                                                            if (-a > -xTarget)
-                                                                return (-a);
-                                                            return (-xTarget);
-                                                        }),
+                                                          static const float xTarget = 500;
+                                                          if (-a > -xTarget)
+                                                              return (-a);
+                                                          return (-xTarget);
+                                                      }),
                                                       std::function<float(float)>([](float a) { return 0; }),
                                                       position);
 
             boss->addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS1, 4000, 3, 200)
                 .addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS2, 10000, 10, 200)
                 .addMissileSalvo(Missile::MissileType::E_HOMING_GREENBOSS3, 900, 1, 0);
-        }
-        else
+        } else
             return;
 
         entity->addComponent(position)
@@ -148,169 +141,110 @@ namespace ecs
         std::shared_ptr<Trajectory> trajectory = nullptr;
         std::shared_ptr<Animation2D> animation = nullptr;
 
-        if (mobId == Enemy::EnemyType::REDSCOUT)
-        {
+        if (mobId == Enemy::EnemyType::REDSCOUT) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy1/RedEnemy1SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(10, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_RED1, 5500);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return std::sin(a / 10) * 50; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return std::sin(a / 10) * 50; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::REDFIGHTER)
-        {
+        } else if (mobId == Enemy::EnemyType::REDFIGHTER) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy2/RedEnemy2SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(10, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_RED2, 3000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::REDTORPEDO)
-        {
+        } else if (mobId == Enemy::EnemyType::REDTORPEDO) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy3/RedEnemy3SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(10, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_RED3, 4000, 3);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::REDFRIGATE)
-        {
+        } else if (mobId == Enemy::EnemyType::REDFRIGATE) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy4/RedEnemy4SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(12, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_RED4, 6000, 8);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::REDTURRET)
-        {
+        } else if (mobId == Enemy::EnemyType::REDTURRET) {
             sprite = std::make_shared<Sprite>("assets/Enemies/RedEnemy5/RedEnemy5.png", 0.0f, 2.0f);
             animation = std::make_shared<Animation2D>(1, 6, Animation2D::AnimationType::FIXED);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_RED5, 5000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::BROWNSCOUT)
-        {
+        } else if (mobId == Enemy::EnemyType::BROWNSCOUT) {
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownEnemy1/BrownEnemy1SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_BROWN1, 8000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return std::sin(a / 10) * 3; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return std::sin(a / 10) * 3; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::BROWNFIGHTER)
-        {
+        } else if (mobId == Enemy::EnemyType::BROWNFIGHTER) {
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownEnemy2/BrownEnemy2SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_BROWN2, 5000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::BROWNTORPEDO)
-        {
+        } else if (mobId == Enemy::EnemyType::BROWNTORPEDO) {
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownEnemy3/BrownEnemy3SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_BROWN3, 4000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::BROWNFRIGATE)
-        {
+        } else if (mobId == Enemy::EnemyType::BROWNFRIGATE) {
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownEnemy4/BrownEnemy4SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_BROWN4, 8000, 8);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::BROWNTURRET)
-        {
+        } else if (mobId == Enemy::EnemyType::BROWNTURRET) {
             sprite = std::make_shared<Sprite>("assets/Enemies/BrownEnemy5/BrownEnemy5.png", 0.0f, 2.0f);
             animation = std::make_shared<Animation2D>(1, 6, Animation2D::AnimationType::FIXED);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_BROWN5, 5000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::GREENSCOUT)
-        {
+        } else if (mobId == Enemy::EnemyType::GREENSCOUT) {
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenEnemy1/GreenEnemy1SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_GREEN1, 8000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -1 * (std::sin(a / 10) * 10 + a); }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return std::sin(a / 10) * 5; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -1 * (std::sin(a / 10) * 10 + a); }),
+                                                      std::function<float(float)>([](float a) { return std::sin(a / 10) * 5; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::GREENFIGHTER)
-        {
+        } else if (mobId == Enemy::EnemyType::GREENFIGHTER) {
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenEnemy2/GreenEnemy2SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_GREEN2, 5000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::GREENTORPEDO)
-        {
+        } else if (mobId == Enemy::EnemyType::GREENTORPEDO) {
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenEnemy3/GreenEnemy3SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_GREEN3, 4000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::GREENFRIGATE)
-        {
+        } else if (mobId == Enemy::EnemyType::GREENFRIGATE) {
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenEnemy4/GreenEnemy4SS.png", 180.0f, 2.0f);
             animation = std::make_shared<Animation2D>(8, 6, Animation2D::AnimationType::LOOP);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_GREEN4, 8000, 8);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return -a; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return -a; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
-        }
-        else if (mobId == Enemy::EnemyType::GREENTURRET)
-        {
+        } else if (mobId == Enemy::EnemyType::GREENTURRET) {
             sprite = std::make_shared<Sprite>("assets/Enemies/GreenEnemy5/GreenEnemy5.png", 0.0f, 2.0f);
             animation = std::make_shared<Animation2D>(1, 6, Animation2D::AnimationType::FIXED);
             enemyComponent = std::make_shared<Enemy>(mobId, Missile::MissileType::E_HOMING_GREEN5, 5000);
-            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
-                                                      std::function<float(float)>([](float a)
-                                                                                  { return 0; }),
+            trajectory = std::make_shared<Trajectory>(std::function<float(float)>([](float a) { return 0; }),
+                                                      std::function<float(float)>([](float a) { return 0; }),
                                                       position);
         }
         entity->addComponent(position)
@@ -377,10 +311,8 @@ namespace ecs
         std::string strCube;
         std::getline(file, lineTwo);
         std::getline(file, lineThree);
-        for (int row = firstRow; row <= lastRow && lineThree != ""; row++)
-        {
-            if (lineTwo[firstLine] == 'a')
-            {
+        for (int row = firstRow; row <= lastRow && lineThree != ""; row++) {
+            if (lineTwo[firstLine] == 'a') {
                 strCube.clear();
                 strCube.push_back('a');
                 strCube.push_back(lineOne[firstLine]);
@@ -388,8 +320,7 @@ namespace ecs
                 strCube.push_back(lineTwo[firstLine + 1]);
                 scene->addEntity(whichWall(strCube, row, firstLine, lineTwo[firstLine]));
             }
-            if (lineTwo[lastLine] == 'a')
-            {
+            if (lineTwo[lastLine] == 'a') {
                 strCube.clear();
                 strCube.push_back(lineTwo[lastLine - 1]);
                 strCube.push_back(lineOne[lastLine]);
@@ -398,12 +329,10 @@ namespace ecs
                 scene->addEntity(whichWall(strCube, row, lastLine, lineTwo[lastLine]));
             }
 
-            for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++)
-            {
+            for (int line = firstLine; line <= lastLine && line <= lineTwo.size(); line++) {
                 if (lineTwo[line] == '*')
                     ;
-                else if (lineTwo[line] == 'a' || lineTwo[line] == 'b' || lineTwo[line] == 'c')
-                {
+                else if (lineTwo[line] == 'a' || lineTwo[line] == 'b' || lineTwo[line] == 'c') {
                     strCube.clear();
                     if (line > 0)
                         strCube.push_back(lineTwo[line - 1]);
@@ -413,22 +342,15 @@ namespace ecs
                     strCube.push_back(lineThree[line]);
                     strCube.push_back(lineTwo[line + 1]);
                     scene->addEntity(whichWall(strCube, row, line, lineTwo[line]));
-                }
-                else if (lineTwo[line] == 'P')
+                } else if (lineTwo[line] == 'P')
                     playerSpawns.push_back({(float)row * (float)SCALE, (lastLine - line) * (float)SCALE, 0});
-                else if (lineTwo[line] >= '1' && lineTwo[line] <= '5')
-                {
+                else if (lineTwo[line] >= '1' && lineTwo[line] <= '5') {
                     GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - '0'), Position(row * SCALE, (lastLine - line) * SCALE)));
-                }
-                else if (lineTwo[line] >= 'f' && lineTwo[line] <= 'j')
-                {
+                } else if (lineTwo[line] >= 'f' && lineTwo[line] <= 'j') {
                     GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - 'f' + 6), Position(row * SCALE, (lastLine - line) * SCALE)));
-                }
-                else if (lineTwo[line] >= 'k' && lineTwo[line] <= 'o')
-                {
+                } else if (lineTwo[line] >= 'k' && lineTwo[line] <= 'o') {
                     GameSystem::enemies.push_back(std::make_pair(Enemy::EnemyType(lineTwo[line] - 'k' + 11), Position(row * SCALE, (lastLine - line) * SCALE)));
-                }
-                else if (lineTwo[line] >= 'A' && lineTwo[line] <= 'C')
+                } else if (lineTwo[line] >= 'A' && lineTwo[line] <= 'C')
                     GameSystem::bosses.push_back(std::make_pair(Boss::BossType(lineTwo[line] - 'A'), Position(row * SCALE, (lastLine - line) * SCALE)));
             }
             lineOne = lineTwo;

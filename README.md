@@ -2,7 +2,7 @@
 Repository for the R-Type project
 
 # Open Port
-    firewall-cmd --add-port=4000/tcp --permanent
+    firewall-cmd --add-port=8080/udp --permanent
 
 # Compilation:
     First :
