@@ -394,9 +394,9 @@ namespace ecs
     {
         const int validBoundingZone = VALID_BORDER_SIZE;
         auto rect = Rect(camPos->x - validBoundingZone,
-            camPos->y - validBoundingZone,
-            camPos->x + 1920 + validBoundingZone,
-            camPos->y + 1080 + validBoundingZone);
+                         camPos->y - validBoundingZone,
+                         camPos->x + 1920 + validBoundingZone,
+                         camPos->y + 1080 + validBoundingZone);
         for (auto &entity : sceneManager.getCurrentScene().getAllEntities()) {
             auto component = (*entity)[IComponent::Type::POSITION];
             if (component == nullptr)
@@ -420,7 +420,7 @@ namespace ecs
         std::vector<ecs::Position> toErasePosBoss;
 
         if (GameSystem::enemies.size() == 0 && GameSystem::bosses.size() == 0)
-                    return;
+            return;
         for (auto &enemy : GameSystem::enemies) {
             Position pos(enemy.second.x, enemy.second.y, 0);
             if (rect.contains(pos.x, pos.y)) {
@@ -464,9 +464,9 @@ namespace ecs
 
     void GameSystem::update(ecs::SceneManager &sceneManager, uint64_t dt)
     {
-        static uint64_t lastPurge = 0;
+        static uint64_t lastPurge = PURGE_FREQUENCY;
 
-        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)// TODO: improve ending of the server
+        if (Core::networkRole == NetworkRole::SERVER && sceneManager.getCurrentSceneType() == SceneType::END)  // TODO: improve ending of the server
             sceneManager.setShouldClose(true);
         if (sceneManager.getCurrentSceneType() == SceneType::SPLASH) {
             timeElasped += dt;
@@ -504,11 +504,12 @@ namespace ecs
             auto cameraComp = Component::castComponent<Camera2DComponent>((*camera)[IComponent::Type::CAMERA_2D]);
             auto pos = Component::castComponent<Position>((*camera)[IComponent::Type::POSITION]);
             auto vel = Component::castComponent<Velocity>((*camera)[IComponent::Type::VELOCITY]);
-            if (Core::networkRole == NetworkRole::SERVER && (lastPurge += dt) >= PURGE_FREQUENCY) {
+            if (Core::networkRole == NetworkRole::SERVER && lastPurge >= PURGE_FREQUENCY) {
                 lastPurge = 0;
                 purgeAroundCameraEntities(sceneManager, pos);
                 activateInboundsEntities(sceneManager, pos);
-            }
+            } else if (Core::networkRole == NetworkRole::SERVER)
+                lastPurge += dt;
             manageCamWhileBossing(sceneManager, vel);
             *pos = (*pos) + ((*vel) * (float)(dt / 1000.0f));
             cameraComp->getCamera().update();
@@ -931,7 +932,7 @@ namespace ecs
                         writeMsg(Message(EntityAction::DELETE, playerComp->getSpaceModule()->getId()));
                         sceneManager.getCurrentScene().removeEntity(playerComp->getSpaceModule());
                     }
-                    sceneManager.getCurrentScene().removeEntity(player);
+                    playersToDestroy.push_back(player);
                     Message msg(EntityAction::DELETE, player->getId());
                     writeMsg(msg);
                 } else if (collider->hasTag(IEntity::Tags::MISSILE)) {
