@@ -35,7 +35,7 @@ void testModelsCollision(void)
     Vector3 rotation = {10.0f, 0.0f, 0.0f};
     Vector3 rotation2 = {0.0f, 0.0f, 0.0f};
     Vector3 scale = {1.0f, 1.0f, 1.0f};
-    SetCameraMode(camera, CAMERA_FREE);  // Set a free camera mode
+    UpdateCamera(&camera, CAMERA_FREE);  // Set a free camera mode
 
     bool colliding = false;
 
@@ -64,7 +64,7 @@ void testModelsCollision(void)
                 collideSystem.makeUpdatedBBox(test2.getBoundingBox(), position2)))
             colliding = true;
 
-        UpdateCamera(&camera);
+        UpdateCamera(&camera, CAMERA_FREE);
 
         // Draw
         //----------------------------------------------------------------------------------

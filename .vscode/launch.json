@@ -9,7 +9,10 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/r-type_client",
-      "args": ["127.0.0.1", "8080"],
+      "args": [
+        "127.0.0.1",
+        "8080"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
@@ -26,14 +29,18 @@
           "text": "-gdb-set disassembly-flavor intel",
           "ignoreFailures": true
         }
-      ]
+      ],
+      "visualizerFile": "c:\\Users\\iona.dommel-prioux\\AppData\\Roaming\\Code\\User\\workspaceStorage\\5391bd4c7c74ecfe8869c79d76cee531\\tonka3000.qtvsctools\\qt.natvis.xml"
     },
     {
       "name": "Launch server",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/r-type_server",
-      "args": ["127.0.0.1", "8080"],
+      "args": [
+        "127.0.0.1",
+        "8080"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
@@ -50,14 +57,18 @@
           "text": "-gdb-set disassembly-flavor intel",
           "ignoreFailures": true
         }
-      ]
+      ],
+      "visualizerFile": "c:\\Users\\iona.dommel-prioux\\AppData\\Roaming\\Code\\User\\workspaceStorage\\5391bd4c7c74ecfe8869c79d76cee531\\tonka3000.qtvsctools\\qt.natvis.xml"
     },
     {
       "name": "Launch server iona online",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/r-type_server",
-      "args": ["10.15.185.36", "8080"],
+      "args": [
+        "10.15.185.36",
+        "8080"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
@@ -74,7 +85,8 @@
           "text": "-gdb-set disassembly-flavor intel",
           "ignoreFailures": true
         }
-      ]
+      ],
+      "visualizerFile": "c:\\Users\\iona.dommel-prioux\\AppData\\Roaming\\Code\\User\\workspaceStorage\\5391bd4c7c74ecfe8869c79d76cee531\\tonka3000.qtvsctools\\qt.natvis.xml"
     }
   ]
 }

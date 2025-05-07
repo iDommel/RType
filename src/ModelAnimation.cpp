@@ -30,7 +30,7 @@ namespace ecs
 
     void ModelAnimation::unloadModelAnimation()
     {
-        for (unsigned int i = 0; i < _animsCount; ++i)
+        for (int i = 0; i < _animsCount; ++i)
             UnloadModelAnimation(anims[i]);
         _isLoaded = false;
     }

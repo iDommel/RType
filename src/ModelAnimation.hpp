@@ -59,7 +59,7 @@ namespace ecs
          * @brief List of animation object
          */
         ::ModelAnimation *anims;
-        unsigned int _animsCount;
+        int _animsCount;
         /// @brief Boolean to see if the animation is loaded or not
         bool _isLoaded;
     };

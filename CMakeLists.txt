@@ -6,13 +6,51 @@ set(CLIENT_NAME "r-type_client")
 set(SERVER_NAME "r-type_server")
 set(LIBRARY_NAME "r-type_library")
 
-# Call the cmake that checks and pulls the raylib
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# Force Release build by default if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+# Force MSVC to use Release Qt libraries even in debug mode
+if(MSVC)
+    add_compile_definitions($<$<CONFIG:Debug>:QT_NO_DEBUG>)
+    add_compile_definitions($<$<CONFIG:Debug>:QT_RELEASE>)
+endif()
+
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTOUIC ON)
+SET(CMAKE_AUTORCC ON)
+
+set(CMAKE_AUTOMOC_PATH_PREFIX ON)
+
+if(WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
+endif()
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_AUTOMOC ON)
+# Dependencies
+set(RAYLIB_VERSION 5.5)
+find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
+if (NOT raylib_FOUND) # If there's none, fetch and build raylib
+  include(FetchContent)
+  FetchContent_Declare(
+    raylib
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
+  )
+  FetchContent_GetProperties(raylib)
+  if (NOT raylib_POPULATED) # Have we downloaded raylib yet?
+    set(FETCHCONTENT_QUIET NO)
+    FetchContent_MakeAvailable(raylib)
+  endif()
+endif()
 
-# set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/gcc_64)
+find_package(Qt5 COMPONENTS Core Network Widgets CONFIG REQUIRED)
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(${LIBRARY_NAME}
@@ -90,22 +128,7 @@ target_include_directories(${LIBRARY_NAME}
     src/systems
     src
 )
-SET(CMAKE_AUTOMOC ON)
-SET(CMAKE_AUTOUIC ON)
-SET(CMAKE_AUTORCC ON)
-
-if(WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
-endif()
-
 target_compile_definitions(${LIBRARY_NAME} PUBLIC)
-
-# find_package(raylib CONFIG REQUIRED)
-find_package(raylib REQUIRED)
-find_package(Qt5 COMPONENTS Core Network CONFIG REQUIRED)
-
-target_include_directories(${LIBRARY_NAME} PUBLIC ${raylib_INCLUDE_DIRS})
-
 target_link_libraries(${LIBRARY_NAME} raylib; Qt5::Core; Qt5::Network)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -125,11 +148,8 @@ target_link_libraries(${SERVER_NAME} ${LIBRARY_NAME})
 # Set default compile flags for GCC
 if(CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${CLIENT_NAME}
-        PRIVATE
-        -Wall
-        -Wextra
-    )
+    target_compile_options(${CLIENT_NAME} PRIVATE -Wall -Wextra)
+    target_compile_options(${SERVER_NAME} PRIVATE -Wall -Wextra)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set_target_properties(

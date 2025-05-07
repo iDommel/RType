@@ -25,7 +25,7 @@ void test_raylib_model(void)
     Vector3 rotation = {10.0f, 0.0f, 0.0f};
     Vector3 scale = {1.0f, 1.0f, 1.0f};
 
-    SetCameraMode(camera, CAMERA_FREE);  // Set a free camera mode
+    UpdateCamera(&camera, CAMERA_FREE);  // Set a free camera mode
 
     bool selected = false;  // Selected object flag
 
@@ -37,7 +37,7 @@ void test_raylib_model(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-        UpdateCamera(&camera);
+        UpdateCamera(&camera, CAMERA_FREE);
 
         // Draw
         //----------------------------------------------------------------------------------

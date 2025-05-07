@@ -33,7 +33,7 @@ namespace ecs
 
     void Sound::play()
     {
-        PlaySoundMulti(*_soundRaylib);
+        PlaySound(*_soundRaylib);
     }
 
     void Sound::stop()

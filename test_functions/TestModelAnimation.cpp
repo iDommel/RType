@@ -21,12 +21,12 @@ void test_raylib_modelAnimation()
     ecs::ModelAnimation anim("assets_test/final_anim.iqm");
     int animFrameCounter = 0;
 
-    SetCameraMode(camera, CAMERA_FREE);
+    UpdateCamera(&camera, CAMERA_FREE);
 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
-        UpdateCamera(&camera);
+        UpdateCamera(&camera, CAMERA_FREE);
 
         if (IsKeyDown(KEY_SPACE)) {
             animFrameCounter++;

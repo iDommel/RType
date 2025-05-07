@@ -11,7 +11,6 @@
 #include "Core.hpp"
 #include "ANetworkSystem.hpp"
 
-#include "TestHeaders.hpp"
 #include "ArgumentError.hpp"
 
 int main(int ac, char **av)

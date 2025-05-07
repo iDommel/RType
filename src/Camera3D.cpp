@@ -38,7 +38,7 @@ namespace ecs
     {
         Vector3 up = {10.0f, 3.0f, 0.0f};
         _camera = std::make_shared<Camera3D>();
-        SetCameraMode(*(_camera.get()), CAMERA_CUSTOM);
+        UpdateCamera(_camera.get(), CAMERA_CUSTOM);
         _camera->target = *(_targetSnap.get());
         _camera->position = *(_positionSnap.get());
         _camera->up = up;
@@ -92,7 +92,7 @@ namespace ecs
             _camera->target = *_targetSnap;
             _camera->position = *_positionSnap;
         }
-        UpdateCamera(_camera.get());
+        UpdateCamera(_camera.get(), CAMERA_CUSTOM);
     }
 
     void Camera::beginDrawScope(void)
